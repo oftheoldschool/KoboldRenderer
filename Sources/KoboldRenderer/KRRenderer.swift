@@ -172,6 +172,7 @@ public class KRRenderer {
         return skyboxModel
     }
 
+    @MainActor
     public func draw(
         mtkView: MTKView?,
         camera: KRCamera,

@@ -79,7 +79,7 @@ class RenderStageTransparent {
             currentFrame: currentFrame,
             renderTarget: rendererSettings.bloomEnabled ? .colorPlusBrightnessPlusDepth : .colorPlusDepth,
             isTransparencyPass: true,
-            msaaEnabled: false, // todo: hardcode msaa off since maintaining multiple transparency targets will be very expensive
+            msaaEnabled: false // todo: hardcode msaa off since maintaining multiple transparency targets will be very expensive
         )
 
         return resources.output
