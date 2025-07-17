@@ -141,12 +141,12 @@ class FragmentShaderFunctionTemplateColor: FragmentShaderFunctionTemplate {
 """
     }
 
-    private static var standardOutput: String =
+    private static let standardOutput: String =
 """
     fragmentOut = fragmentColor;
 """
 
-    private static var gbufferOutput: String =
+    private static let gbufferOutput: String =
 """
     fragmentOut = {
         .normal = float4(fragmentIn.worldNormal, 1),
@@ -154,7 +154,7 @@ class FragmentShaderFunctionTemplateColor: FragmentShaderFunctionTemplate {
     };
 """
 
-    private static var bloomOutput: String =
+    private static let bloomOutput: String =
 """
     float4 brightness = calculateBloom(
         fragmentColor,
@@ -167,7 +167,7 @@ class FragmentShaderFunctionTemplateColor: FragmentShaderFunctionTemplate {
     };
 """
 
-    private static var alphaOutput: String =
+    private static let alphaOutput: String =
 """
     fragmentOut = {
         .revealage = revealage,
@@ -175,7 +175,7 @@ class FragmentShaderFunctionTemplateColor: FragmentShaderFunctionTemplate {
     };
 """
 
-    private static var alphaBloomOutput: String =
+    private static let alphaBloomOutput: String =
 """
     float4 brightness = calculateBloom(
         fragmentColor,

@@ -8,7 +8,7 @@ public struct KRDrawInstanceData {
     public init(
         model: float4x4,
         normalMatrix: float3x3,
-        materialId: Int32,
+        materialId: Int32
     ) {
         self.model = model
         self.normalMatrix = normalMatrix

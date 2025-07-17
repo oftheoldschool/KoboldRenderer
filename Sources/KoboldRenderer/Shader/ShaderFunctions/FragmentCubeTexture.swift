@@ -51,12 +51,12 @@ class FragmentShaderFunctionTemplateCubeTexture: FragmentShaderFunctionTemplate 
 """
     }
 
-    private static var standardOutput: String =
+    private static let standardOutput: String =
 """
     fragmentOut = fragmentColor;
 """
 
-    private static var gbufferOutput: String =
+    private static let gbufferOutput: String =
 """
     fragmentOut = {
         .normal = float4(fragmentIn.normal, 1),
@@ -64,7 +64,7 @@ class FragmentShaderFunctionTemplateCubeTexture: FragmentShaderFunctionTemplate 
     };
 """
 
-    private static var bloomOutput: String =
+    private static let bloomOutput: String =
 """
     float4 brightness = calculateBloom(
         fragmentColor,
