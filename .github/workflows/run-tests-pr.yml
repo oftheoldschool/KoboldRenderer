@@ -1,0 +1,21 @@
+name: Run Tests PR
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths-ignore: [ '.gitignore', '.swift-format', 'README.md', 'LICENSE' ]
+
+jobs:
+  run_tests_pr:
+    runs-on: macos-14
+    steps:
+    - name: Set XCode version
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: "16"
+    - name: Checkout project including tags
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: Build
+      run: swift build
