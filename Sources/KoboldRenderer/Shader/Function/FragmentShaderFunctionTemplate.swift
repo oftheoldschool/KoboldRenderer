@@ -1,15 +1,15 @@
-class FragmentShaderFunctionTemplate {
-    class var functionName: String { fatalError("unimplemented") }
-    class var perVariantLayouts: [FragmentFunctionVariant: FragmentShaderVariantLayouts] { fatalError("unimplemented") }
+open class FragmentShaderFunctionTemplate {
+    open class var functionName: String { fatalError("unimplemented") }
+    open class var perVariantLayouts: [FragmentFunctionVariant: FragmentShaderVariantLayouts] { fatalError("unimplemented") }
 
-    class var inputLayout: String { fatalError("unimplemented") }
-    class var textureLayout: String { fatalError("unimplemented") }
-    class var materialLayout: String { fatalError("unimplemented") }
+    open class var inputLayout: String { fatalError("unimplemented") }
+    open class var textureLayout: String { fatalError("unimplemented") }
+    open class var materialLayout: String { fatalError("unimplemented") }
 
-    class func getFragmentCode(shaderVariant: FragmentFunctionVariant) -> String { fatalError("unimplemented") }
-    class func getFragmentLightingCode(shaderVariant: FragmentFunctionVariant) -> String? { nil }
-    class func getFragmentOutputCode(shaderVariant: FragmentFunctionVariant) -> String { fatalError("unimplemented") }
-    class func getFragmentTransparencyCode(shaderVariant: FragmentFunctionVariant) -> String? { nil }
+    open class func getFragmentCode(shaderVariant: FragmentFunctionVariant) -> String { fatalError("unimplemented") }
+    open class func getFragmentLightingCode(shaderVariant: FragmentFunctionVariant) -> String? { nil }
+    open class func getFragmentOutputCode(shaderVariant: FragmentFunctionVariant) -> String { fatalError("unimplemented") }
+    open class func getFragmentTransparencyCode(shaderVariant: FragmentFunctionVariant) -> String? { nil }
 
     static func createFunctionGroup(
         layoutLibrary: LayoutLibrary,

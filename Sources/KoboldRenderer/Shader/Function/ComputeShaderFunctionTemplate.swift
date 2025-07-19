@@ -1,4 +1,4 @@
-class ComputeShaderFunctionTemplate {
+open class ComputeShaderFunctionTemplate {
     class var functionName: String { fatalError("unimplemented") }
     class var perVariantLayouts: [ComputeFunctionVariant: ComputeShaderVariantLayouts] { fatalError("unimplemented") }
     class var textureSizeValidation: Bool { false }

@@ -1,4 +1,4 @@
-class VertexShaderFunctionTemplate {
+open class VertexShaderFunctionTemplate {
     class var functionName: String { fatalError("unimplemented") }
     class var vertexConstantCode: String? { nil }
     class var vertexPositionCode: String { fatalError("unimplemented") }

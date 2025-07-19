@@ -46,7 +46,10 @@ public class KRRenderer {
         device: MTLDevice,
         rendererSettings: KRRendererSettings,
         gpuDataManager: GPUDataManager,
-        additionalShaderCode: [String] // todo: inject shaderlibrary
+        additionalShaderCode: [String],
+        additionalVertexFunctionTemplates: [VertexShaderFunctionTemplate.Type] = [],
+        additionalFragmentFunctionTemplates: [FragmentShaderFunctionTemplate.Type] = [],
+        additionalComputeFunctionTemplates: [ComputeShaderFunctionTemplate.Type] = []
     ) throws {
         self.blurFunction = MPSImageGaussianBlur(
             device: device,
@@ -84,7 +87,10 @@ public class KRRenderer {
             shadowTextureNumCascades: renderStageShadow.cascadeCount,
             shadowBaseTextureSize: renderStageShadow.baseTextureSize,
             msaaSampleCount: rendererSettings.msaaEnabled ? rendererSettings.msaaSampleCount : 1,
-            additionalShaderCode: additionalShaderCode)
+            additionalShaderCode: additionalShaderCode,
+            additionalVertexFunctionTemplates: additionalVertexFunctionTemplates,
+            additionalFragmentFunctionTemplates: additionalFragmentFunctionTemplates,
+            additionalComputeFunctionTemplates: additionalComputeFunctionTemplates)
 
         // todo: make this a separate render stage
         self.combinePipeline = shaderLibrary.getComputePipeline("computeShaderCombine")

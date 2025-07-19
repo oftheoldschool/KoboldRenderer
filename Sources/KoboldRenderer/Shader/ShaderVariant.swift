@@ -51,7 +51,7 @@ enum VertexFunctionVariant: CaseIterable, CustomStringConvertible {
     }
 }
 
-enum FragmentFunctionVariant: CaseIterable, CustomStringConvertible {
+public enum FragmentFunctionVariant: CaseIterable, CustomStringConvertible {
     case color
     case colorAlpha
     case colorPlusBrightness
@@ -63,7 +63,7 @@ enum FragmentFunctionVariant: CaseIterable, CustomStringConvertible {
     case instancedColorAlphaPlusBrightness
     case instancedGBuffer
 
-    var description: String {
+    public var description: String {
         return switch self {
         case .color:
             "color"
@@ -88,7 +88,7 @@ enum FragmentFunctionVariant: CaseIterable, CustomStringConvertible {
         }
     }
 
-    var isBloom: Bool {
+    public var isBloom: Bool {
         return [
             .colorPlusBrightness,
             .colorAlphaPlusBrightness,
@@ -97,7 +97,7 @@ enum FragmentFunctionVariant: CaseIterable, CustomStringConvertible {
         ].contains(self)
     }
 
-    var isInstanced: Bool {
+    public var isInstanced: Bool {
         return [
             .instancedColor,
             .instancedColorAlpha,
@@ -107,7 +107,7 @@ enum FragmentFunctionVariant: CaseIterable, CustomStringConvertible {
         ].contains(self)
     }
 
-    var isTransparency: Bool {
+    public var isTransparency: Bool {
         return [
             .colorAlpha,
             .colorAlphaPlusBrightness,
@@ -116,7 +116,7 @@ enum FragmentFunctionVariant: CaseIterable, CustomStringConvertible {
         ].contains(self)
     }
 
-    var isGBuffer: Bool {
+    public var isGBuffer: Bool {
         return self == .gbuffer || self == .instancedGBuffer
     }
 }

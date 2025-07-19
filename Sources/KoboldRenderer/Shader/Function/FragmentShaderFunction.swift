@@ -1,7 +1,13 @@
-struct FragmentShaderVariantLayouts {
+public struct FragmentShaderVariantLayouts {
     let bufferLayout: String
     let outputLayout: String
     let attachmentLayout: String
+
+    public init(bufferLayout: String, outputLayout: String, attachmentLayout: String) {
+        self.bufferLayout = bufferLayout
+        self.outputLayout = outputLayout
+        self.attachmentLayout = attachmentLayout
+    }
 }
 
 struct FragmentShaderFunctionGroup {

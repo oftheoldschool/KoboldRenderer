@@ -52,7 +52,7 @@ struct ShaderOptions: OptionSet, Hashable, CustomStringConvertible, CaseIterable
     }
 }
 
-public class ShaderLibrary {
+class ShaderLibrary {
     let pipelines: [String: RenderPipeline]
     let computePipelines: [String: ComputePipeline]
 
@@ -70,28 +70,30 @@ public class ShaderLibrary {
         shadowTextureNumCascades: Int,
         shadowBaseTextureSize: Int,
         msaaSampleCount: Int,
-        additionalShaderCode: [String]
+        additionalShaderCode: [String],
+        additionalVertexFunctionTemplates: [VertexShaderFunctionTemplate.Type] = [],
+        additionalFragmentFunctionTemplates: [FragmentShaderFunctionTemplate.Type] = [],
+        additionalComputeFunctionTemplates: [ComputeShaderFunctionTemplate.Type] = []
     ) throws {
         let vertexFunctionTemplates: [VertexShaderFunctionTemplate.Type] = [
             VertexShaderFunctionTemplateBasic.self,
             VertexShaderFunctionTemplateAnimation.self,
             VertexShaderFunctionTemplateSkySphere.self,
             VertexShaderFunctionTemplatePassThrough.self,
-        ]
+        ] + additionalVertexFunctionTemplates
 
         let fragmentFunctionTemplates: [FragmentShaderFunctionTemplate.Type] = [
             FragmentShaderFunctionTemplateColor.self,
             FragmentShaderFunctionTemplateTexture.self,
             FragmentShaderFunctionTemplateCubeTexture.self,
-            FragmentShaderFunctionTemplateSkySphere.self,
             FragmentShaderFunctionTemplatePassThrough.self,
-        ]
+        ] + additionalFragmentFunctionTemplates
 
         let computeFunctionTemplates: [ComputeShaderFunctionTemplate.Type] = [
             ComputeShaderFunctionTemplateGBufferCombine.self,
             ComputeShaderFunctionTemplateCombine.self,
             ComputeShaderFunctionTemplateConvert.self,
-        ]
+        ] + additionalComputeFunctionTemplates
 
         // todo: we can probably do away with this too
         // some time later... can we though?
