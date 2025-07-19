@@ -1,9 +1,9 @@
-struct VertexShaderVariantLayouts {
+public struct VertexShaderVariantLayouts {
     let bufferLayout: String
     let outputLayout: String
     let attachmentLayout: String?
 
-    init(
+    public init(
         bufferLayout: String,
         outputLayout: String,
         attachmentLayout: String? = nil

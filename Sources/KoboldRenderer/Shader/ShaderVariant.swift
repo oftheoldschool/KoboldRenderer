@@ -7,7 +7,7 @@ enum ComputeFunctionVariant: Hashable {
     }
 }
 
-enum VertexFunctionVariant: CaseIterable, CustomStringConvertible {
+public enum VertexFunctionVariant: CaseIterable, CustomStringConvertible {
     case single
     case singleShadow
     case instanced
@@ -17,7 +17,7 @@ enum VertexFunctionVariant: CaseIterable, CustomStringConvertible {
     case instancedAnimated
     case instancedAnimatedShadow
 
-    var description: String {
+    public var description: String {
         return switch self {
         case .single:
             "single"

@@ -1,11 +1,11 @@
 open class VertexShaderFunctionTemplate {
-    class var functionName: String { fatalError("unimplemented") }
-    class var vertexConstantCode: String? { nil }
-    class var vertexPositionCode: String { fatalError("unimplemented") }
-    class var vertexAnimationCode: String? { nil }
-    class var vertexAdditionalCode: String? { nil }
-    class var vertexLayout: String? { fatalError("unimplemented") }
-    class var perVariantLayouts: [VertexFunctionVariant: VertexShaderVariantLayouts] { fatalError("unimplemented") }
+    open class var functionName: String { fatalError("unimplemented") }
+    open class var vertexConstantCode: String? { nil }
+    open class var vertexPositionCode: String { fatalError("unimplemented") }
+    open class var vertexAnimationCode: String? { nil }
+    open class var vertexAdditionalCode: String? { nil }
+    open class var vertexLayout: String? { fatalError("unimplemented") }
+    open class var perVariantLayouts: [VertexFunctionVariant: VertexShaderVariantLayouts] { fatalError("unimplemented") }
 
     static func createFunctionGroup(
         layoutLibrary: LayoutLibrary,

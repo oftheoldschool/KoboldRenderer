@@ -210,7 +210,7 @@ class ShaderLibrary {
                 device: device,
                 library: library,
                 name: "skyBox",
-                vertexFunction: vertexFunctions["skysphereVertex"]!,
+                vertexFunction: vertexFunctions["skyboxVertex"]!,
                 fragmentFunction: fragmentFunctions["cubeTexturedFragment"]!,
                 shaderVariants: [
                     ShaderVariant(renderTarget: .colorPlusDepth, shaderOptions: [.msaa]),

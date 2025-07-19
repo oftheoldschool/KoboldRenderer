@@ -1,5 +1,5 @@
 class VertexShaderFunctionTemplateSkySphere: VertexShaderFunctionTemplate {
-    override class var functionName: String { "skysphereVertex" }
+    override class var functionName: String { "skyboxVertex" }
     override class var vertexLayout: String { "skyboxVertex" }
     override class var perVariantLayouts: [VertexFunctionVariant: VertexShaderVariantLayouts] {
         [
