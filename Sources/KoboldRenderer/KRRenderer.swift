@@ -24,7 +24,11 @@ public class KRRenderer {
 
     private let layoutLibrary: LayoutLibrary
     private var shaderLibrary: ShaderLibrary
+    private var additionalPipelineDefinitions: [RenderPipelineDefinition]
     private var additionalShaderCode: [String]
+    private var additionalVertexFunctionTemplates: [VertexShaderFunctionTemplate.Type]
+    private var additionalFragmentFunctionTemplates: [FragmentShaderFunctionTemplate.Type]
+    private var additionalComputeFunctionTemplates: [ComputeShaderFunctionTemplate.Type]
 
     public var currentFrame: Int
     private let inflightSemaphore: DispatchSemaphore
@@ -46,7 +50,8 @@ public class KRRenderer {
         device: MTLDevice,
         rendererSettings: KRRendererSettings,
         gpuDataManager: GPUDataManager,
-        additionalShaderCode: [String],
+        additionalPipelineDefinitions: [RenderPipelineDefinition] = [],
+        additionalShaderCode: [String] = [],
         additionalVertexFunctionTemplates: [VertexShaderFunctionTemplate.Type] = [],
         additionalFragmentFunctionTemplates: [FragmentShaderFunctionTemplate.Type] = [],
         additionalComputeFunctionTemplates: [ComputeShaderFunctionTemplate.Type] = []
@@ -61,6 +66,10 @@ public class KRRenderer {
         self.gpuDataManager = gpuDataManager
         self.commandQueue = device.makeCommandQueue()!
         self.additionalShaderCode = additionalShaderCode
+        self.additionalPipelineDefinitions = additionalPipelineDefinitions
+        self.additionalVertexFunctionTemplates = additionalVertexFunctionTemplates
+        self.additionalFragmentFunctionTemplates = additionalFragmentFunctionTemplates
+        self.additionalComputeFunctionTemplates = additionalComputeFunctionTemplates
 
         self.modelManager = ModelManager(
             device: device,
@@ -87,6 +96,7 @@ public class KRRenderer {
             shadowTextureNumCascades: renderStageShadow.cascadeCount,
             shadowBaseTextureSize: renderStageShadow.baseTextureSize,
             msaaSampleCount: rendererSettings.msaaEnabled ? rendererSettings.msaaSampleCount : 1,
+            additionalRenderPipelineDefinitions: additionalPipelineDefinitions,
             additionalShaderCode: additionalShaderCode,
             additionalVertexFunctionTemplates: additionalVertexFunctionTemplates,
             additionalFragmentFunctionTemplates: additionalFragmentFunctionTemplates,
@@ -426,7 +436,11 @@ public class KRRenderer {
                 shadowTextureNumCascades: renderStageShadow.cascadeCount,
                 shadowBaseTextureSize: renderStageShadow.baseTextureSize,
                 msaaSampleCount: msaaSampleCount,
-                additionalShaderCode: additionalShaderCode)
+                additionalRenderPipelineDefinitions: additionalPipelineDefinitions,
+                additionalShaderCode: additionalShaderCode,
+                additionalVertexFunctionTemplates: additionalVertexFunctionTemplates,
+                additionalFragmentFunctionTemplates: additionalFragmentFunctionTemplates,
+                additionalComputeFunctionTemplates: additionalComputeFunctionTemplates)
 
             renderStageOpaque.applyChanges(
                 rendererSettings: rendererSettings,

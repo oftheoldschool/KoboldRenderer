@@ -70,10 +70,11 @@ class ShaderLibrary {
         shadowTextureNumCascades: Int,
         shadowBaseTextureSize: Int,
         msaaSampleCount: Int,
+        additionalRenderPipelineDefinitions: [RenderPipelineDefinition],
         additionalShaderCode: [String],
-        additionalVertexFunctionTemplates: [VertexShaderFunctionTemplate.Type] = [],
-        additionalFragmentFunctionTemplates: [FragmentShaderFunctionTemplate.Type] = [],
-        additionalComputeFunctionTemplates: [ComputeShaderFunctionTemplate.Type] = []
+        additionalVertexFunctionTemplates: [VertexShaderFunctionTemplate.Type],
+        additionalFragmentFunctionTemplates: [FragmentShaderFunctionTemplate.Type],
+        additionalComputeFunctionTemplates: [ComputeShaderFunctionTemplate.Type]
     ) throws {
         let vertexFunctionTemplates: [VertexShaderFunctionTemplate.Type] = [
             VertexShaderFunctionTemplateBasic.self,
@@ -178,7 +179,7 @@ class ShaderLibrary {
             result[element.name] = element
         }
 
-        self.pipelines = [
+        self.pipelines = ([
             try! RenderPipeline(
                 device: device,
                 library: library,
@@ -208,18 +209,6 @@ class ShaderLibrary {
             try! RenderPipeline(
                 device: device,
                 library: library,
-                name: "skySphere",
-                vertexFunction: vertexFunctions["skysphereVertex"]!,
-                fragmentFunction: fragmentFunctions["skysphereFragment"]!,
-                shaderVariants: [
-                    ShaderVariant(renderTarget: .colorPlusDepth, shaderOptions: [.msaa]),
-                    ShaderVariant(renderTarget: .colorPlusBrightnessPlusDepth, shaderOptions: [.msaa]),
-                    ShaderVariant(renderTarget: .gbuffer, shaderOptions: []),
-                ],
-                msaaSampleCount: msaaSampleCount),
-            try! RenderPipeline(
-                device: device,
-                library: library,
                 name: "skyBox",
                 vertexFunction: vertexFunctions["skysphereVertex"]!,
                 fragmentFunction: fragmentFunctions["cubeTexturedFragment"]!,
@@ -240,7 +229,35 @@ class ShaderLibrary {
                 ],
                 msaaSampleCount: msaaSampleCount
             ),
-        ].reduce(into: [:]) { result, element in
+        ] + additionalRenderPipelineDefinitions.map { pipelineDefinition in
+            var supportedTargets = [ShaderRenderTarget.colorPlusDepth, ShaderRenderTarget.gbuffer]
+            if pipelineDefinition.supportsBloom {
+                supportedTargets.append(ShaderRenderTarget.colorPlusBrightnessPlusDepth)
+            }
+            return try! RenderPipeline(
+                device: device,
+                library: library,
+                name: pipelineDefinition.name,
+                vertexFunction: vertexFunctions[pipelineDefinition.vertexFunctionName]!,
+                fragmentFunction: fragmentFunctions[pipelineDefinition.fragmentFunctionName]!,
+                shaderVariants: supportedTargets.map { target in
+                    var shaderOptions: ShaderOptions = []
+                    if target != .gbuffer {
+                        shaderOptions.insert(.msaa)
+                        if pipelineDefinition.supportsTransparency {
+                            shaderOptions.insert(.transparency)
+                        }
+                    }
+                    if pipelineDefinition.supportsAnimation {
+                        shaderOptions.insert(.animated)
+                    }
+                    if pipelineDefinition.supportsInstancing {
+                        shaderOptions.insert(.instanced)
+                    }
+                    return ShaderVariant(renderTarget: target, shaderOptions: shaderOptions)
+                },
+                msaaSampleCount: msaaSampleCount)
+        }).reduce(into: [:]) { result, element in
             result[element.name] = element
         }
     }
