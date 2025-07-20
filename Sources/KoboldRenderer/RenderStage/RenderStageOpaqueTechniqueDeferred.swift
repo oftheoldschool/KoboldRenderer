@@ -124,7 +124,7 @@ class RenderStageOpaqueTechniqueDeferred: RenderStageOpaqueTechnique {
 
         renderPassDescriptor.colorAttachments[1].loadAction = .clear
         renderPassDescriptor.colorAttachments[1].storeAction = .store
-        renderPassDescriptor.colorAttachments[1].clearColor = MTLClearColor.black
+        renderPassDescriptor.colorAttachments[1].clearColor = MTLClearColor(rendererSettings.clearColor)
         renderPassDescriptor.colorAttachments[1].texture = gbuffer.albedos
 
         deferredResources = DeferredResources(

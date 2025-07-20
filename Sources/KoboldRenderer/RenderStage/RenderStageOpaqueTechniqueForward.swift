@@ -104,7 +104,7 @@ class RenderStageOpaqueTechniqueForward: RenderStageOpaqueTechnique {
 
             renderPassDescriptor.colorAttachments[0].loadAction = .clear
             renderPassDescriptor.colorAttachments[0].storeAction = .multisampleResolve
-            renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColor.black
+            renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColor(rendererSettings.clearColor)
             renderPassDescriptor.colorAttachments[0].texture = textures.msaaColorRenderTarget
             renderPassDescriptor.colorAttachments[0].resolveTexture = outputTargets.color
             if rendererSettings.bloomEnabled {
@@ -121,7 +121,7 @@ class RenderStageOpaqueTechniqueForward: RenderStageOpaqueTechnique {
 
             renderPassDescriptor.colorAttachments[0].loadAction = .clear
             renderPassDescriptor.colorAttachments[0].storeAction = .store
-            renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColor.black
+            renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColor(rendererSettings.clearColor)
             renderPassDescriptor.colorAttachments[0].texture = outputTargets.color
             if rendererSettings.bloomEnabled {
                 renderPassDescriptor.colorAttachments[1].loadAction = .clear

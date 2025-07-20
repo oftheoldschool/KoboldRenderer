@@ -181,7 +181,8 @@ public class KRRenderer {
             materialBuffer: materialsBuffer[currentFrame],
             bloomThreshold: bloomThreshold,
             bloomMultiplier: bloomMultiplier,
-            elapsedTime: elapsedTime)
+            elapsedTime: elapsedTime,
+            rendererSettings: rendererSettings)
 
         commandBuffer.commit()
 

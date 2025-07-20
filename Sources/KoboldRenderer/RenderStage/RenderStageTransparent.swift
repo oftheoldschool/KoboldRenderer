@@ -126,7 +126,7 @@ class RenderStageTransparent {
 
         renderPassDescriptor.colorAttachments[0].loadAction = .clear
         renderPassDescriptor.colorAttachments[0].storeAction = .store
-        renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColor(red: 1, green: 1, blue: 1, alpha: 1)
+        renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColor.white
         renderPassDescriptor.colorAttachments[0].texture = transparencyOutput.revealageTexture
 
         renderPassDescriptor.colorAttachments[1].loadAction = .clear

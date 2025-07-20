@@ -14,6 +14,7 @@ public struct KRRendererSettings {
     public var globalMaterial: String
     public var globalLightingColor: SIMD3<Float>
     public var cascadeFrustumDistances: [Float]
+    public var clearColor: SIMD3<Float>
 
     public init(
         forwardRendering: Bool = true,
@@ -30,7 +31,8 @@ public struct KRRendererSettings {
         outputImageScale: Float = 1.0,
         globalMaterial: String = "none",
         globalLightingColor: SIMD3<Float>,
-        cascadeFrustumDistances: [Float]
+        cascadeFrustumDistances: [Float],
+        clearColor: SIMD3<Float>
     ) {
         self.forwardRendering = forwardRendering
         self.transparencyEnabled = transparencyEnabled
@@ -47,6 +49,7 @@ public struct KRRendererSettings {
         self.globalMaterial = globalMaterial
         self.globalLightingColor = globalLightingColor
         self.cascadeFrustumDistances = cascadeFrustumDistances
+        self.clearColor = clearColor
     }
 
     func requiresReinit(previous: KRRendererSettings) -> Bool {

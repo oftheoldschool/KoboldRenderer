@@ -14,7 +14,8 @@ public class RenderStageWriteSkyBox {
         materialBuffer: GPUDataBuffer,
         bloomThreshold: SIMD3<Float>,
         bloomMultiplier: SIMD3<Float>,
-        elapsedTime: Float
+        elapsedTime: Float,
+        rendererSettings: KRRendererSettings
     ) -> KRModelInput {
         let camParams: [(forward: SIMD3<Float>, up: SIMD3<Float>)] = [
             (.xPositive, .yPositive), (.xNegative, .yPositive),
@@ -45,7 +46,7 @@ public class RenderStageWriteSkyBox {
         let renderPassDescriptor = MTLRenderPassDescriptor()
         renderPassDescriptor.colorAttachments[0].texture = cubeTexture
         renderPassDescriptor.colorAttachments[0].loadAction = .clear
-        renderPassDescriptor.colorAttachments[0].clearColor = .black
+        renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColor(rendererSettings.clearColor)
         renderPassDescriptor.depthAttachment.texture = depthTexture
 
         for (index, camParam) in camParams.enumerated() {
