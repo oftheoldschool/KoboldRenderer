@@ -32,6 +32,7 @@ class VertexShaderFunctionTemplateBasic: VertexShaderFunctionTemplate {
     override class var vertexAdditionalCode: String? {
 """
     vertexOut.position = outputPosition;
+    vertexOut.normal = vertexIn.normal;
     vertexOut.texCoords = vertexIn.texCoords;
     vertexOut.worldPosition = worldPosition.xyz;
     vertexOut.worldNormal = worldNormal;
