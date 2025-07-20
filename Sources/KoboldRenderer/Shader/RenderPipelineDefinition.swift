@@ -6,6 +6,7 @@ public struct RenderPipelineDefinition {
     let supportsAnimation: Bool
     let supportsTransparency: Bool
     let supportsInstancing: Bool
+    let supportsDepth: Bool
 
     public init(
         name: String,
@@ -14,7 +15,8 @@ public struct RenderPipelineDefinition {
         supportsBloom: Bool,
         supportsAnimation: Bool,
         supportsTransparency: Bool,
-        supportsInstancing: Bool
+        supportsInstancing: Bool,
+        supportsDepth: Bool
     ) {
         self.name = name
         self.vertexFunctionName = vertexFunctionName
@@ -23,5 +25,6 @@ public struct RenderPipelineDefinition {
         self.supportsAnimation = supportsAnimation
         self.supportsTransparency = supportsTransparency
         self.supportsInstancing = supportsInstancing
+        self.supportsDepth = supportsDepth
     }
 }

@@ -230,9 +230,15 @@ class ShaderLibrary {
                 msaaSampleCount: msaaSampleCount
             ),
         ] + additionalRenderPipelineDefinitions.map { pipelineDefinition in
-            var supportedTargets = [ShaderRenderTarget.colorPlusDepth, ShaderRenderTarget.gbuffer]
+            var supportedTargets = [
+                ShaderRenderTarget.colorPlusDepth,
+                ShaderRenderTarget.gbuffer,
+            ]
             if pipelineDefinition.supportsBloom {
                 supportedTargets.append(ShaderRenderTarget.colorPlusBrightnessPlusDepth)
+            }
+            if pipelineDefinition.supportsDepth {
+                supportedTargets.append(ShaderRenderTarget.depth)
             }
             return try! RenderPipeline(
                 device: device,
