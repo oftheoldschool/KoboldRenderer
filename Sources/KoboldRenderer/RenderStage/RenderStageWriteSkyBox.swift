@@ -112,7 +112,8 @@ public class RenderStageWriteSkyBox {
                     vertexCount: Self.cubePositions.count,
                     indexData: (KIndexType.uint32, MemoryLayout<UInt32>.size, Self.cubeIndices.toByteArray()),
                     indexCount: Self.cubeIndices.count,
-                    textures: [.textureCubeMap: "skyBox"])
+                    textures: [.textureCubeMap: "skyBox"],
+                    primitiveType: .triangle)
             ],
             textures: [
                 "skyBox": .gpu(texture: cubeTexture, sampler: sampler)

@@ -17,6 +17,24 @@ extension KIndexType {
     }
 }
 
+enum KPrimitiveType {
+    case point
+    case line
+    case lineStrip
+    case triangle
+    case triangleStrip
+
+    func toMTLPrimitiveType() -> MTLPrimitiveType {
+        return switch self {
+        case .point: .point
+        case .line: .line
+        case .lineStrip: .lineStrip
+        case .triangle: .triangle
+        case .triangleStrip: .triangleStrip
+        }
+    }
+}
+
 struct IndexBuffer {
     let indexBuffer: GPUDataBuffer?
     let indexBufferType: KIndexType
@@ -28,10 +46,12 @@ struct AttributesBuffer {
     let vertexCount: Int
 }
 
+
 struct MultiBufferMesh {
     let attributes: AttributesBuffer
     let indices: IndexBuffer?
     let textures: [KTextureBindingType: String]
+    let primitiveType: KPrimitiveType
 
     init(
         gpuDataManager: GPUDataManager,
@@ -39,8 +59,10 @@ struct MultiBufferMesh {
         vertexCount: Int,
         indexData: (type: KIndexType, size: Int, data: [UInt8]),
         indexCount: Int,
-        textures: [KTextureBindingType: String] = [:]
+        textures: [KTextureBindingType: String] = [:],
+        primitiveType: KPrimitiveType
     ) {
+        self.primitiveType = primitiveType
         let indexDataSize = indexData.data.count
         let bufferSizes: [Int] = verticesData.reduce([indexDataSize]) { acc, next in
             return acc + [next.data.count]

@@ -224,6 +224,8 @@ public class RenderPipeline {
 
             if let model = model {
                 for mesh in model.meshes {
+                    let primitiveType = mesh.primitiveType.toMTLPrimitiveType()
+
                     if let vertexLayout = vertexFunction?.vertexLayout {
                         for attribute in vertexLayout.attributes {
                             if let buffer = mesh.attributes.buffers[attribute.binding.type] {
@@ -249,7 +251,7 @@ public class RenderPipeline {
                        let indexBuffer = indices.indexBuffer{
                         if instanceCount > 1 {
                             commandEncoder.drawIndexedPrimitives(
-                                type: .triangle,
+                                type: primitiveType,
                                 indexCount: indices.indexCount,
                                 indexType: indices.indexBufferType.toMetalIndexType(),
                                 indexBuffer: indexBuffer.buffer,
@@ -257,7 +259,7 @@ public class RenderPipeline {
                                 instanceCount: instanceCount)
                         } else {
                             commandEncoder.drawIndexedPrimitives(
-                                type: .triangle,
+                                type: primitiveType,
                                 indexCount: indices.indexCount,
                                 indexType: indices.indexBufferType.toMetalIndexType(),
                                 indexBuffer: indexBuffer.buffer,
@@ -265,7 +267,7 @@ public class RenderPipeline {
                         }
                     } else {
                         commandEncoder.drawPrimitives(
-                            type: .triangle,
+                            type: primitiveType,
                             vertexStart: 0,
                             vertexCount: mesh.attributes.vertexCount)
                     }

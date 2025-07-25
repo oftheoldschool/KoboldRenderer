@@ -43,11 +43,22 @@ class ModelManager {
                     vertexCount: mesh.vertexCount,
                     indexData: mesh.indexData,
                     indexCount: mesh.indexCount,
-                    textures: mesh.textures)
+                    textures: mesh.textures,
+                    primitiveType: mapPrimitiveType(mesh.primitiveType))
             },
             textures: textures
         )
         models[modelInput.name] = model
+    }
+
+    private func mapPrimitiveType(_ primitiveType: KRModelPrimitiveType) -> KPrimitiveType {
+        return switch primitiveType {
+        case .point: .point
+        case .line: .line
+        case .lineStrip: .lineStrip
+        case .triangle: .triangle
+        case .triangleStrip: .triangleStrip
+        }
     }
 }
 

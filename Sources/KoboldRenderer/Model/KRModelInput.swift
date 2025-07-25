@@ -44,6 +44,14 @@ public struct KModelSampler {
     }
 }
 
+public enum KRModelPrimitiveType {
+    case point
+    case line
+    case lineStrip
+    case triangle
+    case triangleStrip
+}
+
 public struct KRModelInput {
     public let name: String
     public let meshInput: [KMeshInput]
@@ -67,13 +75,23 @@ public struct KMeshInput {
     public let indexData: (KIndexType, Int, [UInt8])
     public let indexCount: Int
 
+    public let primitiveType: KRModelPrimitiveType
+
     public let textures: [KTextureBindingType: String]
 
-    public init(verticesData: [(KBufferBindingType, Int, [UInt8])], vertexCount: Int, indexData: (KIndexType, Int, [UInt8]), indexCount: Int, textures: [KTextureBindingType : String]) {
+    public init(
+        verticesData: [(KBufferBindingType, Int, [UInt8])],
+        vertexCount: Int,
+        indexData: (KIndexType, Int, [UInt8]),
+        indexCount: Int,
+        textures: [KTextureBindingType : String],
+        primitiveType: KRModelPrimitiveType
+    ) {
         self.verticesData = verticesData
         self.vertexCount = vertexCount
         self.indexData = indexData
         self.indexCount = indexCount
         self.textures = textures
+        self.primitiveType = primitiveType
     }
 }
