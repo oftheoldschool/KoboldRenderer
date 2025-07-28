@@ -12,9 +12,9 @@ class ShaderCodeNoise {
 float map3dNoiseToRange(float noise, float noiseMin, float noiseMax) {
     float oMax = 1;
     float oMin = -oMax;
-    float ratio = (noise - oMin)/(abs(oMin) + abs(oMax));
-    float nPos = ratio * (abs(noiseMin) + abs(noiseMax));
-    return clamp(noiseMin + nPos, 0.f, 1.f);
+    float ratio = (noise - oMin) / (oMax - oMin);
+    float result = noiseMin + ratio * (noiseMax - noiseMin);
+    return result;
 }
 """
 }
