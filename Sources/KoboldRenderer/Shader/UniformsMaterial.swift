@@ -20,4 +20,5 @@ struct MaterialUniforms {
     let materialType: MaterialUniformsType
     let flatShadingMode: FlatShadingMode
     let applyLight: Bool
+    let receiveShadow: Bool
 }

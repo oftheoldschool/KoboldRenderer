@@ -13,18 +13,21 @@ public struct KRMaterial {
     public let name: String
     public let type: KRMaterialType
     let applyLight: Bool
+    let receiveShadow: Bool
     let flatShading: Bool
 
     public init(
         name: String,
         type: KRMaterialType,
         applyLight: Bool,
+        receiveShadow: Bool,
         flatShading: Bool
     ) {
         self.name = name
         self.type = type
         self.applyLight = applyLight
         self.flatShading = flatShading
+        self.receiveShadow = receiveShadow
     }
 
     public func hasTransparency() -> Bool {
@@ -51,6 +54,7 @@ public struct KRMaterial {
             color: color,
             materialType: materialType,
             flatShadingMode: flatShading ? .enabled : .global,
-            applyLight: applyLight)
+            applyLight: applyLight,
+            receiveShadow: receiveShadow)
     }
 }

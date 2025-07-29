@@ -53,6 +53,7 @@ struct MaterialUniforms {
     MaterialUniformsType materialType;
     FlatShadingMode flatShadingMode;
     bool applyLight;
+    bool receiveShadow;
 };
 
 inline float3x3 upperLeft(float4x4 in) {

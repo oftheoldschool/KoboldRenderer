@@ -46,7 +46,7 @@ class ComputeShaderFunctionTemplateGBufferCombine: ComputeShaderFunctionTemplate
     constant MaterialUniforms & material = materials[materialId];
     constant MaterialUniforms & globalMaterial = materials[uniformsShared.globalMaterialId];
     bool enableLighting = uniformsShared.enableLighting && material.applyLight;
-    bool enableShadows = uniformsShared.enableShadows && material.applyLight;
+    bool enableShadows = uniformsShared.enableShadows && material.receiveShadow;
 
     ShadowResult shadowResult = calculateShadow(
         shadowCalculationData,
