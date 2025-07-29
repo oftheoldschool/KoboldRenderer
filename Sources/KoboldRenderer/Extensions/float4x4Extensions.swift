@@ -26,7 +26,7 @@ extension float4x4 {
 
     public var normalMatrix: float3x3 {
         let upperLeft = float3x3(self[0].xyz, self[1].xyz, self[2].xyz)
-        return upperLeft.transpose.inverse
+        return upperLeft.inverse.transpose
     }
     
     public func toRotationScaleMatrix() -> Self {
