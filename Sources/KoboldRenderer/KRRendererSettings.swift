@@ -1,5 +1,17 @@
+public enum KRRenderingMode: Hashable, CustomStringConvertible, CaseIterable {
+    case forward
+    case deferred
+
+    public var description: String {
+        return switch self {
+        case .forward: "forward"
+        case .deferred: "deferred"
+        }
+    }
+}
+
 public struct KRRendererSettings {
-    public var forwardRendering: Bool
+    public var renderingMode: KRRenderingMode
     public var transparencyEnabled: Bool
     public var bloomEnabled: Bool
     public var msaaEnabled: Bool
@@ -17,7 +29,7 @@ public struct KRRendererSettings {
     public var clearColor: SIMD3<Float>
 
     public init(
-        forwardRendering: Bool = true,
+        renderingMode: KRRenderingMode = .forward,
         transparencyEnabled: Bool = true,
         bloomEnabled: Bool = true,
         msaaEnabled: Bool = true,
@@ -34,7 +46,7 @@ public struct KRRendererSettings {
         cascadeFrustumDistances: [Float],
         clearColor: SIMD3<Float>
     ) {
-        self.forwardRendering = forwardRendering
+        self.renderingMode = renderingMode
         self.transparencyEnabled = transparencyEnabled
         self.bloomEnabled = bloomEnabled
         self.msaaEnabled = msaaEnabled
@@ -55,7 +67,7 @@ public struct KRRendererSettings {
     func requiresReinit(previous: KRRendererSettings) -> Bool {
         return bloomEnabled != previous.bloomEnabled
         || msaaEnabled != previous.msaaEnabled
-        || forwardRendering != previous.forwardRendering
+        || renderingMode != previous.renderingMode
         || cascadeFrustumDistances != previous.cascadeFrustumDistances
     }
 
@@ -63,7 +75,7 @@ public struct KRRendererSettings {
         return bloomEnabled != previous.bloomEnabled
         || msaaEnabled != previous.msaaEnabled
         || outputImageScale != previous.outputImageScale
-        || forwardRendering != previous.forwardRendering
+        || renderingMode != previous.renderingMode
         || cascadeFrustumDistances != previous.cascadeFrustumDistances
     }
 }

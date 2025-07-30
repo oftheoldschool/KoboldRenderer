@@ -18,18 +18,20 @@ class RenderStageOpaque {
         shaderLibrary: ShaderLibrary
     ) {
         self.renderTargets = nil
-        self.opaqueTechnique = rendererSettings.forwardRendering
-        ? RenderStageOpaqueTechniqueForward()
-        : RenderStageOpaqueTechniqueDeferred(shaderLibrary: shaderLibrary)
+        self.opaqueTechnique = switch rendererSettings.renderingMode {
+        case .forward: RenderStageOpaqueTechniqueForward()
+        case .deferred: RenderStageOpaqueTechniqueDeferred(shaderLibrary: shaderLibrary)
+        }
     }
 
     func applyChanges(
         rendererSettings: KRRendererSettings,
         shaderLibrary: ShaderLibrary
     ) {
-        self.opaqueTechnique = rendererSettings.forwardRendering
-        ? RenderStageOpaqueTechniqueForward()
-        : RenderStageOpaqueTechniqueDeferred(shaderLibrary: shaderLibrary)
+        self.opaqueTechnique = switch rendererSettings.renderingMode {
+        case .forward: RenderStageOpaqueTechniqueForward()
+        case .deferred: RenderStageOpaqueTechniqueDeferred(shaderLibrary: shaderLibrary)
+        }
     }
 
     func render(
