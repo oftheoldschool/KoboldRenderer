@@ -72,6 +72,9 @@ class FragmentShaderFunctionTemplateColor: FragmentShaderFunctionTemplate {
 
     override class func getFragmentLightingCode(shaderVariant: FragmentFunctionVariant) -> String? {
 """
+    bool enableLighting = uniformsShared.enableLighting && material.applyLight;
+    bool enableShadows = uniformsShared.enableShadows && material.receiveShadow;
+
     float3 normal = getResolvedNormal(
         uniformsShared,
         material,
@@ -83,7 +86,7 @@ class FragmentShaderFunctionTemplateColor: FragmentShaderFunctionTemplate {
         textureArrayCascadedShadowMap,
         textureArrayCascadedShadowMapSampler,
         uniformsCascadeEndClipSpace,
-        uniformsShared.enableShadows && material.receiveShadow);
+        enableShadows);
 
     float4 resolvedColor = getResolvedColor(
         material,
@@ -103,7 +106,7 @@ class FragmentShaderFunctionTemplateColor: FragmentShaderFunctionTemplate {
         resolvedColor.rgb, 
         baseAlpha, 
         shadowResult.shadowFactor,
-        uniformsShared.enableLighting && material.applyLight);
+        enableLighting);
 """
     }
 
