@@ -37,23 +37,14 @@ public struct KRLight {
     let type: KRLightType
     let color: SIMD3<Float>
     let intensity: Float
-    let ambientStrength: Float
-    let specularStrength: Float
-    let specularPower: Float
 
     public init(
         type: KRLightType,
         color: SIMD3<Float>,
         intensity: Float,
-        ambientStrength: Float,
-        specularStrength: Float,
-        specularPower: Float
     ) {
-        self.specularPower = specularPower
         self.type = type
         self.intensity = intensity
         self.color = color
-        self.ambientStrength = ambientStrength
-        self.specularStrength = specularStrength
     }
 }

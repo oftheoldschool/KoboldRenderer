@@ -354,11 +354,8 @@ class LayoutLibrary {
                     StructItem(name: "float3Data", type: .primitive(.float3)),
                     StructItem(name: "intensity", type: .primitive(.float)),
                     StructItem(name: "color", type: .primitive(.float3)),
-                    StructItem(name: "ambientStrength", type: .primitive(.float)),
-                    StructItem(name: "attenuation", type: .primitive(.float3)),
                     StructItem(name: "range", type: .primitive(.float)),
-                    StructItem(name: "specularStrength", type: .primitive(.float)),
-                    StructItem(name: "specularPower", type: .primitive(.float)),
+                    StructItem(name: "attenuation", type: .primitive(.float3)),
                     StructItem(name: "type", type: .custom("LightUniformsType")),
                 ]
             ),

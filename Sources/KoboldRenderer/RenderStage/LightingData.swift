@@ -44,9 +44,6 @@ struct LightingData {
                 float3Data: float3Data,
                 color: light.color,
                 intensity: light.intensity,
-                ambientStrength: light.ambientStrength,
-                specularStrength: light.specularStrength,
-                specularPower: light.specularPower,
                 attenuation: attenuation,
                 range: range
             )
