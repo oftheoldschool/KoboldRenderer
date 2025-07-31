@@ -41,7 +41,7 @@ public struct KRLight {
     public init(
         type: KRLightType,
         color: SIMD3<Float>,
-        intensity: Float,
+        intensity: Float
     ) {
         self.type = type
         self.intensity = intensity
