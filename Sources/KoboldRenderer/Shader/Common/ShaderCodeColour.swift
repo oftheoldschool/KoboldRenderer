@@ -9,36 +9,42 @@ class ShaderCodeColor {
 
     private static let shaderCode =
 """
-float4 getResolvedColor(
+
+MaterialParameters resolveMaterial(
     constant MaterialUniforms & material,
     constant MaterialUniforms & globalMaterial,
     float3 worldPosition,
     float3 worldNormal,
     int cascadeIndex,
-    float3 inputColor
+    float4 inputColor
 ) {
-    float4 resolvedColor = float4(inputColor, 1);
+    float4 materialParameters = inputColor;
 
     constant MaterialUniforms & finalMaterial = (globalMaterial.materialType != MaterialUniformsType::none)
         ? globalMaterial
         : material;
 
     if (finalMaterial.materialType == MaterialUniformsType::debugPosition) {
-        resolvedColor = float4((worldPosition + 1) / 2, 1);
+        materialParameters = float4((worldPosition + 1) / 2, 1);
     } else if (finalMaterial.materialType == MaterialUniformsType::debugNormal) {
-        resolvedColor = float4((worldNormal + 1) / 2, 1);
+        materialParameters = float4((worldNormal + 1) / 2, 1);
     } else if (finalMaterial.materialType == MaterialUniformsType::debugColor) {
-        resolvedColor = finalMaterial.color;
+        materialParameters = finalMaterial.color;
     } else if (finalMaterial.materialType == MaterialUniformsType::debugCascade) {
         if (cascadeIndex == 0) {
-            resolvedColor = float4(1, 0, 0, 1);
+            materialParameters = float4(1, 0, 0, 1);
         } else if (cascadeIndex == 1) {
-            resolvedColor = float4(0, 1, 0, 1);
+            materialParameters = float4(0, 1, 0, 1);
         } else if (cascadeIndex == 2) {
-            resolvedColor = float4(0, 0, 1, 1);
+            materialParameters = float4(0, 0, 1, 1);
         }
     }
-    return resolvedColor;
+    return {
+        .color = materialParameters,
+        .ambientFactor = finalMaterial.ambientFactor,
+        .shininess = finalMaterial.shininess,
+        .specularIntensity = finalMaterial.specularIntensity,
+    };
 }
 
 float3 getResolvedNormal(

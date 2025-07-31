@@ -17,6 +17,9 @@ enum FlatShadingMode: Int8 {
 
 struct MaterialUniforms {
     let color: SIMD4<Float>
+    let ambientFactor: Float
+    let shininess: Float
+    let specularIntensity: Float
     let materialType: MaterialUniformsType
     let flatShadingMode: FlatShadingMode
     let applyLight: Bool

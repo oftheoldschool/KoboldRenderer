@@ -111,16 +111,16 @@ float calculateShadowFactor(
     return baseShadowFactor + (1.0 - baseShadowFactor) * shadowReduction;
 }
 
-// Calculate ambient lighting contribution
 float3 calculateAmbient(
     constant LightUniforms & light, 
     float3 lightColor, 
-    float attenuation
+    float attenuation,
+    float ambientFactor
 ) {
     if (light.type == LightUniformsType::point) {
-        return lightColor * light.ambientStrength * attenuation;
+        return lightColor * ambientFactor * attenuation;
     } else {
-        return lightColor * light.ambientStrength; // Directional = global ambient
+        return lightColor * ambientFactor; // Directional = global ambient
     }
 }
 
@@ -132,7 +132,9 @@ SurfaceLighting calculateSurfaceLighting(
     float3 worldPosition,
     constant SharedUniforms & uniformsShared, 
     float attenuation, 
-    float shadowFactor
+    float shadowFactor,
+    float shininess,
+    float specularIntensity
 ) {
     SurfaceLighting result = {float3(0), float3(0)};
     
@@ -145,14 +147,13 @@ SurfaceLighting calculateSurfaceLighting(
         float3 viewDirection = normalize(uniformsShared.cameraPosition - worldPosition);
         float3 reflectDirection = normalize(reflect(lightDirection, normal));
         float specularFactor = max(0.0, dot(viewDirection, reflectDirection));
-        float specular = pow(specularFactor, light.specularPower);
-        result.specular = light.specularStrength * specular * lightColor * attenuation * shadowFactor;
+        float specular = pow(specularFactor, shininess);
+        result.specular = specularIntensity * specular * lightColor * attenuation * shadowFactor;
     }
     
     return result;
 }
 
-// Calculate rim lighting effect
 float3 calculateRimLighting(
     constant SharedUniforms & uniformsShared,
     constant LightUniforms * uniformsLights,
@@ -208,14 +209,12 @@ float3 calculateRimLighting(
     }
 }
 
-// Main lighting calculation function
 float4 calculateLighting(
     constant SharedUniforms & uniformsShared,
     constant LightUniforms * uniformsLights,
     float3 worldPosition,
     float3 normal,
-    float3 baseColor, 
-    float baseAlpha, 
+    MaterialParameters materialParameters, 
     float baseShadowFactor,
     bool enableLighting,
     float rimIntensity = 0.6,
@@ -224,7 +223,7 @@ float4 calculateLighting(
     RimLightingMode rimMode = RimLightingMode::lightInfluenced
 ) {
     if (!enableLighting) {
-        return float4(baseColor * baseShadowFactor, baseAlpha);
+        return float4(materialParameters.color.rgb * baseShadowFactor, materialParameters.color.a);
     }
     
     float3 N = normal;
@@ -258,7 +257,8 @@ float4 calculateLighting(
         totalAmbient += calculateAmbient(
             light, 
             lightColor, 
-            lightContrib.attenuation
+            lightContrib.attenuation,
+            materialParameters.ambientFactor
         );
         
         SurfaceLighting surface = calculateSurfaceLighting(
@@ -269,7 +269,9 @@ float4 calculateLighting(
             worldPosition,
             uniformsShared, 
             lightContrib.attenuation, 
-            shadowFactor
+            shadowFactor,
+            materialParameters.shininess,
+            materialParameters.specularIntensity
         );
         totalDiffuse += surface.diffuse;
         totalSpecular += surface.specular;
@@ -288,8 +290,8 @@ float4 calculateLighting(
     );
     
     // Combine all lighting terms
-    float3 finalColor = baseColor * (totalAmbient + totalDiffuse) + totalSpecular + rimTerm;
-    return float4(finalColor, baseAlpha);
+    float3 finalColor = materialParameters.color.rgb * (totalAmbient + totalDiffuse) + totalSpecular + rimTerm;
+    return float4(finalColor, materialParameters.color.a);
 }
 
 float4 calculateBloom(

@@ -34,14 +34,14 @@ class FragmentShaderFunctionTemplateCubeTexture: FragmentShaderFunctionTemplate 
     sampleWorldPosition.z = -sampleWorldPosition.z;
     
     float4 sampledColor = textureCubeMap.sample(textureCubeMapSampler, sampleWorldPosition);
-    float4 resolvedColor = getResolvedColor(
+    MaterialParameters materialParameters = resolveMaterial(
         material,
         globalMaterial,
         fragmentIn.worldPosition,
         fragmentIn.worldNormal,
         0,
-        sampledColor.xyz);
-    float4 fragmentColor = float4(resolvedColor.rgb, sampledColor.a);
+        sampledColor);
+    float4 fragmentColor = float4(materialParameters.color);
 """
     }
 

@@ -61,23 +61,20 @@ class FragmentShaderFunctionTemplateTexture: FragmentShaderFunctionTemplate {
         uniformsCascadeEndClipSpace,
         uniformsShared.enableShadows && material.applyLight);
 
-    float4 resolvedColor = getResolvedColor(
+    MaterialParameters materialParameters = resolveMaterial(
         material,
         globalMaterial,
         fragmentIn.worldPosition,
         normal,
         shadowResult.cascadeIndex,
-        fragmentColor.xyz);
-
-    float baseAlpha = 1.0;
+        fragmentColor);
 
     fragmentColor = calculateLighting(
         uniformsShared,
         uniformsLights, 
         fragmentIn.worldPosition,
         normal,
-        resolvedColor.rgb, 
-        baseAlpha, 
+        materialParameters, 
         shadowResult.shadowFactor,
         uniformsShared.enableLighting && material.applyLight);
 """

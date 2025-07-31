@@ -12,6 +12,9 @@ public enum KRMaterialType: Hashable {
 public struct KRMaterial {
     public let name: String
     public let type: KRMaterialType
+    let ambientFactor: Float
+    let shininess: Float
+    let specularIntensity: Float
     let applyLight: Bool
     let receiveShadow: Bool
     let flatShading: Bool
@@ -19,12 +22,18 @@ public struct KRMaterial {
     public init(
         name: String,
         type: KRMaterialType,
+        ambientFactor: Float,
+        shininess: Float,
+        specularIntensity: Float,
         applyLight: Bool,
         receiveShadow: Bool,
         flatShading: Bool
     ) {
         self.name = name
         self.type = type
+        self.ambientFactor = ambientFactor
+        self.shininess = shininess
+        self.specularIntensity = specularIntensity
         self.applyLight = applyLight
         self.flatShading = flatShading
         self.receiveShadow = receiveShadow
@@ -52,6 +61,9 @@ public struct KRMaterial {
 
         return MaterialUniforms(
             color: color,
+            ambientFactor: ambientFactor,
+            shininess: shininess,
+            specularIntensity: specularIntensity,
             materialType: materialType,
             flatShadingMode: flatShading ? .enabled : .global,
             applyLight: applyLight,

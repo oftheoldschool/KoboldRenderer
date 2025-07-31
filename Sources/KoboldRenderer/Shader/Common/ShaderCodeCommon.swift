@@ -50,10 +50,21 @@ enum class LightUniformsType: int8_t {
 
 struct MaterialUniforms {
     float4 color;
+    float ambientFactor;
+    float shininess;
+    float specularIntensity;
+
     MaterialUniformsType materialType;
     FlatShadingMode flatShadingMode;
     bool applyLight;
     bool receiveShadow;
+};
+
+struct MaterialParameters {
+    float4 color;
+    float ambientFactor;
+    float shininess;
+    float specularIntensity;
 };
 
 inline float3x3 upperLeft(float4x4 in) {

@@ -88,23 +88,20 @@ class FragmentShaderFunctionTemplateColor: FragmentShaderFunctionTemplate {
         uniformsCascadeEndClipSpace,
         enableShadows);
 
-    float4 resolvedColor = getResolvedColor(
+    MaterialParameters materialParameters = resolveMaterial(
         material,
         globalMaterial,
         fragmentIn.worldPosition,
         normal,
         shadowResult.cascadeIndex,
-        fragmentColor.xyz);
-
-    float baseAlpha = fragmentColor.a;
+        fragmentColor);
 
     fragmentColor = calculateLighting(
         uniformsShared,
         uniformsLights, 
         fragmentIn.worldPosition,
         normal,
-        resolvedColor.rgb, 
-        baseAlpha, 
+        materialParameters, 
         shadowResult.shadowFactor,
         enableLighting);
 """
@@ -127,7 +124,7 @@ class FragmentShaderFunctionTemplateColor: FragmentShaderFunctionTemplate {
     override class func getFragmentTransparencyCode(shaderVariant: FragmentFunctionVariant) -> String? {
 """
     // Calculate weight using unshadowed color
-    float4 weightColor = float4(fragmentColor.rgb, baseAlpha); // Use lit but unshadowed color
+    float4 weightColor = fragmentColor; // Use lit but unshadowed color
     float transparencyWeight = max(
         min(
             1.0f, 
@@ -141,7 +138,7 @@ class FragmentShaderFunctionTemplateColor: FragmentShaderFunctionTemplate {
     3e3);
 
     // Apply shadows to final transparency color after weight calculation
-    float4 transparencyColor = float4(fragmentColor.rgb * shadowResult.shadowFactor, baseAlpha);
+    float4 transparencyColor = float4(fragmentColor.rgb * shadowResult.shadowFactor, fragmentColor.a);
     float revealage = transparencyColor.a;
     fragmentColor = float4(transparencyColor.rgb * transparencyColor.a, transparencyColor.a) * transparencyWeight;
 

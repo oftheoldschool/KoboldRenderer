@@ -56,21 +56,20 @@ class ComputeShaderFunctionTemplateGBufferCombine: ComputeShaderFunctionTemplate
         uniformsCascadeEndClipSpace,
         enableShadows);
 
-    float4 resolvedColor = getResolvedColor(
+    MaterialParameters materialParameters = resolveMaterial(
         material,
         globalMaterial,
         worldSpacePos.xyz,
         normal,
         shadowResult.cascadeIndex,
-        albedo.rgb);
+        float4(albedo.rgb, 1));
 
     float4 finalColor = calculateLighting(
         uniformsShared,
         uniformsLights,
         worldSpacePos.xyz,
         normal,
-        resolvedColor.rgb,
-        1, 
+        materialParameters,
         shadowResult.shadowFactor,
         enableLighting);
 
