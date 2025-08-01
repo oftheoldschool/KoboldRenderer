@@ -28,13 +28,6 @@ ShadowCalculationData getShadowCalculationData(
     return shadowCalculationData;
 }
 
-// Rim lighting modes
-enum class RimLightingMode {
-    artistic,           // Pure artistic rim using material color only
-    lightInfluenced,    // Rim influenced by all lights equally
-    directional        // Rim influenced by lights with directional consideration
-};
-
 // Helper function to resolve light color
 float3 resolveLightColor(
     constant SharedUniforms & uniformsShared, 
@@ -216,11 +209,7 @@ float4 calculateLighting(
     float3 normal,
     MaterialParameters materialParameters, 
     float baseShadowFactor,
-    bool enableLighting,
-    float rimIntensity = 0.6,
-    float rimPower = 2.0,
-    float3 rimColor = float3(1.0, 1.0, 1.0),
-    RimLightingMode rimMode = RimLightingMode::lightInfluenced
+    bool enableLighting
 ) {
     if (!enableLighting) {
         return float4(materialParameters.color.rgb * baseShadowFactor, materialParameters.color.a);
@@ -279,14 +268,14 @@ float4 calculateLighting(
     
     // Add rim lighting
     float3 rimTerm = calculateRimLighting(
-        uniformsShared, 
-        uniformsLights, 
-        worldPosition, 
+        uniformsShared,
+        uniformsLights,
+        worldPosition,
         N,
-        rimIntensity, 
-        rimPower, 
-        rimColor, 
-        rimMode
+        materialParameters.rimIntensity, 
+        materialParameters.rimPower, 
+        materialParameters.rimColor, 
+        materialParameters.rimLightingMode
     );
     
     // Combine all lighting terms

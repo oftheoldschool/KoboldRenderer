@@ -39,11 +39,16 @@ MaterialParameters resolveMaterial(
             materialParameters = float4(0, 0, 1, 1);
         }
     }
+
     return {
         .color = materialParameters,
         .ambientFactor = finalMaterial.ambientFactor,
         .shininess = finalMaterial.shininess,
         .specularIntensity = finalMaterial.specularIntensity,
+        .rimIntensity = finalMaterial.rimIntensity,
+        .rimColor = finalMaterial.rimColor,
+        .rimPower = finalMaterial.rimPower,
+        .rimLightingMode = finalMaterial.rimLightingMode,
     };
 }
 

@@ -48,14 +48,24 @@ enum class LightUniformsType: int8_t {
     point = 1,
 };
 
+enum class RimLightingMode: int8_t {
+    none = 0,
+    artistic = 1,          // Pure artistic rim using material color only
+    lightInfluenced = 2,   // Rim influenced by all lights equally
+    directional = 3        // Rim influenced by lights with directional consideration
+};
+
 struct MaterialUniforms {
     float4 color;
     float ambientFactor;
     float shininess;
     float specularIntensity;
-
+    float rimIntensity;
+    float3 rimColor;
+    float rimPower;
     MaterialUniformsType materialType;
     FlatShadingMode flatShadingMode;
+    RimLightingMode rimLightingMode;
     bool applyLight;
     bool receiveShadow;
 };
@@ -65,6 +75,10 @@ struct MaterialParameters {
     float ambientFactor;
     float shininess;
     float specularIntensity;
+    float rimIntensity;
+    float3 rimColor;
+    float rimPower;
+    RimLightingMode rimLightingMode;
 };
 
 inline float3x3 upperLeft(float4x4 in) {

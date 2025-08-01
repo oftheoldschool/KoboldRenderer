@@ -15,13 +15,24 @@ enum FlatShadingMode: Int8 {
     case enabled
 }
 
+enum RimLightingMode: Int8 {
+    case none
+    case artistic
+    case lightInfluenced
+    case directional
+}
+
 struct MaterialUniforms {
     let color: SIMD4<Float>
     let ambientFactor: Float
     let shininess: Float
     let specularIntensity: Float
+    let rimIntensity: Float
+    let rimColor: SIMD3<Float>
+    let rimPower: Float
     let materialType: MaterialUniformsType
     let flatShadingMode: FlatShadingMode
+    let rimLightingMode: RimLightingMode
     let applyLight: Bool
     let receiveShadow: Bool
 }

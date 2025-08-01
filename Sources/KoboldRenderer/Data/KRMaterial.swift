@@ -9,34 +9,70 @@ public enum KRMaterialType: Hashable {
     case texture
 }
 
+public struct KRLightingProperties {
+    public let ambientFactor: Float
+    public let shininess: Float
+    public let specularIntensity: Float
+
+    public init(ambientFactor: Float, shininess: Float, specularIntensity: Float) {
+        self.ambientFactor = ambientFactor
+        self.shininess = shininess
+        self.specularIntensity = specularIntensity
+    }
+}
+
+public struct KRRimLightingProperties {
+    public let intensity: Float
+    public let color: SIMD3<Float>
+    public let power: Float
+    public let mode: KRRimLightingMode
+
+    public init(intensity: Float, color: SIMD3<Float>, power: Float, mode: KRRimLightingMode) {
+        self.intensity = intensity
+        self.color = color
+        self.power = power
+        self.mode = mode
+    }
+}
+
+public struct KRLightingBehavior {
+    public let applyLight: Bool
+    public let receiveShadow: Bool
+    public let flatShading: Bool
+
+    public init(applyLight: Bool, receiveShadow: Bool, flatShading: Bool) {
+        self.applyLight = applyLight
+        self.receiveShadow = receiveShadow
+        self.flatShading = flatShading
+    }
+}
+
+public enum KRRimLightingMode {
+    case none
+    case artistic
+    case lightInfluenced
+    case directional
+}
+
 public struct KRMaterial {
     public let name: String
     public let type: KRMaterialType
-    let ambientFactor: Float
-    let shininess: Float
-    let specularIntensity: Float
-    let applyLight: Bool
-    let receiveShadow: Bool
-    let flatShading: Bool
+    public let lighting: KRLightingProperties
+    public let rim: KRRimLightingProperties
+    public let behavior: KRLightingBehavior
 
     public init(
         name: String,
         type: KRMaterialType,
-        ambientFactor: Float,
-        shininess: Float,
-        specularIntensity: Float,
-        applyLight: Bool,
-        receiveShadow: Bool,
-        flatShading: Bool
+        lighting: KRLightingProperties,
+        rim: KRRimLightingProperties,
+        behavior: KRLightingBehavior
     ) {
         self.name = name
         self.type = type
-        self.ambientFactor = ambientFactor
-        self.shininess = shininess
-        self.specularIntensity = specularIntensity
-        self.applyLight = applyLight
-        self.flatShading = flatShading
-        self.receiveShadow = receiveShadow
+        self.lighting = lighting
+        self.rim = rim
+        self.behavior = behavior
     }
 
     public func hasTransparency() -> Bool {
@@ -59,14 +95,26 @@ public struct KRMaterial {
         case .texture: (.texture, .zero)
         }
 
+        let rimLightingMode: RimLightingMode = switch rim.mode {
+        case .none: .none
+        case .artistic: .artistic
+        case .lightInfluenced: .lightInfluenced
+        case .directional: .directional
+        }
+
         return MaterialUniforms(
             color: color,
-            ambientFactor: ambientFactor,
-            shininess: shininess,
-            specularIntensity: specularIntensity,
+            ambientFactor: lighting.ambientFactor,
+            shininess: lighting.shininess,
+            specularIntensity: lighting.specularIntensity,
+            rimIntensity: rim.intensity,
+            rimColor: rim.color,
+            rimPower: rim.power,
             materialType: materialType,
-            flatShadingMode: flatShading ? .enabled : .global,
-            applyLight: applyLight,
-            receiveShadow: receiveShadow)
+            flatShadingMode: behavior.flatShading ? .enabled : .global,
+            rimLightingMode: rimLightingMode,
+            applyLight: behavior.applyLight,
+            receiveShadow: behavior.receiveShadow
+        )
     }
 }
