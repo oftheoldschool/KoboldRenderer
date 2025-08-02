@@ -52,7 +52,7 @@ enum class RimLightingMode: int8_t {
     none = 0,
     artistic = 1,          // Pure artistic rim using material color only
     lightInfluenced = 2,   // Rim influenced by all lights equally
-    directional = 3        // Rim influenced by lights with directional consideration
+    directional = 3,       // Rim influenced by lights with directional consideration
 };
 
 struct MaterialUniforms {

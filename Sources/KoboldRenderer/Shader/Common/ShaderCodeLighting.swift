@@ -157,7 +157,9 @@ float3 calculateRimLighting(
     float3 rimColor,
     RimLightingMode rimMode
 ) {
-    if (rimIntensity <= 0.0) return float3(0);
+    if (rimIntensity <= 0.0 || rimMode == RimLightingMode::none) {
+        return float3(0);
+    }
     
     float3 viewDirection = normalize(uniformsShared.cameraPosition - worldPosition);
     float rim = 1.0 - max(0.0, dot(normal, viewDirection));
