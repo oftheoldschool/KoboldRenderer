@@ -140,7 +140,7 @@ SurfaceLighting calculateSurfaceLighting(
         float3 viewDirection = normalize(uniformsShared.cameraPosition - worldPosition);
         float3 reflectDirection = normalize(reflect(lightDirection, normal));
         float specularFactor = max(0.0, dot(viewDirection, reflectDirection));
-        float specular = pow(specularFactor, shininess);
+        float specular = pow(specularFactor, max(shininess, 1.f));
         result.specular = specularIntensity * specular * lightColor * attenuation * shadowFactor;
     }
     
