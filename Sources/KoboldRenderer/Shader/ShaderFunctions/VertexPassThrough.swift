@@ -5,7 +5,7 @@ class VertexShaderFunctionTemplatePassThrough: VertexShaderFunctionTemplate {
         [
             .single: VertexShaderVariantLayouts(
                 bufferLayout: "none",
-                outputLayout: "basicFragment"),
+                outputLayout: "fullFragment"),
         ]
     }
 

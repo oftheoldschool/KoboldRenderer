@@ -410,26 +410,6 @@ class LayoutLibrary {
                     ]
                 )
             ),
-            "basicFragment": .compound(
-                StructLayout(
-                    name: "BasicFragmentInput",
-                    items: [
-                        StructItem(name: "position", type: .primitive(.float4), attributes: [.position]),
-                        StructItem(name: "worldPosition", type: .primitive(.float3)),
-                        StructItem(name: "worldNormal", type: .primitive(.float3)),
-                        StructItem(name: "normal", type: .primitive(.float3)),
-                        StructItem(
-                            name: "lightSpacePos_",
-                            type: .repeated(
-                                RepeatedItemType(
-                                    count: "${CASCADED_SHADOW_NUM_CASCADES}",
-                                    type: .float4))),
-                        StructItem(name: "texCoords", type: .primitive(.float2)),
-                        StructItem(name: "clipSpacePosZ", type: .primitive(.float)),
-                        StructItem(name: "instanceId", type: .primitive(.int))
-                    ]
-                )
-            ),
             "fullFragment": .compound(
                 StructLayout(
                     name: "FullFragmentInput",

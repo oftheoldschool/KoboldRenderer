@@ -1,6 +1,6 @@
 class FragmentShaderFunctionTemplateCubeTexture: FragmentShaderFunctionTemplate {
     override class var functionName: String { "cubeTexturedFragment" }
-    override class var inputLayout: String { "basicFragment" }
+    override class var inputLayout: String { "fullFragment" }
     override class var perVariantLayouts: [FragmentFunctionVariant: FragmentShaderVariantLayouts] {
         [
             .color: FragmentShaderVariantLayouts(

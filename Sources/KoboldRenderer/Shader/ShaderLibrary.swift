@@ -183,7 +183,7 @@ class ShaderLibrary {
             try! RenderPipeline(
                 device: device,
                 library: library,
-                name: "textured",
+                name: "texturedAnimated",
                 vertexFunction: vertexFunctions["fullVertex"]!,
                 fragmentFunction: fragmentFunctions["texturedFragment"]!,
                 shaderVariants: [
@@ -191,6 +191,19 @@ class ShaderLibrary {
                     ShaderVariant(renderTarget: .colorPlusBrightnessPlusDepth, shaderOptions: [.instanced, .msaa, .animated]),
                     ShaderVariant(renderTarget: .gbuffer, shaderOptions: [.instanced, .animated]),
                     ShaderVariant(renderTarget: .depth, shaderOptions: [.instanced, .animated]),
+                ],
+                msaaSampleCount: msaaSampleCount),
+            try! RenderPipeline(
+                device: device,
+                library: library,
+                name: "textured",
+                vertexFunction: vertexFunctions["basicVertex"]!,
+                fragmentFunction: fragmentFunctions["texturedFragment"]!,
+                shaderVariants: [
+                    ShaderVariant(renderTarget: .colorPlusDepth, shaderOptions: [.instanced, .msaa]),
+                    ShaderVariant(renderTarget: .colorPlusBrightnessPlusDepth, shaderOptions: [.instanced, .msaa]),
+                    ShaderVariant(renderTarget: .gbuffer, shaderOptions: [.instanced]),
+                    ShaderVariant(renderTarget: .depth, shaderOptions: [.instanced]),
                 ],
                 msaaSampleCount: msaaSampleCount),
             try! RenderPipeline(

@@ -5,7 +5,7 @@ class VertexShaderFunctionTemplateSkySphere: VertexShaderFunctionTemplate {
         [
             .single: VertexShaderVariantLayouts(
                 bufferLayout: "baseUniforms",
-                outputLayout: "basicFragment"),
+                outputLayout: "fullFragment"),
         ]
     }
 

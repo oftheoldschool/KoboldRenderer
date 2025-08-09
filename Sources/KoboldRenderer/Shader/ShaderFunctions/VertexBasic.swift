@@ -5,10 +5,10 @@ class VertexShaderFunctionTemplateBasic: VertexShaderFunctionTemplate {
         [
             .single: VertexShaderVariantLayouts(
                 bufferLayout: "baseUniformsPlusLightSpaceVolumes",
-                outputLayout: "basicFragment"),
+                outputLayout: "fullFragment"),
             .instanced: VertexShaderVariantLayouts(
                 bufferLayout: "baseUniformsPlusLightSpaceVolumes",
-                outputLayout: "basicFragment"),
+                outputLayout: "fullFragment"),
             .singleShadow: VertexShaderVariantLayouts(
                 bufferLayout: "baseUniforms",
                 outputLayout: "float4",
