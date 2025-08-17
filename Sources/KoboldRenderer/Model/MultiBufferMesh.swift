@@ -46,17 +46,23 @@ struct AttributesBuffer {
     let vertexCount: Int
 }
 
+struct BoundingBox {
+    let min: SIMD3<Float>
+    let max: SIMD3<Float>
+}
 
 struct MultiBufferMesh {
     let attributes: AttributesBuffer
     let indices: IndexBuffer?
     let textures: [KTextureBindingType: String]
     let primitiveType: KPrimitiveType
+    let boundingBox: BoundingBox
 
     init(
         gpuDataManager: GPUDataManager,
         verticesData: [(type: KBufferBindingType, size: Int, data: [UInt8])],
         vertexCount: Int,
+        boundingBox: KBoundingBox,
         indexData: (type: KIndexType, size: Int, data: [UInt8]),
         indexCount: Int,
         textures: [KTextureBindingType: String] = [:],
@@ -74,6 +80,10 @@ struct MultiBufferMesh {
         for (i, vertices) in verticesData.enumerated() {
             buffers[i + 1].copy(data: vertices.data)
         }
+
+        self.boundingBox = BoundingBox(
+            min: boundingBox.min,
+            max: boundingBox.max)
 
         self.indices = IndexBuffer(
             indexBuffer: buffers[0],

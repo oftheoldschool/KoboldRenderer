@@ -10,6 +10,21 @@ extension SIMD3 {
     }
 }
 
+extension SIMD3 where Scalar: Comparable {
+    static func min(_ lhs: Self, _ rhs: Self) -> Self {
+        return .init(
+            Swift.min(lhs.x, rhs.x),
+            Swift.min(lhs.y, rhs.y),
+            Swift.min(lhs.z, rhs.z))
+    }
+
+    static func max(_ lhs: Self, _ rhs: Self) -> Self {
+        return .init(
+            Swift.max(lhs.x, rhs.x),
+            Swift.max(lhs.y, rhs.y),
+            Swift.max(lhs.z, rhs.z))
+    }
+}
 
 extension SIMD3 where Scalar == Float {
     static func lerp(_ start: Self, _ end: Self, t: Scalar) -> Self {

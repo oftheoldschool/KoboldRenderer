@@ -101,6 +101,7 @@ public class RenderStageWriteSkyBox {
         samplerStateDescriptor.minFilter = .linear
         let sampler = device.makeSamplerState(descriptor: samplerStateDescriptor)!
 
+        let boundingBox = KBoundingBox(Self.cubePositions)
         let modelInput = KRModelInput(
             name: "skyBox",
             meshInput: [
@@ -113,7 +114,8 @@ public class RenderStageWriteSkyBox {
                     indexData: (KIndexType.uint32, MemoryLayout<UInt32>.size, Self.cubeIndices.toByteArray()),
                     indexCount: Self.cubeIndices.count,
                     textures: [.textureCubeMap: "skyBox"],
-                    primitiveType: .triangle)
+                    primitiveType: .triangle,
+                    boundingBox: boundingBox)
             ],
             textures: [
                 "skyBox": .gpu(texture: cubeTexture, sampler: sampler)

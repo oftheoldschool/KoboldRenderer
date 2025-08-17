@@ -34,6 +34,7 @@ class ModelManager {
             }
         }
 
+
         let model = KModel(
             name: modelInput.name,
             meshes: modelInput.meshInput.map { mesh in
@@ -41,6 +42,7 @@ class ModelManager {
                     gpuDataManager: gpuDataManager,
                     verticesData: mesh.verticesData,
                     vertexCount: mesh.vertexCount,
+                    boundingBox: mesh.boundingBox,
                     indexData: mesh.indexData,
                     indexCount: mesh.indexCount,
                     textures: mesh.textures,

@@ -68,9 +68,27 @@ public struct KRModelInput {
     }
 }
 
+public struct KBoundingBox {
+    public let min: SIMD3<Float>
+    public let max: SIMD3<Float>
+
+    public init(min: SIMD3<Float>, max: SIMD3<Float>) {
+        self.min = min
+        self.max = max
+    }
+
+    public init(_ data: [SIMD3<Float>]) {
+        (self.min, self.max) = data.reduce((min: SIMD3<Float>.zero, max: SIMD3<Float>.zero)) { result, data in
+            (SIMD3.min(result.min, data), max: SIMD3.max(result.max, data))
+        }
+    }
+}
+
 public struct KMeshInput {
     public let verticesData: [(KBufferBindingType, Int, [UInt8])]
     public let vertexCount: Int
+
+    public let boundingBox: KBoundingBox
 
     public let indexData: (KIndexType, Int, [UInt8])
     public let indexCount: Int
@@ -85,7 +103,8 @@ public struct KMeshInput {
         indexData: (KIndexType, Int, [UInt8]),
         indexCount: Int,
         textures: [KTextureBindingType : String],
-        primitiveType: KRModelPrimitiveType
+        primitiveType: KRModelPrimitiveType,
+        boundingBox: KBoundingBox
     ) {
         self.verticesData = verticesData
         self.vertexCount = vertexCount
@@ -93,5 +112,6 @@ public struct KMeshInput {
         self.indexCount = indexCount
         self.textures = textures
         self.primitiveType = primitiveType
+        self.boundingBox = boundingBox
     }
 }
