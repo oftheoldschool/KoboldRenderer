@@ -81,14 +81,28 @@ public struct KBoundingBox {
 
     public init(_ data: [SIMD3<Float>]) {
         (self.min, self.max) = data.reduce((min: SIMD3<Float>.zero, max: SIMD3<Float>.zero)) { acc, next in
-            (SIMD3.min(acc.min, next), max: SIMD3.max(acc.max, next))
+            (Self.minSIMD3(acc.min, next), max: Self.maxSIMD3(acc.max, next))
         }
     }
 
     public init(_ data: [KBoundingBox]) {
         (self.min, self.max) = data.reduce((min: SIMD3<Float>.zero, max: SIMD3<Float>.zero)) { acc, next in
-            (SIMD3.min(acc.min, next.min), max: SIMD3.max(acc.max, next.max))
+            (Self.minSIMD3(acc.min, next.min), max: Self.maxSIMD3(acc.max, next.max))
         }
+    }
+
+    private static func minSIMD3(_ lhs: SIMD3<Float>, _ rhs: SIMD3<Float>) -> SIMD3<Float> {
+        return SIMD3<Float>(
+            Swift.min(lhs.x, rhs.x),
+            Swift.min(lhs.y, rhs.y),
+            Swift.min(lhs.z, rhs.z))
+    }
+
+    private static func maxSIMD3(_ lhs: SIMD3<Float>, _ rhs: SIMD3<Float>) -> SIMD3<Float> {
+        return SIMD3<Float>(
+            Swift.max(lhs.x, rhs.x),
+            Swift.max(lhs.y, rhs.y),
+            Swift.max(lhs.z, rhs.z))
     }
 }
 
