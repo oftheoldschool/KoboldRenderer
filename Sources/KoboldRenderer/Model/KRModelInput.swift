@@ -56,6 +56,7 @@ public struct KRModelInput {
     public let name: String
     public let meshInput: [KMeshInput]
     public let textures: [String: KModelTexture]
+    public let boundingBox: KBoundingBox
 
     public init(
         name: String,
@@ -65,6 +66,7 @@ public struct KRModelInput {
         self.name = name
         self.meshInput = meshInput
         self.textures = textures
+        self.boundingBox = KBoundingBox(meshInput.map { $0.boundingBox })
     }
 }
 
@@ -78,8 +80,14 @@ public struct KBoundingBox {
     }
 
     public init(_ data: [SIMD3<Float>]) {
-        (self.min, self.max) = data.reduce((min: SIMD3<Float>.zero, max: SIMD3<Float>.zero)) { result, data in
-            (SIMD3.min(result.min, data), max: SIMD3.max(result.max, data))
+        (self.min, self.max) = data.reduce((min: SIMD3<Float>.zero, max: SIMD3<Float>.zero)) { acc, next in
+            (SIMD3.min(acc.min, next), max: SIMD3.max(acc.max, next))
+        }
+    }
+
+    public init(_ data: [KBoundingBox]) {
+        (self.min, self.max) = data.reduce((min: SIMD3<Float>.zero, max: SIMD3<Float>.zero)) { acc, next in
+            (SIMD3.min(acc.min, next.min), max: SIMD3.max(acc.max, next.max))
         }
     }
 }
