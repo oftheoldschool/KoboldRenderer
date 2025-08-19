@@ -91,12 +91,16 @@ public struct KBoundingBox {
         }
     }
 
-    public func center() -> SIMD3<Float> {
-        return (self.min + self.max) / 2.0
+    public var center: SIMD3<Float> {
+        get {
+            (self.min + self.max) / 2
+        }
     }
 
-    public func dimensions() -> SIMD3<Float> {
-        return self.max - self.min
+    public var dimensions: SIMD3<Float> {
+        get {
+            self.max - self.min
+        }
     }
 
     private static func minSIMD3(_ lhs: SIMD3<Float>, _ rhs: SIMD3<Float>) -> SIMD3<Float> {
