@@ -1,6 +1,7 @@
 import Metal
 import MetalKit
 import MetalPerformanceShaders
+import KoboldLogging
 
 public class KRRenderer {
     public static let maxFramesInFlight: Int = 3
@@ -198,10 +199,19 @@ public class KRRenderer {
         lights: [KRLight],
         materials: [KRMaterial],
         drawDataList: [KRDrawData],
-        elapsedTime: Float
+        elapsedTime: Float,
+        debugOutput: Bool = false
     ) {
+        if debugOutput {
+            kdebug("draw called with \(lights.count) lights, \(materials.count) materials, and \(drawDataList.count) items to draw")
+        }
+
         if needsResize || needsInit {
             applyChanges()
+        }
+
+        if debugOutput {
+            kdebug("changes applied")
         }
 
         guard
@@ -214,11 +224,23 @@ public class KRRenderer {
             return
         }
 
+        if debugOutput {
+            kdebug("view acquired")
+        }
+
         if inflightSemaphore.wait(timeout: DispatchTime.distantFuture) == .timedOut {
             fatalError("Unable to acquire semaphore for frame")
         }
 
+        if debugOutput {
+            kdebug("semaphore acquired")
+        }
+
         let opaqueDrawData = getInternalDrawData(drawDataList.filter { !$0.hasTransparency || !rendererSettings.transparencyEnabled } )
+
+        if debugOutput {
+            kdebug("opaque draw data mapped")
+        }
 
         let cascadedShadowMap = try! renderStageShadow.renderCascadedShadowMap(
             shaderLibrary: shaderLibrary,
@@ -231,6 +253,10 @@ public class KRRenderer {
             currentFrame: currentFrame
         )
 
+        if debugOutput {
+            kdebug("cascaded shadow map phase complete")
+        }
+
         let lightingData = LightingData(
             globalLight: globalLight,
             maxLights: Self.maxLights,
@@ -241,9 +267,16 @@ public class KRRenderer {
             enableLighting: rendererSettings.lightingEnabled,
             enableShadows: rendererSettings.shadowsEnabled)
 
+
         // todo: make Lighting a stateful concept and have it store lights buffer? responsible for max light setting?
         lightsBuffer[currentFrame].copy(data: lightingData.toLightUniforms())
+        if debugOutput {
+            kdebug("lighting data mapped")
+        }
         materialsBuffer[currentFrame].copy(data: materials.map { $0.toGPUData() })
+        if debugOutput {
+            kdebug("material data mapped")
+        }
 
         guard let opaqueTargets = renderStageOpaque.render(
             shaderLibrary: shaderLibrary,
@@ -263,9 +296,15 @@ public class KRRenderer {
         ) else {
             return
         }
+        if debugOutput {
+            kdebug("opaque phase complete")
+        }
 
         let transparentDrawData = getInternalDrawData(drawDataList.filter { $0.hasTransparency })
         let transparencyRequired = rendererSettings.transparencyEnabled && !transparentDrawData.isEmpty
+        if debugOutput {
+            kdebug("transparency data mapped")
+        }
 
         var transparentTargets: RenderStageTransparentOutput?
         if transparencyRequired {
@@ -286,6 +325,9 @@ public class KRRenderer {
                 drawDataList: transparentDrawData,
                 opaqueDepthTexture: opaqueTargets.depth)
         }
+        if debugOutput {
+            kdebug("transparency phase complete")
+        }
 
         if rendererSettings.bloomEnabled, var bloomTexture = opaqueTargets.brightness {
             blurFunction.edgeMode = .clamp
@@ -295,6 +337,10 @@ public class KRRenderer {
                 blurFunction.encode(commandBuffer: commandBuffer, inPlaceTexture: &alphaBloomTexture)
             }
         }
+        if debugOutput {
+            kdebug("bloom phase complete")
+        }
+
 
         if transparencyRequired, let transparentTargets = transparentTargets {
             combinePipeline.combine(
@@ -336,12 +382,18 @@ public class KRRenderer {
                 blitEncoder.endEncoding()
             }
         }
+        if debugOutput {
+            kdebug("compositing complete")
+        }
 
         renderStageWriteOutput.render(
             commandBuffer: commandBuffer,
             outputRenderPassDescriptor: outputRenderPassDescriptor,
             shaderLibrary: shaderLibrary,
             outputTexture: postProcessedTexture!)
+        if debugOutput {
+            kdebug("write to output phase complete")
+        }
 
         commandBuffer.present(drawable)
 
@@ -352,6 +404,9 @@ public class KRRenderer {
         }
 
         commandBuffer.commit()
+        if debugOutput {
+            kdebug("command buffer committed")
+        }
 
         currentFrame = (currentFrame + 1) % Self.maxFramesInFlight
     }
