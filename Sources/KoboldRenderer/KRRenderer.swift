@@ -198,19 +198,10 @@ public class KRRenderer {
         lights: [KRLight],
         materials: [KRMaterial],
         drawDataList: [KRDrawData],
-        elapsedTime: Float,
-        debugOutput: Bool = false
+        elapsedTime: Float
     ) {
-        if debugOutput {
-            print("draw called with \(lights.count) lights, \(materials.count) materials, and \(drawDataList.count) items to draw")
-        }
-
         if needsResize || needsInit {
             applyChanges()
-        }
-
-        if debugOutput {
-            print("changes applied")
         }
 
         guard
@@ -223,23 +214,11 @@ public class KRRenderer {
             return
         }
 
-        if debugOutput {
-            print("view acquired")
-        }
-
         if inflightSemaphore.wait(timeout: DispatchTime.distantFuture) == .timedOut {
             fatalError("Unable to acquire semaphore for frame")
         }
 
-        if debugOutput {
-            print("semaphore acquired")
-        }
-
         let opaqueDrawData = getInternalDrawData(drawDataList.filter { !$0.hasTransparency || !rendererSettings.transparencyEnabled } )
-
-        if debugOutput {
-            print("opaque draw data mapped")
-        }
 
         let cascadedShadowMap = try! renderStageShadow.renderCascadedShadowMap(
             shaderLibrary: shaderLibrary,
@@ -252,10 +231,6 @@ public class KRRenderer {
             currentFrame: currentFrame
         )
 
-        if debugOutput {
-            print("cascaded shadow map phase complete")
-        }
-
         let lightingData = LightingData(
             globalLight: globalLight,
             maxLights: Self.maxLights,
@@ -266,16 +241,9 @@ public class KRRenderer {
             enableLighting: rendererSettings.lightingEnabled,
             enableShadows: rendererSettings.shadowsEnabled)
 
-
         // todo: make Lighting a stateful concept and have it store lights buffer? responsible for max light setting?
         lightsBuffer[currentFrame].copy(data: lightingData.toLightUniforms())
-        if debugOutput {
-            print("lighting data mapped")
-        }
         materialsBuffer[currentFrame].copy(data: materials.map { $0.toGPUData() })
-        if debugOutput {
-            print("material data mapped")
-        }
 
         guard let opaqueTargets = renderStageOpaque.render(
             shaderLibrary: shaderLibrary,
@@ -295,15 +263,9 @@ public class KRRenderer {
         ) else {
             return
         }
-        if debugOutput {
-            print("opaque phase complete")
-        }
 
         let transparentDrawData = getInternalDrawData(drawDataList.filter { $0.hasTransparency })
         let transparencyRequired = rendererSettings.transparencyEnabled && !transparentDrawData.isEmpty
-        if debugOutput {
-            print("transparency data mapped")
-        }
 
         var transparentTargets: RenderStageTransparentOutput?
         if transparencyRequired {
@@ -324,9 +286,6 @@ public class KRRenderer {
                 drawDataList: transparentDrawData,
                 opaqueDepthTexture: opaqueTargets.depth)
         }
-        if debugOutput {
-            print("transparency phase complete")
-        }
 
         if rendererSettings.bloomEnabled, var bloomTexture = opaqueTargets.brightness {
             blurFunction.edgeMode = .clamp
@@ -336,10 +295,6 @@ public class KRRenderer {
                 blurFunction.encode(commandBuffer: commandBuffer, inPlaceTexture: &alphaBloomTexture)
             }
         }
-        if debugOutput {
-            print("bloom phase complete")
-        }
-
 
         if transparencyRequired, let transparentTargets = transparentTargets {
             combinePipeline.combine(
@@ -381,18 +336,12 @@ public class KRRenderer {
                 blitEncoder.endEncoding()
             }
         }
-        if debugOutput {
-            print("compositing complete")
-        }
 
         renderStageWriteOutput.render(
             commandBuffer: commandBuffer,
             outputRenderPassDescriptor: outputRenderPassDescriptor,
             shaderLibrary: shaderLibrary,
             outputTexture: postProcessedTexture!)
-        if debugOutput {
-            print("write to output phase complete")
-        }
 
         commandBuffer.present(drawable)
 
@@ -403,9 +352,6 @@ public class KRRenderer {
         }
 
         commandBuffer.commit()
-        if debugOutput {
-            print("command buffer committed")
-        }
 
         currentFrame = (currentFrame + 1) % Self.maxFramesInFlight
     }
