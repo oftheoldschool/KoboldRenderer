@@ -93,10 +93,10 @@ class RenderStageShadow {
             throw RenderError.unsupportedCameraType("Unable to render cascaded shadow map")
         }
 
-        guard case let .directional(directionalLight) = globalLight.type else {
-            throw RenderError.unsupportedLightType("Deferred renderer only supports directional lights")
+        let lightDirection = switch globalLight.type {
+        case .directional(let directionalLight): directionalLight.direction
+        case .point(let pointLight): normalize(camera.position - pointLight.position)
         }
-        let lightDirection = directionalLight.direction
 
         let orthographicVolumes = cameraVolume.calculateOrthographicVolumesInLightSpace(
             frustumRatios: try getCascadeFrustumRatios(camera: camera),
