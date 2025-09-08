@@ -66,10 +66,16 @@ LightContribution calculateLightContribution(
         float3 toFragment = worldPosition - lightPos;
         float distance = length(toFragment);
         
-        if (distance > light.range) {
+        // Check for infinite range (use negative or zero range to indicate infinite)
+        if (light.range <= 0.0) {
+            // Infinite range - no distance falloff, only custom attenuation
+            result.attenuation = 1.0 / (light.attenuation.x + 
+                                      light.attenuation.y * distance + 
+                                      light.attenuation.z * distance * distance);
+        } else if (distance > light.range) {
             result.attenuation = 0.0;
         } else {
-            // Custom attenuation: constant + linear + quadratic
+            // Finite range with custom attenuation
             result.attenuation = 1.0 / (light.attenuation.x + 
                                       light.attenuation.y * distance + 
                                       light.attenuation.z * distance * distance);
