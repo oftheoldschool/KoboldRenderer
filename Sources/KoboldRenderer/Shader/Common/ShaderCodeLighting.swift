@@ -69,9 +69,7 @@ LightContribution calculateLightContribution(
         // Check for infinite range (use negative or zero range to indicate infinite)
         if (light.range <= 0.0) {
             // Infinite range - no distance falloff, only custom attenuation
-            result.attenuation = 1.0 / (light.attenuation.x + 
-                                      light.attenuation.y * distance + 
-                                      light.attenuation.z * distance * distance);
+            result.attenuation = 1.0;
         } else if (distance > light.range) {
             result.attenuation = 0.0;
         } else {
