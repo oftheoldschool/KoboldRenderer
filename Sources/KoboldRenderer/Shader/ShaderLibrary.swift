@@ -183,7 +183,7 @@ class ShaderLibrary {
             try! RenderPipeline(
                 device: device,
                 library: library,
-                name: "texturedAnimated",
+                name: "TexturedAnimated",
                 vertexFunction: vertexFunctions["fullVertex"]!,
                 fragmentFunction: fragmentFunctions["texturedFragment"]!,
                 shaderVariants: [
@@ -209,7 +209,7 @@ class ShaderLibrary {
             try! RenderPipeline(
                 device: device,
                 library: library,
-                name: "basic",
+                name: "Basic",
                 vertexFunction: vertexFunctions["basicVertex"]!,
                 fragmentFunction: fragmentFunctions["colorFragment"]!,
                 shaderVariants: [
@@ -222,7 +222,7 @@ class ShaderLibrary {
             try! RenderPipeline(
                 device: device,
                 library: library,
-                name: "skyBox",
+                name: "SkyBox",
                 vertexFunction: vertexFunctions["skyboxVertex"]!,
                 fragmentFunction: fragmentFunctions["cubeTexturedFragment"]!,
                 shaderVariants: [
