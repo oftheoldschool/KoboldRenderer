@@ -1,4 +1,4 @@
-public enum MetalPrimitiveType: CustomStringConvertible {
+public enum MetalPrimitiveType: CustomStringConvertible, Sendable {
     case bool
     case uint8_t
     case int32_t

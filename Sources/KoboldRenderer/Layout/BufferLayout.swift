@@ -1,4 +1,4 @@
-public struct KBufferBindingType: CustomStringConvertible, Hashable {
+public struct KBufferBindingType: CustomStringConvertible, Hashable, Sendable {
     let name: String
     public let description: String
     let datatype: BufferDataType
@@ -156,7 +156,7 @@ public struct BufferLayout {
     }
 }
 
-indirect public enum BufferDataType: Hashable, Equatable, CustomStringConvertible {
+indirect public enum BufferDataType: Hashable, Equatable, CustomStringConvertible, Sendable {
     case primitive(MetalPrimitiveType)
     case pointer(BufferDataType)
     case custom(String)
