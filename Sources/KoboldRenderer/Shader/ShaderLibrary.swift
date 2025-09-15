@@ -48,7 +48,7 @@ struct ShaderOptions: OptionSet, Hashable, CustomStringConvertible, CaseIterable
         if contains(.animated) { options.append("animated") }
         if contains(.transparency) { options.append("transparency") }
 
-        return options.isEmpty ? "none" : options.joined(separator: ", ")
+        return options.isEmpty ? "None" : options.joined(separator: ", ")
     }
 }
 
@@ -166,7 +166,7 @@ class ShaderLibrary {
             try! ComputePipelineGBufferCombine(
                 device: device,
                 library: library,
-                name: "gbufferCombine",
+                name: "GBufferCombine",
                 computeFunctionGroup: computeFunctions["computeShaderGBufferCombine"]!,
                 computeVariants: [.color, .colorPlusBloom]),
             try! ComputePipelineCombine(
@@ -196,7 +196,7 @@ class ShaderLibrary {
             try! RenderPipeline(
                 device: device,
                 library: library,
-                name: "textured",
+                name: "Textured",
                 vertexFunction: vertexFunctions["basicVertex"]!,
                 fragmentFunction: fragmentFunctions["texturedFragment"]!,
                 shaderVariants: [
@@ -234,7 +234,7 @@ class ShaderLibrary {
             try! RenderPipeline(
                 device: device,
                 library: library,
-                name: "passThrough",
+                name: "PassThrough",
                 vertexFunction: vertexFunctions["passThroughVertex"]!,
                 fragmentFunction: fragmentFunctions["passThroughFragment"]!,
                 shaderVariants: [

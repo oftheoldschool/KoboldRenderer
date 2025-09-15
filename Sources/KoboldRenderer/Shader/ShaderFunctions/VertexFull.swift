@@ -1,36 +1,36 @@
 class VertexShaderFunctionTemplateAnimation: VertexShaderFunctionTemplate {
     override class var functionName: String { "fullVertex" }
-    override class var vertexLayout: String { "fullVertex" }
+    override class var vertexLayout: String { "FullVertex" }
     override class var perVariantLayouts: [VertexFunctionVariant: VertexShaderVariantLayouts] {
         [
             .single: VertexShaderVariantLayouts(
-                bufferLayout: "baseUniformsPlusLightSpaceVolumes",
-                outputLayout: "fullFragment"),
+                bufferLayout: "BaseUniformsPlusLightSpaceVolumes",
+                outputLayout: "FullFragmentInput"),
             .instanced: VertexShaderVariantLayouts(
-                bufferLayout: "baseUniformsPlusLightSpaceVolumes",
-                outputLayout: "fullFragment"),
+                bufferLayout: "BaseUniformsPlusLightSpaceVolumes",
+                outputLayout: "FullFragmentInput"),
             .singleShadow: VertexShaderVariantLayouts(
-                bufferLayout: "baseUniforms",
+                bufferLayout: "BaseUniforms",
                 outputLayout: "float4",
-                attachmentLayout: "depth"),
+                attachmentLayout: "Depth"),
             .instancedShadow: VertexShaderVariantLayouts(
-                bufferLayout: "baseUniforms",
+                bufferLayout: "BaseUniforms",
                 outputLayout: "float4",
-                attachmentLayout: "depth"),
+                attachmentLayout: "Depth"),
             .singleAnimated: VertexShaderVariantLayouts(
-                bufferLayout: "baseUniformsPlusAnimationPlusLightSpaceVolumes",
-                outputLayout: "fullFragment"),
+                bufferLayout: "BaseUniformsPlusAnimationPlusLightSpaceVolumes",
+                outputLayout: "FullFragmentInput"),
             .instancedAnimated: VertexShaderVariantLayouts(
-                bufferLayout: "baseUniformsPlusAnimationPlusLightSpaceVolumes",
-                outputLayout: "fullFragment"),
+                bufferLayout: "BaseUniformsPlusAnimationPlusLightSpaceVolumes",
+                outputLayout: "FullFragmentInput"),
             .singleAnimatedShadow: VertexShaderVariantLayouts(
-                bufferLayout: "baseUniformsPlusAnimation",
+                bufferLayout: "BaseUniformsPlusAnimation",
                 outputLayout: "float4",
-                attachmentLayout: "depth"),
+                attachmentLayout: "Depth"),
             .instancedAnimatedShadow: VertexShaderVariantLayouts(
-                bufferLayout: "baseUniformsPlusAnimation",
+                bufferLayout: "BaseUniformsPlusAnimation",
                 outputLayout: "float4",
-                attachmentLayout: "depth"),
+                attachmentLayout: "Depth"),
         ]
     }
 

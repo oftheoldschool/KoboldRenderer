@@ -1,27 +1,27 @@
 class FragmentShaderFunctionTemplateCubeTexture: FragmentShaderFunctionTemplate {
     override class var functionName: String { "cubeTexturedFragment" }
-    override class var inputLayout: String { "fullFragment" }
+    override class var inputLayout: String { "FullFragmentInput" }
     override class var perVariantLayouts: [FragmentFunctionVariant: FragmentShaderVariantLayouts] {
         [
             .color: FragmentShaderVariantLayouts(
-                bufferLayout: "baseUniformsPlusMaterials",
+                bufferLayout: "BaseUniformsPlusMaterials",
                 outputLayout: "float4",
-                attachmentLayout: "colorPlusDepth"),
+                attachmentLayout: "ColorPlusDepth"),
             .colorPlusBrightness: FragmentShaderVariantLayouts(
-                bufferLayout: "baseUniformsPlusMaterials",
-                outputLayout: "forwardBloom",
-                attachmentLayout: "colorPlusBrightnessPlusDepth"),
+                bufferLayout: "BaseUniformsPlusMaterials",
+                outputLayout: "BloomFragmentOutput",
+                attachmentLayout: "ColorPlusBrightnessPlusDepth"),
             .gbuffer: FragmentShaderVariantLayouts(
-                bufferLayout: "baseUniformsPlusMaterials",
-                outputLayout: "gbuffer",
-                attachmentLayout: "gbuffer")
+                bufferLayout: "BaseUniformsPlusMaterials",
+                outputLayout: "GBufferFragmentOutput",
+                attachmentLayout: "GBuffer")
         ]
     }
     override class var textureLayout: String {
-        "none"
+        "None"
     }
     override class var materialLayout: String {
-        "cubeTextured"
+        "CubeTextured"
     }
 
     override class func getFragmentCode(shaderVariant: FragmentFunctionVariant) -> String {

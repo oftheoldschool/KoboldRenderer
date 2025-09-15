@@ -4,7 +4,7 @@ class ComputeShaderFunctionTemplateConvert: ComputeShaderFunctionTemplate {
     override class var functionName: String { "convertRGBA32FloatToBGRA8Unorm" }
     override class var perVariantLayouts: [ComputeFunctionVariant: ComputeShaderVariantLayouts] {
         [
-            .color: ComputeShaderVariantLayouts(bufferLayout: "none", textureLayout: "convertRGBA32FloatToBGRA8Unorm"),
+            .color: ComputeShaderVariantLayouts(bufferLayout: "None", textureLayout: "ConvertRGBA32FloatToBGRA8Unorm"),
         ]
     }
     override class var textureSizeValidation: Bool { true }

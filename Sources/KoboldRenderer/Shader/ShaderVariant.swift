@@ -70,11 +70,11 @@ public enum FragmentFunctionVariant: CaseIterable, CustomStringConvertible {
         case .colorAlpha:
             "colorAlpha"
         case .colorPlusBrightness:
-            "colorPlusBrightness"
+            "ColorPlusBrightness"
         case .colorAlphaPlusBrightness:
             "colorAlphaPlusBrightness"
         case .gbuffer:
-            "gbuffer"
+            "GBuffer"
         case .instancedColor:
             "instancedColor"
         case .instancedColorAlpha:

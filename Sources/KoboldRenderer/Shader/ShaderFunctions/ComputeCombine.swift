@@ -5,8 +5,8 @@ class ComputeShaderFunctionTemplateCombine: ComputeShaderFunctionTemplate {
     override class var functionName: String { "computeShaderCombine" }
     override class var perVariantLayouts: [ComputeFunctionVariant: ComputeShaderVariantLayouts] {
         [
-            .color: ComputeShaderVariantLayouts(bufferLayout: "combine", textureLayout: "combine"),
-            .colorPlusBloom: ComputeShaderVariantLayouts(bufferLayout: "combine", textureLayout: "combineBloom"),
+            .color: ComputeShaderVariantLayouts(bufferLayout: "None", textureLayout: "Combine"),
+            .colorPlusBloom: ComputeShaderVariantLayouts(bufferLayout: "None", textureLayout: "CombineBloom"),
         ]
     }
     override class var textureSizeValidation: Bool { true }

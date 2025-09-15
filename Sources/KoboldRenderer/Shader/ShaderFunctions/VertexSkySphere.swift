@@ -1,11 +1,11 @@
 class VertexShaderFunctionTemplateSkySphere: VertexShaderFunctionTemplate {
     override class var functionName: String { "skyboxVertex" }
-    override class var vertexLayout: String { "skyboxVertex" }
+    override class var vertexLayout: String { "SkyboxVertex" }
     override class var perVariantLayouts: [VertexFunctionVariant: VertexShaderVariantLayouts] {
         [
             .single: VertexShaderVariantLayouts(
-                bufferLayout: "baseUniforms",
-                outputLayout: "fullFragment"),
+                bufferLayout: "BaseUniforms",
+                outputLayout: "FullFragmentInput"),
         ]
     }
 

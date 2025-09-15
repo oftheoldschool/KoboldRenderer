@@ -16,7 +16,7 @@ class RenderStageOpaqueTechniqueDeferred: RenderStageOpaqueTechnique {
     let computePipelineGBufferCombine: ComputePipelineGBufferCombine
 
     init(shaderLibrary: ShaderLibrary) {
-        self.computePipelineGBufferCombine = shaderLibrary.getComputePipeline("gbufferCombine")
+        self.computePipelineGBufferCombine = shaderLibrary.getComputePipeline("GBufferCombine")
     }
 
     func resize(

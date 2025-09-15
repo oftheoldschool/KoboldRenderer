@@ -1,22 +1,22 @@
 class VertexShaderFunctionTemplateBasic: VertexShaderFunctionTemplate {
     override class var functionName: String { "basicVertex" }
-    override class var vertexLayout: String { "basicVertex" }
+    override class var vertexLayout: String { "BasicVertex" }
     override class var perVariantLayouts: [VertexFunctionVariant: VertexShaderVariantLayouts] {
         [
             .single: VertexShaderVariantLayouts(
-                bufferLayout: "baseUniformsPlusLightSpaceVolumes",
-                outputLayout: "fullFragment"),
+                bufferLayout: "BaseUniformsPlusLightSpaceVolumes",
+                outputLayout: "FullFragmentInput"),
             .instanced: VertexShaderVariantLayouts(
-                bufferLayout: "baseUniformsPlusLightSpaceVolumes",
-                outputLayout: "fullFragment"),
+                bufferLayout: "BaseUniformsPlusLightSpaceVolumes",
+                outputLayout: "FullFragmentInput"),
             .singleShadow: VertexShaderVariantLayouts(
-                bufferLayout: "baseUniforms",
+                bufferLayout: "BaseUniforms",
                 outputLayout: "float4",
-                attachmentLayout: "depth"),
+                attachmentLayout: "Depth"),
             .instancedShadow: VertexShaderVariantLayouts(
-                bufferLayout: "baseUniforms",
+                bufferLayout: "BaseUniforms",
                 outputLayout: "float4",
-                attachmentLayout: "depth"),
+                attachmentLayout: "Depth"),
         ]
     }
 

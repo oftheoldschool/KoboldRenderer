@@ -1,65 +1,65 @@
 class FragmentShaderFunctionTemplateColor: FragmentShaderFunctionTemplate {
     override class var functionName: String { "colorFragment" }
-    override class var inputLayout: String { "fullFragment" }
+    override class var inputLayout: String { "FullFragmentInput" }
 
     // todo: can we dedupe these and remove the need for variants with "instanced" in the name?
     // can we switch the FragmentFunctionaVariant to an OptionSet? How would we resolve? Most specific to least?
     override class var perVariantLayouts: [FragmentFunctionVariant: FragmentShaderVariantLayouts] {
         [
             .color: FragmentShaderVariantLayouts(
-                bufferLayout: "baseUniformsPlusLightUniforms",
+                bufferLayout: "BaseUniformsPlusLightUniforms",
                 outputLayout: "float4",
-                attachmentLayout: "colorPlusDepth"),
+                attachmentLayout: "ColorPlusDepth"),
             .instancedColor: FragmentShaderVariantLayouts(
-                bufferLayout: "baseUniformsPlusLightUniforms",
+                bufferLayout: "BaseUniformsPlusLightUniforms",
                 outputLayout: "float4",
-                attachmentLayout: "colorPlusDepth"),
+                attachmentLayout: "ColorPlusDepth"),
 
             .colorAlpha: FragmentShaderVariantLayouts(
-                bufferLayout: "baseUniformsPlusLightUniforms",
-                outputLayout: "alpha",
-                attachmentLayout: "colorPlusRevealagePlusDepth"),
+                bufferLayout: "BaseUniformsPlusLightUniforms",
+                outputLayout: "AlphaFragmentOutput",
+                attachmentLayout: "ColorPlusRevealagePlusDepth"),
             .instancedColorAlpha: FragmentShaderVariantLayouts(
-                bufferLayout: "baseUniformsPlusLightUniforms",
-                outputLayout: "alpha",
-                attachmentLayout: "colorPlusRevealagePlusDepth"),
+                bufferLayout: "BaseUniformsPlusLightUniforms",
+                outputLayout: "AlphaFragmentOutput",
+                attachmentLayout: "ColorPlusRevealagePlusDepth"),
 
             .colorPlusBrightness: FragmentShaderVariantLayouts(
-                bufferLayout: "baseUniformsPlusLightUniforms",
-                outputLayout: "forwardBloom",
-                attachmentLayout: "colorPlusBrightnessPlusDepth"),
+                bufferLayout: "BaseUniformsPlusLightUniforms",
+                outputLayout: "BloomFragmentOutput",
+                attachmentLayout: "ColorPlusBrightnessPlusDepth"),
             .instancedColorPlusBrightness: FragmentShaderVariantLayouts(
-                bufferLayout: "baseUniformsPlusLightUniforms",
-                outputLayout: "forwardBloom",
-                attachmentLayout: "colorPlusBrightnessPlusDepth"),
+                bufferLayout: "BaseUniformsPlusLightUniforms",
+                outputLayout: "BloomFragmentOutput",
+                attachmentLayout: "ColorPlusBrightnessPlusDepth"),
 
             .colorAlphaPlusBrightness: FragmentShaderVariantLayouts(
-                bufferLayout: "baseUniformsPlusLightUniforms",
-                outputLayout: "alphaBloom",
-                attachmentLayout: "colorPlusBrightnessPlusRevealagePlusDepth"),
+                bufferLayout: "BaseUniformsPlusLightUniforms",
+                outputLayout: "AlphaBloomFragmentOutput",
+                attachmentLayout: "ColorPlusBrightnessPlusRevealagePlusDepth"),
             .instancedColorAlphaPlusBrightness: FragmentShaderVariantLayouts(
-                bufferLayout: "baseUniformsPlusLightUniforms",
-                outputLayout: "alphaBloom",
-                attachmentLayout: "colorPlusBrightnessPlusRevealagePlusDepth"),
+                bufferLayout: "BaseUniformsPlusLightUniforms",
+                outputLayout: "AlphaBloomFragmentOutput",
+                attachmentLayout: "ColorPlusBrightnessPlusRevealagePlusDepth"),
 
             .gbuffer: FragmentShaderVariantLayouts(
-                bufferLayout: "baseUniformsPlusMaterials",
-                outputLayout: "gbuffer",
-                attachmentLayout: "gbuffer"),
+                bufferLayout: "BaseUniformsPlusMaterials",
+                outputLayout: "GBufferFragmentOutput",
+                attachmentLayout: "GBuffer"),
             .instancedGBuffer: FragmentShaderVariantLayouts(
-                bufferLayout: "baseUniformsPlusMaterials",
-                outputLayout: "gbuffer",
-                attachmentLayout: "gbuffer"),
+                bufferLayout: "BaseUniformsPlusMaterials",
+                outputLayout: "GBufferFragmentOutput",
+                attachmentLayout: "GBuffer"),
         ]
     }
 
     // todo: not required for gbuffer pass. how will we handle this?
     override class var textureLayout: String {
-        "cascadedShadowMap"
+        "CascadedShadowMap"
     }
 
     override class var materialLayout: String {
-        "none"
+        "None"
     }
 
     override class func getFragmentCode(shaderVariant: FragmentFunctionVariant) -> String {

@@ -13,7 +13,7 @@ class RenderStageWriteOutput {
             commandEncoder.setCullMode(.back)
             commandEncoder.setFrontFacing(.counterClockwise)
 
-            shaderLibrary.pipelines["passThrough"]!.draw(
+            shaderLibrary.pipelines["PassThrough"]!.draw(
                 commandEncoder: commandEncoder,
                 textureBindings: [.texturePassThrough: .texture(outputTexture)],
                 renderTarget: .colorPlusDepth,

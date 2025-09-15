@@ -89,7 +89,9 @@ public class KRRenderer {
             device: device,
             cascadeFrustumDistances: rendererSettings.cascadeFrustumDistances)
 
-        self.layoutLibrary = LayoutLibrary()
+        self.layoutLibrary = LayoutLibrary(
+            additionalBufferLayouts: [],
+            additionalUniformLayouts: [])
         self.shaderLibrary = try ShaderLibrary(
             device: device,
             layoutLibrary: self.layoutLibrary,

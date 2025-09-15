@@ -1,19 +1,19 @@
 class FragmentShaderFunctionTemplatePassThrough: FragmentShaderFunctionTemplate {
     override class var functionName: String { "passThroughFragment" }
-    override class var inputLayout: String { "fullFragment" }
+    override class var inputLayout: String { "FullFragmentInput" }
     override class var perVariantLayouts: [FragmentFunctionVariant: FragmentShaderVariantLayouts] {
         [
             .color: FragmentShaderVariantLayouts(
-                bufferLayout: "none",
+                bufferLayout: "None",
                 outputLayout: "float4",
-                attachmentLayout: "color"),
+                attachmentLayout: "Color"),
         ]
     }
     override class var textureLayout: String {
-        "passThrough"
+        "PassThrough"
     }
     override class var materialLayout: String {
-        "none"
+        "None"
     }
 
     override class func getFragmentCode(shaderVariant: FragmentFunctionVariant) -> String { "" }

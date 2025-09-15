@@ -7,9 +7,12 @@ class LayoutLibrary {
     let inOutLayouts: [String: InOutLayout]
     let uniformLayouts: [String: StructLayout]
 
-    init() {
+    init(
+        additionalBufferLayouts: [BufferLayout] = [],
+        additionalUniformLayouts: [StructLayout] = []
+    ) {
         self.vertexLayouts = [
-            "fullVertex": VertexLayout(
+            VertexLayout(
                 name: "FullVertex",
                 attributes: [
                     VertexAttributeLayout(
@@ -34,7 +37,7 @@ class LayoutLibrary {
                         offset: 0),
                 ]
             ),
-            "basicVertex": VertexLayout(
+            VertexLayout(
                 name: "BasicVertex",
                 attributes: [
                     VertexAttributeLayout(
@@ -51,7 +54,7 @@ class LayoutLibrary {
                         offset: 0),
                 ]
             ),
-            "skyboxVertex": VertexLayout(
+            VertexLayout(
                 name: "SkyboxVertex",
                 attributes: [
                     VertexAttributeLayout(
@@ -64,134 +67,149 @@ class LayoutLibrary {
                         offset: 0),
                 ]
             ),
-        ]
+        ].reduce(into: [:]) { acc, next in
+            acc[next.name] = next
+        }
 
-        self.bufferLayouts = [
-            // vertex layouts
+        self.bufferLayouts = (
+            [
+                // vertex layouts
 
-            // used for cascading shadow pass for static objects
-            "baseUniforms": BufferLayout(
-                bufferLayoutBindings: [
-                    Self.getBufferLayoutBinding(.uniformsShared),
-                    Self.getBufferLayoutBinding(.uniformsObject),
-                ]
-            ),
+                // used for cascading shadow pass for static objects
+                BufferLayout(
+                    name: "BaseUniforms",
+                    bufferLayoutBindings: [
+                        Self.getBufferLayoutBinding(.uniformsShared),
+                        Self.getBufferLayoutBinding(.uniformsObject),
+                    ]
+                ),
 
-            // used for cascading shadow pass for animated objects
-            "baseUniformsPlusAnimation": BufferLayout(
-                bufferLayoutBindings: [
-                    Self.getBufferLayoutBinding(.uniformsShared),
-                    Self.getBufferLayoutBinding(.uniformsObject),
-                    Self.getBufferLayoutBinding(.uniformsAnimationPose),
-                    Self.getBufferLayoutBinding(.uniformsAnimationInverseBindPose),
-                ]
-            ),
+                // used for cascading shadow pass for animated objects
+                BufferLayout(
+                    name: "BaseUniformsPlusAnimation",
+                    bufferLayoutBindings: [
+                        Self.getBufferLayoutBinding(.uniformsShared),
+                        Self.getBufferLayoutBinding(.uniformsObject),
+                        Self.getBufferLayoutBinding(.uniformsAnimationPose),
+                        Self.getBufferLayoutBinding(.uniformsAnimationInverseBindPose),
+                    ]
+                ),
 
-            // used for regular color pass for static objects with light space volumes used to calculate which volume the vertex is in
-            "baseUniformsPlusLightSpaceVolumes": BufferLayout(
-                bufferLayoutBindings: [
-                    Self.getBufferLayoutBinding(.uniformsShared),
-                    Self.getBufferLayoutBinding(.uniformsObject),
-                    Self.getBufferLayoutBinding(.uniformsLightSpaceVolumes),
-                ]
-            ),
+                // used for regular color pass for static objects with light space volumes used to calculate which volume the vertex is in
+                BufferLayout(
+                    name: "BaseUniformsPlusLightSpaceVolumes",
+                    bufferLayoutBindings: [
+                        Self.getBufferLayoutBinding(.uniformsShared),
+                        Self.getBufferLayoutBinding(.uniformsObject),
+                        Self.getBufferLayoutBinding(.uniformsLightSpaceVolumes),
+                    ]
+                ),
 
-            // used for regular color pass for animated objects with light space volumes used to calculate which volume the vertex is in
-            "baseUniformsPlusAnimationPlusLightSpaceVolumes": BufferLayout(
-                bufferLayoutBindings: [
-                    Self.getBufferLayoutBinding(.uniformsShared),
-                    Self.getBufferLayoutBinding(.uniformsObject),
-                    Self.getBufferLayoutBinding(.uniformsAnimationPose),
-                    Self.getBufferLayoutBinding(.uniformsAnimationInverseBindPose),
-                    Self.getBufferLayoutBinding(.uniformsLightSpaceVolumes),
-                ]
-            ),
+                // used for regular color pass for animated objects with light space volumes used to calculate which volume the vertex is in
+                BufferLayout(
+                    name: "BaseUniformsPlusAnimationPlusLightSpaceVolumes",
+                    bufferLayoutBindings: [
+                        Self.getBufferLayoutBinding(.uniformsShared),
+                        Self.getBufferLayoutBinding(.uniformsObject),
+                        Self.getBufferLayoutBinding(.uniformsAnimationPose),
+                        Self.getBufferLayoutBinding(.uniformsAnimationInverseBindPose),
+                        Self.getBufferLayoutBinding(.uniformsLightSpaceVolumes),
+                    ]
+                ),
 
-            // fragment layouts
+                // fragment layouts
 
-            // used for shading fragments without lighting, for example in skybox or writing to gbuffer
-            "baseUniformsPlusMaterials": BufferLayout(
-                bufferLayoutBindings: [
-                    Self.getBufferLayoutBinding(.uniformsShared),
-                    Self.getBufferLayoutBinding(.uniformsObject),
-                    Self.getBufferLayoutBinding(.materials),
-                ]
-            ),
+                // used for shading fragments without lighting, for example in skybox or writing to gbuffer
+                BufferLayout(
+                    name: "BaseUniformsPlusMaterials",
+                    bufferLayoutBindings: [
+                        Self.getBufferLayoutBinding(.uniformsShared),
+                        Self.getBufferLayoutBinding(.uniformsObject),
+                        Self.getBufferLayoutBinding(.materials),
+                    ]
+                ),
 
-            // used for shading fragments with lighting
-            // object uniforms contain material id which is used to look up material
-            "baseUniformsPlusLightUniforms": BufferLayout(
-                bufferLayoutBindings: [
-                    Self.getBufferLayoutBinding(.uniformsShared),
-                    Self.getBufferLayoutBinding(.uniformsObject),
-                    Self.getBufferLayoutBinding(.uniformsLights),
-                    Self.getBufferLayoutBinding(.uniformsCascadeFrustumLimitsClipSpace),
-                    Self.getBufferLayoutBinding(.materials),
-                ]
-            ),
+                // used for shading fragments with lighting
+                // object uniforms contain material id which is used to look up material
+                BufferLayout(
+                    name: "BaseUniformsPlusLightUniforms",
+                    bufferLayoutBindings: [
+                        Self.getBufferLayoutBinding(.uniformsShared),
+                        Self.getBufferLayoutBinding(.uniformsObject),
+                        Self.getBufferLayoutBinding(.uniformsLights),
+                        Self.getBufferLayoutBinding(.uniformsCascadeFrustumLimitsClipSpace),
+                        Self.getBufferLayoutBinding(.materials),
+                    ]
+                ),
 
-            // used for shading fragments with lighting in the deferred pass
-            // the albedo texture's alpha channel contains the material id which is used to look up material
-            // light space volumes are required to calculate the cascade the fragment is in
-            "gbufferCombine": BufferLayout(
-                bufferLayoutBindings: [
-                    Self.getBufferLayoutBinding(.uniformsShared),
-                    Self.getBufferLayoutBinding(.uniformsLights),
-                    Self.getBufferLayoutBinding(.uniformsLightSpaceVolumes),
-                    Self.getBufferLayoutBinding(.uniformsCascadeFrustumLimitsClipSpace),
-                    Self.getBufferLayoutBinding(.materials),
-                ]
-            ),
+                // used for shading fragments with lighting in the deferred pass
+                // the albedo texture's alpha channel contains the material id which is used to look up material
+                // light space volumes are required to calculate the cascade the fragment is in
+                BufferLayout(
+                    name: "GBufferCombine",
+                    bufferLayoutBindings: [
+                        Self.getBufferLayoutBinding(.uniformsShared),
+                        Self.getBufferLayoutBinding(.uniformsLights),
+                        Self.getBufferLayoutBinding(.uniformsLightSpaceVolumes),
+                        Self.getBufferLayoutBinding(.uniformsCascadeFrustumLimitsClipSpace),
+                        Self.getBufferLayoutBinding(.materials),
+                    ]
+                ),
 
-            // may not need any bindings for combine. adding shared uniforms for now
-            "combine": BufferLayout(
-                bufferLayoutBindings: [
-                ]
-            ),
-
-
-            "none": BufferLayout(bufferLayoutBindings: []),
-        ]
+                BufferLayout(
+                    name: "None",
+                    bufferLayoutBindings: []
+                ),
+            ] + additionalBufferLayouts
+        ).reduce(into: [:]) { acc, next in
+            acc[next.name] = next
+        }
 
         self.textureLayouts = [
-            // todo: indicate whether these are for read or write usage. Maybe have separate arrays?
-            // todo: why are no textures bound to 0?
-            "cascadedShadowMap": TextureLayout(
+            TextureLayout(
+                name: "CascadedShadowMap",
                 textureLayoutBindings: [
                     TextureLayoutBinding(index: 1, type: .textureArrayCascadedShadowMap, accessType: .sample),
                 ]
             ),
-            "passThrough": TextureLayout(
+            TextureLayout(
+                name: "PassThrough",
                 textureLayoutBindings: [
                     TextureLayoutBinding(index: 1, type: .texturePassThrough, accessType: .sample),
                 ]
             ),
-            "computeOutputTexture": TextureLayout(
+            TextureLayout(
+                name: "ComputeOutputTexture",
                 textureLayoutBindings: [
                     TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .sample),
                 ]
             ),
-            "computeOutputBloomTexture": TextureLayout(
+            TextureLayout(
+                name: "ComputeOutputBloomTexture",
                 textureLayoutBindings: [
                     TextureLayoutBinding(index: 3, type: .textureComputeBloomOutput, accessType: .sample),
                 ]
             ),
-            "depthTexture": TextureLayout(
+            TextureLayout(
+                name: "DepthTexture",
                 textureLayoutBindings: [
                     TextureLayoutBinding(index: 4, type: .textureGBufferDepth, accessType: .sample),
                 ]
             ),
-            "gbufferNormals": TextureLayout(
+            TextureLayout(
+                name: "GBufferNormals",
                 textureLayoutBindings: [
                     TextureLayoutBinding(index: 6, type: .textureGBufferNormals, accessType: .sample),
                 ]
             ),
-            "gbufferAlbedos": TextureLayout(
+            TextureLayout(
+                name: "GBufferAlbedos",
                 textureLayoutBindings: [
                     TextureLayoutBinding(index: 7, type: .textureGBufferAlbedos, accessType: .sample),
                 ]
             ),
-            "gbufferCombine": TextureLayout(
+            TextureLayout(
+                name: "GBufferCombine",
                 textureLayoutBindings: [
                     TextureLayoutBinding(index: 1, type: .textureArrayCascadedShadowMap, accessType: .sample),
                     TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
@@ -200,7 +218,8 @@ class LayoutLibrary {
                     TextureLayoutBinding(index: 6, type: .textureGBufferAlbedos, accessType: .read),
                 ]
             ),
-            "gbufferCombineBloom": TextureLayout(
+            TextureLayout(
+                name: "GBufferCombineBloom",
                 textureLayoutBindings: [
                     TextureLayoutBinding(index: 1, type: .textureArrayCascadedShadowMap, accessType: .sample),
                     TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
@@ -210,8 +229,8 @@ class LayoutLibrary {
                     TextureLayoutBinding(index: 6, type: .textureGBufferAlbedos, accessType: .read),
                 ]
             ),
-
-            "combine": TextureLayout(
+            TextureLayout(
+                name: "Combine",
                 textureLayoutBindings: [
                     TextureLayoutBinding(index: 1, type: .textureCombineRevealage, accessType: .read),
                     TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
@@ -219,7 +238,8 @@ class LayoutLibrary {
                     TextureLayoutBinding(index: 4, type: .textureCombineColorAlpha, accessType: .read),
                 ]
             ),
-            "combineBloom": TextureLayout(
+            TextureLayout(
+                name: "CombineBloom",
                 textureLayoutBindings: [
                     TextureLayoutBinding(index: 1, type: .textureCombineRevealage, accessType: .read),
                     TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
@@ -229,31 +249,42 @@ class LayoutLibrary {
                     TextureLayoutBinding(index: 6, type: .textureCombineBrightnessAlpha, accessType: .read),
                 ]
             ),
-            "convertRGBA32FloatToBGRA8Unorm": TextureLayout(
+            TextureLayout(
+                name: "ConvertRGBA32FloatToBGRA8Unorm",
                 textureLayoutBindings: [
                     TextureLayoutBinding(index: 0, type: .textureComputeInput, accessType: .read),
                     TextureLayoutBinding(index: 1, type: .textureComputeOutput, accessType: .write),
                 ]
             ),
-            "none": TextureLayout(textureLayoutBindings: []),
-        ]
+            TextureLayout(
+                name: "None",
+                textureLayoutBindings: []
+            ),
+        ].reduce(into: [:]) { acc, next in
+            acc[next.name] = next
+        }
 
         self.materialLayouts = [
-            "textured": MaterialLayout(
+            MaterialLayout(
+                name: "Textured",
                 textureLayoutBindings: [
                     TextureLayoutBinding(index: 0, type: .textureBaseColor, accessType: .sample),
                 ]
             ),
-            "cubeTextured": MaterialLayout(
+            MaterialLayout(
+                name: "CubeTextured",
                 textureLayoutBindings: [
                     TextureLayoutBinding(index: 0, type: .textureCubeMap, accessType: .sample),
                 ]
             ),
-            "none": MaterialLayout(textureLayoutBindings: []),
-        ]
+            MaterialLayout(name: "None", textureLayoutBindings: []),
+        ].reduce(into: [:]) { acc, next in
+            acc[next.name] = next
+        }
 
         self.attachmentLayouts = [
-            "colorPlusDepth": AttachmentLayout(
+            AttachmentLayout(
+                name: "ColorPlusDepth",
                 colorAttachments: [
                     ColorAttachment(
                         description: "Color",
@@ -261,7 +292,8 @@ class LayoutLibrary {
                 ],
                 depthAttachment: DepthAttachment(pixelFormat: .depth32)
             ),
-            "colorPlusRevealagePlusDepth": AttachmentLayout(
+            AttachmentLayout(
+                name: "ColorPlusRevealagePlusDepth",
                 colorAttachments: [
                     ColorAttachment(
                         description: "Revealage",
@@ -274,7 +306,8 @@ class LayoutLibrary {
                 ],
                 depthAttachment: DepthAttachment(pixelFormat: .depth32)
             ),
-            "colorPlusBrightnessPlusDepth": AttachmentLayout(
+            AttachmentLayout(
+                name: "ColorPlusBrightnessPlusDepth",
                 colorAttachments: [
                     ColorAttachment(
                         description: "Color",
@@ -285,7 +318,8 @@ class LayoutLibrary {
                 ],
                 depthAttachment: DepthAttachment(pixelFormat: .depth32)
             ),
-            "colorPlusBrightnessPlusRevealagePlusDepth": AttachmentLayout(
+            AttachmentLayout(
+                name: "ColorPlusBrightnessPlusRevealagePlusDepth",
                 colorAttachments: [
                     ColorAttachment(
                         description: "Revealage",
@@ -302,7 +336,8 @@ class LayoutLibrary {
                 ],
                 depthAttachment: DepthAttachment(pixelFormat: .depth32)
             ),
-            "gbuffer": AttachmentLayout(
+            AttachmentLayout(
+                name: "GBuffer",
                 colorAttachments: [
                     ColorAttachment(
                         description: "Albedo (xyz), MaterialId (w)",
@@ -313,7 +348,8 @@ class LayoutLibrary {
                 ],
                 depthAttachment: DepthAttachment(pixelFormat: .depth32)
             ),
-            "color": AttachmentLayout(
+            AttachmentLayout(
+                name: "Color",
                 colorAttachments: [
                     ColorAttachment(
                         description: "Color",
@@ -321,14 +357,17 @@ class LayoutLibrary {
                 ],
                 depthAttachment: nil
             ),
-            "depth": AttachmentLayout(
+            AttachmentLayout(
+                name: "Depth",
                 colorAttachments: [],
                 depthAttachment: DepthAttachment(pixelFormat: .depth32)
             ),
-        ]
+        ].reduce(into: [:]) { acc, next in
+            acc[next.name] = next
+        }
 
-        self.uniformLayouts = [
-            "SharedUniforms": StructLayout(
+        self.uniformLayouts = ([
+            StructLayout(
                 name: "SharedUniforms",
                 items: [
                     StructItem(name: "viewProjection", type: .primitive(.float4x4)),
@@ -348,7 +387,7 @@ class LayoutLibrary {
                     StructItem(name: "enableFlatShading", type: .primitive(.bool)),
                 ]
             ),
-            "LightUniforms": StructLayout(
+            StructLayout(
                 name: "LightUniforms",
                 items: [
                     StructItem(name: "float3Data", type: .primitive(.float3)),
@@ -359,7 +398,7 @@ class LayoutLibrary {
                     StructItem(name: "type", type: .custom("LightUniformsType")),
                 ]
             ),
-            "DrawObjectUniforms": StructLayout(
+            StructLayout(
                 name: "DrawObjectUniforms",
                 items: [
                     StructItem(name: "model", type: .primitive(.float4x4)),
@@ -367,13 +406,15 @@ class LayoutLibrary {
                     StructItem(name: "materialId", type: .primitive(.int)),
                 ]
             ),
-        ]
+        ] + additionalUniformLayouts).reduce(into: [:]) { acc, next in
+            acc[next.name] = next
+        }
 
         // todo: separate fragment out layouts from vertex out/fragment in
         // also there's overlap between these and the attachments which were developed simultaneously
         self.inOutLayouts = [
-            "float4": .primitive(.float4),
-            "forwardBloom": .compound(
+            .primitive(.float4),
+            .compound(
                 StructLayout(
                     name: "BloomFragmentOutput",
                     items: [
@@ -382,7 +423,7 @@ class LayoutLibrary {
                     ]
                 )
             ),
-            "alpha": .compound(
+            .compound(
                 StructLayout(
                     name: "AlphaFragmentOutput",
                     items: [
@@ -391,7 +432,7 @@ class LayoutLibrary {
                     ]
                 )
             ),
-            "alphaBloom": .compound(
+            .compound(
                 StructLayout(
                     name: "AlphaBloomFragmentOutput",
                     items: [
@@ -401,7 +442,7 @@ class LayoutLibrary {
                     ]
                 )
             ),
-            "gbuffer": .compound(
+            .compound(
                 StructLayout(
                     name: "GBufferFragmentOutput",
                     items: [
@@ -410,7 +451,7 @@ class LayoutLibrary {
                     ]
                 )
             ),
-            "fullFragment": .compound(
+            .compound(
                 StructLayout(
                     name: "FullFragmentInput",
                     items: [
@@ -431,7 +472,7 @@ class LayoutLibrary {
                     ]
                 )
             ),
-            "shadowCalculationData": .compound(
+            .compound(
                 StructLayout(
                     name: "ShadowCalculationData",
                     items: [
@@ -445,27 +486,16 @@ class LayoutLibrary {
                     ]
                 )
             ),
-        ]
+        ].reduce(into: [:]) { acc, next in
+            acc[next.name] = next
+        }
+        
     }
 
     // todo: can/should this be incremented rather than hard coded? downside to hard coding is that
     // it's inflexible and error prone, but incrementing means that some optimisation opportunities
     // are a bit harder since you can't rely on the same buffer having the same binding across draw calls
     private static func getBufferLayoutBinding(_ bufferBindingType: KBufferBindingType) -> BufferLayoutBinding {
-        switch bufferBindingType {
-        case .attributePosition: BufferLayoutBinding(index: 0, type: bufferBindingType)
-        case .attributeNormal: BufferLayoutBinding(index: 1, type: bufferBindingType)
-        case .attributeTexCoords: BufferLayoutBinding(index: 2, type: bufferBindingType)
-        case .attributeWeights: BufferLayoutBinding(index: 3, type: bufferBindingType)
-        case .attributeJoints: BufferLayoutBinding(index: 4, type: bufferBindingType)
-        case .uniformsShared: BufferLayoutBinding(index: 5, type: bufferBindingType)
-        case .uniformsLights: BufferLayoutBinding(index: 6, type: bufferBindingType)
-        case .uniformsObject: BufferLayoutBinding(index: 7, type: bufferBindingType)
-        case .uniformsLightSpaceVolumes: BufferLayoutBinding(index: 8, type: bufferBindingType)
-        case .uniformsCascadeFrustumLimitsClipSpace: BufferLayoutBinding(index: 9, type: bufferBindingType)
-        case .uniformsAnimationPose: BufferLayoutBinding(index: 10, type: bufferBindingType)
-        case .uniformsAnimationInverseBindPose: BufferLayoutBinding(index: 11, type: bufferBindingType)
-        case .materials: BufferLayoutBinding(index: 12, type: bufferBindingType)
-        }
+        return BufferLayoutBinding(index: bufferBindingType.bindingIndex, type: bufferBindingType)
     }
 }

@@ -5,8 +5,8 @@ class ComputeShaderFunctionTemplateGBufferCombine: ComputeShaderFunctionTemplate
     override class var functionName: String { "computeShaderGBufferCombine" }
     override class var perVariantLayouts: [ComputeFunctionVariant: ComputeShaderVariantLayouts] {
         [
-            .color: ComputeShaderVariantLayouts(bufferLayout: "gbufferCombine", textureLayout: "gbufferCombine"),
-            .colorPlusBloom: ComputeShaderVariantLayouts(bufferLayout: "gbufferCombine", textureLayout: "gbufferCombineBloom"),
+            .color: ComputeShaderVariantLayouts(bufferLayout: "GBufferCombine", textureLayout: "GBufferCombine"),
+            .colorPlusBloom: ComputeShaderVariantLayouts(bufferLayout: "GBufferCombine", textureLayout: "GBufferCombineBloom"),
         ]
     }
     override class var textureSizeValidation: Bool { true }

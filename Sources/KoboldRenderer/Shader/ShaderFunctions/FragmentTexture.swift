@@ -1,41 +1,41 @@
 class FragmentShaderFunctionTemplateTexture: FragmentShaderFunctionTemplate {
     override class var functionName: String { "texturedFragment" }
-    override class var inputLayout: String { "fullFragment" }
+    override class var inputLayout: String { "FullFragmentInput" }
     override class var perVariantLayouts: [FragmentFunctionVariant: FragmentShaderVariantLayouts] {
         [
             .color: FragmentShaderVariantLayouts(
-                bufferLayout: "baseUniformsPlusLightUniforms",
+                bufferLayout: "BaseUniformsPlusLightUniforms",
                 outputLayout: "float4",
-                attachmentLayout: "colorPlusDepth"),
+                attachmentLayout: "ColorPlusDepth"),
             .colorPlusBrightness: FragmentShaderVariantLayouts(
-                bufferLayout: "baseUniformsPlusLightUniforms",
-                outputLayout: "forwardBloom",
-                attachmentLayout: "colorPlusBrightnessPlusDepth"),
+                bufferLayout: "BaseUniformsPlusLightUniforms",
+                outputLayout: "BloomFragmentOutput",
+                attachmentLayout: "ColorPlusBrightnessPlusDepth"),
             .gbuffer: FragmentShaderVariantLayouts(
-                bufferLayout: "baseUniformsPlusMaterials",
-                outputLayout: "gbuffer",
-                attachmentLayout: "gbuffer"),
+                bufferLayout: "BaseUniformsPlusMaterials",
+                outputLayout: "GBufferFragmentOutput",
+                attachmentLayout: "GBuffer"),
             .instancedColor: FragmentShaderVariantLayouts(
-                bufferLayout: "baseUniformsPlusLightUniforms",
+                bufferLayout: "BaseUniformsPlusLightUniforms",
                 outputLayout: "float4",
-                attachmentLayout: "colorPlusDepth"),
+                attachmentLayout: "ColorPlusDepth"),
             .instancedColorPlusBrightness: FragmentShaderVariantLayouts(
-                bufferLayout: "baseUniformsPlusLightUniforms",
-                outputLayout: "forwardBloom",
-                attachmentLayout: "colorPlusBrightnessPlusDepth"),
+                bufferLayout: "BaseUniformsPlusLightUniforms",
+                outputLayout: "BloomFragmentOutput",
+                attachmentLayout: "ColorPlusBrightnessPlusDepth"),
             .instancedGBuffer: FragmentShaderVariantLayouts(
-                bufferLayout: "baseUniformsPlusMaterials",
-                outputLayout: "gbuffer",
-                attachmentLayout: "gbuffer"),
+                bufferLayout: "BaseUniformsPlusMaterials",
+                outputLayout: "GBufferFragmentOutput",
+                attachmentLayout: "GBuffer"),
         ]
     }
 
     override class var textureLayout: String {
-        "cascadedShadowMap"
+        "CascadedShadowMap"
     }
     
     override class var materialLayout: String {
-        "textured"
+        "Textured"
     }
 
     override class func getFragmentCode(shaderVariant: FragmentFunctionVariant) -> String {

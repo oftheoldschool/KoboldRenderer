@@ -1,11 +1,11 @@
 class VertexShaderFunctionTemplatePassThrough: VertexShaderFunctionTemplate {
     override class var functionName: String { "passThroughVertex" }
-    override class var vertexLayout: String { "none" }
+    override class var vertexLayout: String { "None" }
     override class var perVariantLayouts: [VertexFunctionVariant: VertexShaderVariantLayouts] {
         [
             .single: VertexShaderVariantLayouts(
-                bufferLayout: "none",
-                outputLayout: "fullFragment"),
+                bufferLayout: "None",
+                outputLayout: "FullFragmentInput"),
         ]
     }
 

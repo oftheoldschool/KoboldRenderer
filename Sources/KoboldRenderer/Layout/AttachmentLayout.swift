@@ -1,6 +1,7 @@
 import Metal
 
 struct AttachmentLayout {
+    let name: String
     let colorAttachments: [ColorAttachment]
     let depthAttachment: DepthAttachment?
 }

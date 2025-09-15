@@ -18,6 +18,7 @@ public enum KTextureBindingType {
 }
 
 struct TextureLayout {
+    let name: String
     let textureLayoutBindings: [TextureLayoutBinding]
 }
 
