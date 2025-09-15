@@ -41,7 +41,7 @@ public struct KRRendererSettings {
         bloomThreshold: SIMD3<Float> = SIMD3<Float>(0.8, 0.8, 0.8),
         bloomMultiplier: SIMD3<Float> = SIMD3<Float>(1.0, 1.0, 1.0),
         outputImageScale: Float = 1.0,
-        globalMaterial: String = "None",
+        globalMaterial: String = "none",
         globalLightingColor: SIMD3<Float>,
         cascadeFrustumDistances: [Float],
         clearColor: SIMD3<Float>
