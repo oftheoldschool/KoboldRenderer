@@ -1,385 +1,420 @@
-class LayoutLibrary {
-    let vertexLayouts: [String: VertexLayout]
-    let bufferLayouts: [String: BufferLayout]
-    let textureLayouts: [String: TextureLayout]
-    let materialLayouts: [String: MaterialLayout]
-    let inOutLayouts: [String: InOutLayout]
-    let uniformLayouts: [String: StructLayout]
-    let attachmentLayouts: [String: AttachmentLayout]
+public class RendererLayouts {
+    public let vertexLayouts: [VertexLayout]
+    public let bufferLayouts: [BufferLayout]
+    public let textureLayouts: [TextureLayout]
+    public let materialLayouts: [MaterialLayout]
+    public let inOutLayouts: [InOutLayout]
+    public let uniformLayouts: [StructLayout]
+    public let attachmentLayouts: [AttachmentLayout]
 
-    init(
-        additionalVertexLayouts: [VertexLayout] = [],
-        additionalBufferLayouts: [BufferLayout] = [],
-        additionalTextureLayouts: [TextureLayout] = [],
-        additionalMaterialLayouts: [MaterialLayout] = [],
-        additionalInOutLayouts: [InOutLayout] = [],
-        additionalUniformLayouts: [StructLayout] = [],
-        additionalAttachmentLayouts: [AttachmentLayout] = []
+    public init(
+        vertexLayouts: [VertexLayout] = [],
+        bufferLayouts: [BufferLayout] = [],
+        textureLayouts: [TextureLayout] = [],
+        materialLayouts: [MaterialLayout] = [],
+        inOutLayouts: [InOutLayout] = [],
+        uniformLayouts: [StructLayout] = [],
+        attachmentLayouts: [AttachmentLayout] = []
+    ) {
+        self.vertexLayouts = vertexLayouts
+        self.bufferLayouts = bufferLayouts
+        self.textureLayouts  = textureLayouts
+        self.materialLayouts = materialLayouts
+        self.inOutLayouts = inOutLayouts
+        self.uniformLayouts = uniformLayouts
+        self.attachmentLayouts = attachmentLayouts
+    }
+}
+
+public class LayoutLibrary {
+    public let vertexLayouts: [String: VertexLayout]
+    public let bufferLayouts: [String: BufferLayout]
+    public let textureLayouts: [String: TextureLayout]
+    public let materialLayouts: [String: MaterialLayout]
+    public let inOutLayouts: [String: InOutLayout]
+    public let uniformLayouts: [String: StructLayout]
+    public let attachmentLayouts: [String: AttachmentLayout]
+
+    public init(
+        additionalLayouts: RendererLayouts? = nil
     ) {
         self.vertexLayouts = (
-            [
-                VertexLayout(
-                    name: "FullVertex",
-                    attributes: [
-                        VertexAttributeLayout(
-                            binding: Self.getBufferLayoutBinding(.attributePosition),
-                            type: .float3,
-                            offset: 0),
-                        VertexAttributeLayout(
-                            binding: Self.getBufferLayoutBinding(.attributeNormal),
-                            type: .float3,
-                            offset: 0),
-                        VertexAttributeLayout(
-                            binding: Self.getBufferLayoutBinding(.attributeTexCoords),
-                            type: .float2,
-                            offset: 0),
-                        VertexAttributeLayout(
-                            binding: Self.getBufferLayoutBinding(.attributeWeights),
-                            type: .float4,
-                            offset: 0),
-                        VertexAttributeLayout(
-                            binding: Self.getBufferLayoutBinding(.attributeJoints),
-                            type: .int4,
-                            offset: 0),
-                    ]
-                ),
-                VertexLayout(
-                    name: "BasicVertex",
-                    attributes: [
-                        VertexAttributeLayout(
-                            binding: Self.getBufferLayoutBinding(.attributePosition),
-                            type: .float3,
-                            offset: 0),
-                        VertexAttributeLayout(
-                            binding: Self.getBufferLayoutBinding(.attributeNormal),
-                            type: .float3,
-                            offset: 0),
-                        VertexAttributeLayout(
-                            binding: Self.getBufferLayoutBinding(.attributeTexCoords),
-                            type: .float2,
-                            offset: 0),
-                    ]
-                ),
-                VertexLayout(
-                    name: "SkyboxVertex",
-                    attributes: [
-                        VertexAttributeLayout(
-                            binding: Self.getBufferLayoutBinding(.attributePosition),
-                            type: .float3,
-                            offset: 0),
-                        VertexAttributeLayout(
-                            binding: Self.getBufferLayoutBinding(.attributeNormal),
-                            type: .float3,
-                            offset: 0),
-                    ]
-                ),
-            ] + additionalVertexLayouts
+            Self.coreLayouts.vertexLayouts + (additionalLayouts?.vertexLayouts ?? [])
         ).reduce(into: [:]) { acc, next in
             acc[next.name] = next
         }
 
         self.bufferLayouts = (
-            [
-                // vertex layouts
-
-                // used for cascading shadow pass for static objects
-                BufferLayout(
-                    name: "BaseUniforms",
-                    bufferLayoutBindings: [
-                        Self.getBufferLayoutBinding(.uniformsShared),
-                        Self.getBufferLayoutBinding(.uniformsObject),
-                    ]
-                ),
-
-                // used for cascading shadow pass for animated objects
-                BufferLayout(
-                    name: "BaseUniformsPlusAnimation",
-                    bufferLayoutBindings: [
-                        Self.getBufferLayoutBinding(.uniformsShared),
-                        Self.getBufferLayoutBinding(.uniformsObject),
-                        Self.getBufferLayoutBinding(.uniformsAnimationPose),
-                        Self.getBufferLayoutBinding(.uniformsAnimationInverseBindPose),
-                    ]
-                ),
-
-                // used for regular color pass for static objects with light space volumes used to calculate which volume the vertex is in
-                BufferLayout(
-                    name: "BaseUniformsPlusLightSpaceVolumes",
-                    bufferLayoutBindings: [
-                        Self.getBufferLayoutBinding(.uniformsShared),
-                        Self.getBufferLayoutBinding(.uniformsObject),
-                        Self.getBufferLayoutBinding(.uniformsLightSpaceVolumes),
-                    ]
-                ),
-
-                // used for regular color pass for animated objects with light space volumes used to calculate which volume the vertex is in
-                BufferLayout(
-                    name: "BaseUniformsPlusAnimationPlusLightSpaceVolumes",
-                    bufferLayoutBindings: [
-                        Self.getBufferLayoutBinding(.uniformsShared),
-                        Self.getBufferLayoutBinding(.uniformsObject),
-                        Self.getBufferLayoutBinding(.uniformsAnimationPose),
-                        Self.getBufferLayoutBinding(.uniformsAnimationInverseBindPose),
-                        Self.getBufferLayoutBinding(.uniformsLightSpaceVolumes),
-                    ]
-                ),
-
-                // fragment layouts
-
-                // used for shading fragments without lighting, for example in skybox or writing to gbuffer
-                BufferLayout(
-                    name: "BaseUniformsPlusMaterials",
-                    bufferLayoutBindings: [
-                        Self.getBufferLayoutBinding(.uniformsShared),
-                        Self.getBufferLayoutBinding(.uniformsObject),
-                        Self.getBufferLayoutBinding(.materials),
-                    ]
-                ),
-
-                // used for shading fragments with lighting
-                // object uniforms contain material id which is used to look up material
-                BufferLayout(
-                    name: "BaseUniformsPlusLightUniforms",
-                    bufferLayoutBindings: [
-                        Self.getBufferLayoutBinding(.uniformsShared),
-                        Self.getBufferLayoutBinding(.uniformsObject),
-                        Self.getBufferLayoutBinding(.uniformsLights),
-                        Self.getBufferLayoutBinding(.uniformsCascadeFrustumLimitsClipSpace),
-                        Self.getBufferLayoutBinding(.materials),
-                    ]
-                ),
-
-                // used for shading fragments with lighting in the deferred pass
-                // the albedo texture's alpha channel contains the material id which is used to look up material
-                // light space volumes are required to calculate the cascade the fragment is in
-                BufferLayout(
-                    name: "GBufferCombine",
-                    bufferLayoutBindings: [
-                        Self.getBufferLayoutBinding(.uniformsShared),
-                        Self.getBufferLayoutBinding(.uniformsLights),
-                        Self.getBufferLayoutBinding(.uniformsLightSpaceVolumes),
-                        Self.getBufferLayoutBinding(.uniformsCascadeFrustumLimitsClipSpace),
-                        Self.getBufferLayoutBinding(.materials),
-                    ]
-                ),
-
-                BufferLayout(
-                    name: "None",
-                    bufferLayoutBindings: []
-                ),
-            ] + additionalBufferLayouts
+            Self.coreLayouts.bufferLayouts + (additionalLayouts?.bufferLayouts ?? [])
         ).reduce(into: [:]) { acc, next in
             acc[next.name] = next
         }
 
         self.textureLayouts = (
-            [
-                TextureLayout(
-                    name: "CascadedShadowMap",
-                    textureLayoutBindings: [
-                        TextureLayoutBinding(index: 1, type: .textureArrayCascadedShadowMap, accessType: .sample),
-                    ]
-                ),
-                TextureLayout(
-                    name: "PassThrough",
-                    textureLayoutBindings: [
-                        TextureLayoutBinding(index: 1, type: .texturePassThrough, accessType: .sample),
-                    ]
-                ),
-                TextureLayout(
-                    name: "ComputeOutputTexture",
-                    textureLayoutBindings: [
-                        TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .sample),
-                    ]
-                ),
-                TextureLayout(
-                    name: "ComputeOutputBloomTexture",
-                    textureLayoutBindings: [
-                        TextureLayoutBinding(index: 3, type: .textureComputeBloomOutput, accessType: .sample),
-                    ]
-                ),
-                TextureLayout(
-                    name: "DepthTexture",
-                    textureLayoutBindings: [
-                        TextureLayoutBinding(index: 4, type: .textureGBufferDepth, accessType: .sample),
-                    ]
-                ),
-                TextureLayout(
-                    name: "GBufferNormals",
-                    textureLayoutBindings: [
-                        TextureLayoutBinding(index: 6, type: .textureGBufferNormals, accessType: .sample),
-                    ]
-                ),
-                TextureLayout(
-                    name: "GBufferAlbedos",
-                    textureLayoutBindings: [
-                        TextureLayoutBinding(index: 7, type: .textureGBufferAlbedos, accessType: .sample),
-                    ]
-                ),
-                TextureLayout(
-                    name: "GBufferCombine",
-                    textureLayoutBindings: [
-                        TextureLayoutBinding(index: 1, type: .textureArrayCascadedShadowMap, accessType: .sample),
-                        TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
-                        TextureLayoutBinding(index: 4, type: .textureGBufferDepth, accessType: .read),
-                        TextureLayoutBinding(index: 5, type: .textureGBufferNormals, accessType: .read),
-                        TextureLayoutBinding(index: 6, type: .textureGBufferAlbedos, accessType: .read),
-                    ]
-                ),
-                TextureLayout(
-                    name: "GBufferCombineBloom",
-                    textureLayoutBindings: [
-                        TextureLayoutBinding(index: 1, type: .textureArrayCascadedShadowMap, accessType: .sample),
-                        TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
-                        TextureLayoutBinding(index: 3, type: .textureComputeBloomOutput, accessType: .write),
-                        TextureLayoutBinding(index: 4, type: .textureGBufferDepth, accessType: .read),
-                        TextureLayoutBinding(index: 5, type: .textureGBufferNormals, accessType: .read),
-                        TextureLayoutBinding(index: 6, type: .textureGBufferAlbedos, accessType: .read),
-                    ]
-                ),
-                TextureLayout(
-                    name: "Combine",
-                    textureLayoutBindings: [
-                        TextureLayoutBinding(index: 1, type: .textureCombineRevealage, accessType: .read),
-                        TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
-                        TextureLayoutBinding(index: 3, type: .textureCombineColor, accessType: .read),
-                        TextureLayoutBinding(index: 4, type: .textureCombineColorAlpha, accessType: .read),
-                    ]
-                ),
-                TextureLayout(
-                    name: "CombineBloom",
-                    textureLayoutBindings: [
-                        TextureLayoutBinding(index: 1, type: .textureCombineRevealage, accessType: .read),
-                        TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
-                        TextureLayoutBinding(index: 3, type: .textureCombineColor, accessType: .read),
-                        TextureLayoutBinding(index: 4, type: .textureCombineColorAlpha, accessType: .read),
-                        TextureLayoutBinding(index: 5, type: .textureCombineBrightness, accessType: .read),
-                        TextureLayoutBinding(index: 6, type: .textureCombineBrightnessAlpha, accessType: .read),
-                    ]
-                ),
-                TextureLayout(
-                    name: "ConvertRGBA32FloatToBGRA8Unorm",
-                    textureLayoutBindings: [
-                        TextureLayoutBinding(index: 0, type: .textureComputeInput, accessType: .read),
-                        TextureLayoutBinding(index: 1, type: .textureComputeOutput, accessType: .write),
-                    ]
-                ),
-                TextureLayout(
-                    name: "None",
-                    textureLayoutBindings: []
-                ),
-            ] + additionalTextureLayouts
+            Self.coreLayouts.textureLayouts + (additionalLayouts?.textureLayouts ?? [])
         ).reduce(into: [:]) { acc, next in
             acc[next.name] = next
         }
 
         self.materialLayouts = (
-            [
-                MaterialLayout(
-                    name: "Textured",
-                    textureLayoutBindings: [
-                        TextureLayoutBinding(index: 0, type: .textureBaseColor, accessType: .sample),
-                    ]
-                ),
-                MaterialLayout(
-                    name: "CubeTextured",
-                    textureLayoutBindings: [
-                        TextureLayoutBinding(index: 0, type: .textureCubeMap, accessType: .sample),
-                    ]
-                ),
-                MaterialLayout(name: "None", textureLayoutBindings: []),
-            ] + additionalMaterialLayouts
+            Self.coreLayouts.materialLayouts + (additionalLayouts?.materialLayouts ?? [])
         ).reduce(into: [:]) { acc, next in
             acc[next.name] = next
         }
 
         self.attachmentLayouts = (
-            [
-                AttachmentLayout(
-                    name: "ColorPlusDepth",
-                    colorAttachments: [
-                        ColorAttachment(
-                            description: "Color",
-                            pixelFormat: .bgra8Unorm),
-                    ],
-                    depthAttachment: DepthAttachment(pixelFormat: .depth32)
-                ),
-                AttachmentLayout(
-                    name: "ColorPlusRevealagePlusDepth",
-                    colorAttachments: [
-                        ColorAttachment(
-                            description: "Revealage",
-                            pixelFormat: .r16Float,
-                            enableTransparency: true),
-                        ColorAttachment(
-                            description: "Color Accumulation",
-                            pixelFormat: .rgba16Float,
-                            enableTransparency: true),
-                    ],
-                    depthAttachment: DepthAttachment(pixelFormat: .depth32)
-                ),
-                AttachmentLayout(
-                    name: "ColorPlusBrightnessPlusDepth",
-                    colorAttachments: [
-                        ColorAttachment(
-                            description: "Color",
-                            pixelFormat: .bgra8Unorm),
-                        ColorAttachment(
-                            description: "Brightness",
-                            pixelFormat: .bgra8Unorm),
-                    ],
-                    depthAttachment: DepthAttachment(pixelFormat: .depth32)
-                ),
-                AttachmentLayout(
-                    name: "ColorPlusBrightnessPlusRevealagePlusDepth",
-                    colorAttachments: [
-                        ColorAttachment(
-                            description: "Revealage",
-                            pixelFormat: .r16Float,
-                            enableTransparency: true),
-                        ColorAttachment(
-                            description: "Color Accumulation",
-                            pixelFormat: .rgba16Float,
-                            enableTransparency: true),
-                        ColorAttachment(
-                            description: "Brightness Accumulation",
-                            pixelFormat: .rgba16Float,
-                            enableTransparency: true),
-                    ],
-                    depthAttachment: DepthAttachment(pixelFormat: .depth32)
-                ),
-                AttachmentLayout(
-                    name: "GBuffer",
-                    colorAttachments: [
-                        ColorAttachment(
-                            description: "Albedo (xyz), MaterialId (w)",
-                            pixelFormat: .rgba32Float),
-                        ColorAttachment(
-                            description: "Normal",
-                            pixelFormat: .rgba32Float),
-                    ],
-                    depthAttachment: DepthAttachment(pixelFormat: .depth32)
-                ),
-                AttachmentLayout(
-                    name: "Color",
-                    colorAttachments: [
-                        ColorAttachment(
-                            description: "Color",
-                            pixelFormat: .bgra8Unorm),
-                    ],
-                    depthAttachment: nil
-                ),
-                AttachmentLayout(
-                    name: "Depth",
-                    colorAttachments: [],
-                    depthAttachment: DepthAttachment(pixelFormat: .depth32)
-                ),
-            ] + additionalAttachmentLayouts
+            Self.coreLayouts.attachmentLayouts + (additionalLayouts?.attachmentLayouts ?? [])
         ).reduce(into: [:]) { acc, next in
             acc[next.name] = next
         }
 
-        self.uniformLayouts = ([
+        self.uniformLayouts = (
+            Self.coreLayouts.uniformLayouts + (additionalLayouts?.uniformLayouts ?? [])
+        ).reduce(into: [:]) { acc, next in
+            acc[next.name] = next
+        }
+
+        self.inOutLayouts = (
+            Self.coreLayouts.inOutLayouts + (additionalLayouts?.inOutLayouts ?? [])
+        ).reduce(into: [:]) { acc, next in
+            acc[next.name] = next
+        }
+    }
+
+    public static let coreLayouts = RendererLayouts(
+        vertexLayouts: [
+            VertexLayout(
+                name: "FullVertex",
+                attributes: [
+                    VertexAttributeLayout(
+                        binding: LayoutLibrary.getBufferLayoutBinding(.attributePosition),
+                        type: .float3,
+                        offset: 0),
+                    VertexAttributeLayout(
+                        binding: LayoutLibrary.getBufferLayoutBinding(.attributeNormal),
+                        type: .float3,
+                        offset: 0),
+                    VertexAttributeLayout(
+                        binding: LayoutLibrary.getBufferLayoutBinding(.attributeTexCoords),
+                        type: .float2,
+                        offset: 0),
+                    VertexAttributeLayout(
+                        binding: LayoutLibrary.getBufferLayoutBinding(.attributeWeights),
+                        type: .float4,
+                        offset: 0),
+                    VertexAttributeLayout(
+                        binding: LayoutLibrary.getBufferLayoutBinding(.attributeJoints),
+                        type: .int4,
+                        offset: 0),
+                ]
+            ),
+            VertexLayout(
+                name: "BasicVertex",
+                attributes: [
+                    VertexAttributeLayout(
+                        binding: LayoutLibrary.getBufferLayoutBinding(.attributePosition),
+                        type: .float3,
+                        offset: 0),
+                    VertexAttributeLayout(
+                        binding: LayoutLibrary.getBufferLayoutBinding(.attributeNormal),
+                        type: .float3,
+                        offset: 0),
+                    VertexAttributeLayout(
+                        binding: LayoutLibrary.getBufferLayoutBinding(.attributeTexCoords),
+                        type: .float2,
+                        offset: 0),
+                ]
+            ),
+            VertexLayout(
+                name: "SkyboxVertex",
+                attributes: [
+                    VertexAttributeLayout(
+                        binding: LayoutLibrary.getBufferLayoutBinding(.attributePosition),
+                        type: .float3,
+                        offset: 0),
+                    VertexAttributeLayout(
+                        binding: LayoutLibrary.getBufferLayoutBinding(.attributeNormal),
+                        type: .float3,
+                        offset: 0),
+                ]
+            ),
+        ],
+        bufferLayouts: [
+            // vertex layouts
+
+            // used for cascading shadow pass for static objects
+            BufferLayout(
+                name: "BaseUniforms",
+                bufferLayoutBindings: [
+                    LayoutLibrary.getBufferLayoutBinding(.uniformsShared),
+                    LayoutLibrary.getBufferLayoutBinding(.uniformsObject),
+                ]
+            ),
+
+            // used for cascading shadow pass for animated objects
+            BufferLayout(
+                name: "BaseUniformsPlusAnimation",
+                bufferLayoutBindings: [
+                    LayoutLibrary.getBufferLayoutBinding(.uniformsShared),
+                    LayoutLibrary.getBufferLayoutBinding(.uniformsObject),
+                    LayoutLibrary.getBufferLayoutBinding(.uniformsAnimationPose),
+                    LayoutLibrary.getBufferLayoutBinding(.uniformsAnimationInverseBindPose),
+                ]
+            ),
+
+            // used for regular color pass for static objects with light space volumes used to calculate which volume the vertex is in
+            BufferLayout(
+                name: "BaseUniformsPlusLightSpaceVolumes",
+                bufferLayoutBindings: [
+                    LayoutLibrary.getBufferLayoutBinding(.uniformsShared),
+                    LayoutLibrary.getBufferLayoutBinding(.uniformsObject),
+                    LayoutLibrary.getBufferLayoutBinding(.uniformsLightSpaceVolumes),
+                ]
+            ),
+
+            // used for regular color pass for animated objects with light space volumes used to calculate which volume the vertex is in
+            BufferLayout(
+                name: "BaseUniformsPlusAnimationPlusLightSpaceVolumes",
+                bufferLayoutBindings: [
+                    LayoutLibrary.getBufferLayoutBinding(.uniformsShared),
+                    LayoutLibrary.getBufferLayoutBinding(.uniformsObject),
+                    LayoutLibrary.getBufferLayoutBinding(.uniformsAnimationPose),
+                    LayoutLibrary.getBufferLayoutBinding(.uniformsAnimationInverseBindPose),
+                    LayoutLibrary.getBufferLayoutBinding(.uniformsLightSpaceVolumes),
+                ]
+            ),
+
+            // fragment layouts
+
+            // used for shading fragments without lighting, for example in skybox or writing to gbuffer
+            BufferLayout(
+                name: "BaseUniformsPlusMaterials",
+                bufferLayoutBindings: [
+                    LayoutLibrary.getBufferLayoutBinding(.uniformsShared),
+                    LayoutLibrary.getBufferLayoutBinding(.uniformsObject),
+                    LayoutLibrary.getBufferLayoutBinding(.materials),
+                ]
+            ),
+
+            // used for shading fragments with lighting
+            // object uniforms contain material id which is used to look up material
+            BufferLayout(
+                name: "BaseUniformsPlusLightUniforms",
+                bufferLayoutBindings: [
+                    LayoutLibrary.getBufferLayoutBinding(.uniformsShared),
+                    LayoutLibrary.getBufferLayoutBinding(.uniformsObject),
+                    LayoutLibrary.getBufferLayoutBinding(.uniformsLights),
+                    LayoutLibrary.getBufferLayoutBinding(.uniformsCascadeFrustumLimitsClipSpace),
+                    LayoutLibrary.getBufferLayoutBinding(.materials),
+                ]
+            ),
+
+            // used for shading fragments with lighting in the deferred pass
+            // the albedo texture's alpha channel contains the material id which is used to look up material
+            // light space volumes are required to calculate the cascade the fragment is in
+            BufferLayout(
+                name: "GBufferCombine",
+                bufferLayoutBindings: [
+                    LayoutLibrary.getBufferLayoutBinding(.uniformsShared),
+                    LayoutLibrary.getBufferLayoutBinding(.uniformsLights),
+                    LayoutLibrary.getBufferLayoutBinding(.uniformsLightSpaceVolumes),
+                    LayoutLibrary.getBufferLayoutBinding(.uniformsCascadeFrustumLimitsClipSpace),
+                    LayoutLibrary.getBufferLayoutBinding(.materials),
+                ]
+            ),
+
+            BufferLayout(
+                name: "None",
+                bufferLayoutBindings: []
+            ),
+        ],
+        textureLayouts: [
+            TextureLayout(
+                name: "CascadedShadowMap",
+                textureLayoutBindings: [
+                    TextureLayoutBinding(index: 1, type: .textureArrayCascadedShadowMap, accessType: .sample),
+                ]
+            ),
+            TextureLayout(
+                name: "PassThrough",
+                textureLayoutBindings: [
+                    TextureLayoutBinding(index: 1, type: .texturePassThrough, accessType: .sample),
+                ]
+            ),
+            TextureLayout(
+                name: "ComputeOutputTexture",
+                textureLayoutBindings: [
+                    TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .sample),
+                ]
+            ),
+            TextureLayout(
+                name: "ComputeOutputBloomTexture",
+                textureLayoutBindings: [
+                    TextureLayoutBinding(index: 3, type: .textureComputeBloomOutput, accessType: .sample),
+                ]
+            ),
+            TextureLayout(
+                name: "DepthTexture",
+                textureLayoutBindings: [
+                    TextureLayoutBinding(index: 4, type: .textureGBufferDepth, accessType: .sample),
+                ]
+            ),
+            TextureLayout(
+                name: "GBufferNormals",
+                textureLayoutBindings: [
+                    TextureLayoutBinding(index: 6, type: .textureGBufferNormals, accessType: .sample),
+                ]
+            ),
+            TextureLayout(
+                name: "GBufferAlbedos",
+                textureLayoutBindings: [
+                    TextureLayoutBinding(index: 7, type: .textureGBufferAlbedos, accessType: .sample),
+                ]
+            ),
+            TextureLayout(
+                name: "GBufferCombine",
+                textureLayoutBindings: [
+                    TextureLayoutBinding(index: 1, type: .textureArrayCascadedShadowMap, accessType: .sample),
+                    TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
+                    TextureLayoutBinding(index: 4, type: .textureGBufferDepth, accessType: .read),
+                    TextureLayoutBinding(index: 5, type: .textureGBufferNormals, accessType: .read),
+                    TextureLayoutBinding(index: 6, type: .textureGBufferAlbedos, accessType: .read),
+                ]
+            ),
+            TextureLayout(
+                name: "GBufferCombineBloom",
+                textureLayoutBindings: [
+                    TextureLayoutBinding(index: 1, type: .textureArrayCascadedShadowMap, accessType: .sample),
+                    TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
+                    TextureLayoutBinding(index: 3, type: .textureComputeBloomOutput, accessType: .write),
+                    TextureLayoutBinding(index: 4, type: .textureGBufferDepth, accessType: .read),
+                    TextureLayoutBinding(index: 5, type: .textureGBufferNormals, accessType: .read),
+                    TextureLayoutBinding(index: 6, type: .textureGBufferAlbedos, accessType: .read),
+                ]
+            ),
+            TextureLayout(
+                name: "Combine",
+                textureLayoutBindings: [
+                    TextureLayoutBinding(index: 1, type: .textureCombineRevealage, accessType: .read),
+                    TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
+                    TextureLayoutBinding(index: 3, type: .textureCombineColor, accessType: .read),
+                    TextureLayoutBinding(index: 4, type: .textureCombineColorAlpha, accessType: .read),
+                ]
+            ),
+            TextureLayout(
+                name: "CombineBloom",
+                textureLayoutBindings: [
+                    TextureLayoutBinding(index: 1, type: .textureCombineRevealage, accessType: .read),
+                    TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
+                    TextureLayoutBinding(index: 3, type: .textureCombineColor, accessType: .read),
+                    TextureLayoutBinding(index: 4, type: .textureCombineColorAlpha, accessType: .read),
+                    TextureLayoutBinding(index: 5, type: .textureCombineBrightness, accessType: .read),
+                    TextureLayoutBinding(index: 6, type: .textureCombineBrightnessAlpha, accessType: .read),
+                ]
+            ),
+            TextureLayout(
+                name: "ConvertRGBA32FloatToBGRA8Unorm",
+                textureLayoutBindings: [
+                    TextureLayoutBinding(index: 0, type: .textureComputeInput, accessType: .read),
+                    TextureLayoutBinding(index: 1, type: .textureComputeOutput, accessType: .write),
+                ]
+            ),
+            TextureLayout(
+                name: "None",
+                textureLayoutBindings: []
+            ),
+        ],
+        materialLayouts: [
+            MaterialLayout(
+                name: "Textured",
+                textureLayoutBindings: [
+                    TextureLayoutBinding(index: 0, type: .textureBaseColor, accessType: .sample),
+                ]
+            ),
+            MaterialLayout(
+                name: "CubeTextured",
+                textureLayoutBindings: [
+                    TextureLayoutBinding(index: 0, type: .textureCubeMap, accessType: .sample),
+                ]
+            ),
+            MaterialLayout(name: "None", textureLayoutBindings: []),
+        ],
+        inOutLayouts: [
+            .primitive(.float4),
+            .compound(
+                StructLayout(
+                    name: "BloomFragmentOutput",
+                    items: [
+                        StructItem(name: "color", type: .primitive(.float4), attributes: [.color(0)]),
+                        StructItem(name: "brightness", type: .primitive(.float4), attributes: [.color(1)]),
+                    ]
+                )
+            ),
+            .compound(
+                StructLayout(
+                    name: "AlphaFragmentOutput",
+                    items: [
+                        StructItem(name: "revealage", type: .primitive(.float), attributes: [.color(0)]),
+                        StructItem(name: "color", type: .primitive(.float4), attributes: [.color(1)]),
+                    ]
+                )
+            ),
+            .compound(
+                StructLayout(
+                    name: "AlphaBloomFragmentOutput",
+                    items: [
+                        StructItem(name: "revealage", type: .primitive(.float), attributes: [.color(0)]),
+                        StructItem(name: "color", type: .primitive(.float4), attributes: [.color(1)]),
+                        StructItem(name: "brightness", type: .primitive(.float4), attributes: [.color(2)]),
+                    ]
+                )
+            ),
+            .compound(
+                StructLayout(
+                    name: "GBufferFragmentOutput",
+                    items: [
+                        StructItem(name: "normal", type: .primitive(.float4), attributes: [.color(0)]),
+                        StructItem(name: "albedo", type: .primitive(.float4), attributes: [.color(1)]),
+                    ]
+                )
+            ),
+            .compound(
+                StructLayout(
+                    name: "FullFragmentInput",
+                    items: [
+                        StructItem(name: "position", type: .primitive(.float4), attributes: [.position]),
+                        StructItem(name: "worldPosition", type: .primitive(.float3)),
+                        StructItem(name: "worldNormal", type: .primitive(.float3)),
+                        StructItem(name: "localPosition", type: .primitive(.float3)),
+                        StructItem(name: "normal", type: .primitive(.float3)),
+                        StructItem(
+                            name: "lightSpacePos_",
+                            type: .repeated(
+                                RepeatedItemType(
+                                    count: "${CASCADED_SHADOW_NUM_CASCADES}",
+                                    type: .float4))),
+                        StructItem(name: "texCoords", type: .primitive(.float2)),
+                        StructItem(name: "clipSpacePosZ", type: .primitive(.float)),
+                        StructItem(name: "instanceId", type: .primitive(.int))
+                    ]
+                )
+            ),
+            .compound(
+                StructLayout(
+                    name: "ShadowCalculationData",
+                    items: [
+                        StructItem(
+                            name: "lightSpacePos_",
+                            type: .repeated(
+                                RepeatedItemType(
+                                    count: "${CASCADED_SHADOW_NUM_CASCADES}",
+                                    type: .float4))),
+                        StructItem(name: "clipSpacePosZ", type: .primitive(.float)),
+                    ]
+                )
+            ),
+        ],
+        uniformLayouts: [
             StructLayout(
                 name: "SharedUniforms",
                 items: [
@@ -419,92 +454,89 @@ class LayoutLibrary {
                     StructItem(name: "materialId", type: .primitive(.int)),
                 ]
             ),
-        ] + additionalUniformLayouts).reduce(into: [:]) { acc, next in
-            acc[next.name] = next
-        }
-
-        // todo: separate fragment out layouts from vertex out/fragment in
-        // also there's overlap between these and the attachments which were developed simultaneously
-        self.inOutLayouts = (
-            [
-                .primitive(.float4),
-                .compound(
-                    StructLayout(
-                        name: "BloomFragmentOutput",
-                        items: [
-                            StructItem(name: "color", type: .primitive(.float4), attributes: [.color(0)]),
-                            StructItem(name: "brightness", type: .primitive(.float4), attributes: [.color(1)]),
-                        ]
-                    )
-                ),
-                .compound(
-                    StructLayout(
-                        name: "AlphaFragmentOutput",
-                        items: [
-                            StructItem(name: "revealage", type: .primitive(.float), attributes: [.color(0)]),
-                            StructItem(name: "color", type: .primitive(.float4), attributes: [.color(1)]),
-                        ]
-                    )
-                ),
-                .compound(
-                    StructLayout(
-                        name: "AlphaBloomFragmentOutput",
-                        items: [
-                            StructItem(name: "revealage", type: .primitive(.float), attributes: [.color(0)]),
-                            StructItem(name: "color", type: .primitive(.float4), attributes: [.color(1)]),
-                            StructItem(name: "brightness", type: .primitive(.float4), attributes: [.color(2)]),
-                        ]
-                    )
-                ),
-                .compound(
-                    StructLayout(
-                        name: "GBufferFragmentOutput",
-                        items: [
-                            StructItem(name: "normal", type: .primitive(.float4), attributes: [.color(0)]),
-                            StructItem(name: "albedo", type: .primitive(.float4), attributes: [.color(1)]),
-                        ]
-                    )
-                ),
-                .compound(
-                    StructLayout(
-                        name: "FullFragmentInput",
-                        items: [
-                            StructItem(name: "position", type: .primitive(.float4), attributes: [.position]),
-                            StructItem(name: "worldPosition", type: .primitive(.float3)),
-                            StructItem(name: "worldNormal", type: .primitive(.float3)),
-                            StructItem(name: "localPosition", type: .primitive(.float3)),
-                            StructItem(name: "normal", type: .primitive(.float3)),
-                            StructItem(
-                                name: "lightSpacePos_",
-                                type: .repeated(
-                                    RepeatedItemType(
-                                        count: "${CASCADED_SHADOW_NUM_CASCADES}",
-                                        type: .float4))),
-                            StructItem(name: "texCoords", type: .primitive(.float2)),
-                            StructItem(name: "clipSpacePosZ", type: .primitive(.float)),
-                            StructItem(name: "instanceId", type: .primitive(.int))
-                        ]
-                    )
-                ),
-                .compound(
-                    StructLayout(
-                        name: "ShadowCalculationData",
-                        items: [
-                            StructItem(
-                                name: "lightSpacePos_",
-                                type: .repeated(
-                                    RepeatedItemType(
-                                        count: "${CASCADED_SHADOW_NUM_CASCADES}",
-                                        type: .float4))),
-                            StructItem(name: "clipSpacePosZ", type: .primitive(.float)),
-                        ]
-                    )
-                ),
-            ] + additionalInOutLayouts
-        ).reduce(into: [:]) { acc, next in
-            acc[next.name] = next
-        }
-    }
+        ],
+        attachmentLayouts: [
+            AttachmentLayout(
+                name: "ColorPlusDepth",
+                colorAttachments: [
+                    ColorAttachment(
+                        description: "Color",
+                        pixelFormat: .bgra8Unorm),
+                ],
+                depthAttachment: DepthAttachment(pixelFormat: .depth32)
+            ),
+            AttachmentLayout(
+                name: "ColorPlusRevealagePlusDepth",
+                colorAttachments: [
+                    ColorAttachment(
+                        description: "Revealage",
+                        pixelFormat: .r16Float,
+                        enableTransparency: true),
+                    ColorAttachment(
+                        description: "Color Accumulation",
+                        pixelFormat: .rgba16Float,
+                        enableTransparency: true),
+                ],
+                depthAttachment: DepthAttachment(pixelFormat: .depth32)
+            ),
+            AttachmentLayout(
+                name: "ColorPlusBrightnessPlusDepth",
+                colorAttachments: [
+                    ColorAttachment(
+                        description: "Color",
+                        pixelFormat: .bgra8Unorm),
+                    ColorAttachment(
+                        description: "Brightness",
+                        pixelFormat: .bgra8Unorm),
+                ],
+                depthAttachment: DepthAttachment(pixelFormat: .depth32)
+            ),
+            AttachmentLayout(
+                name: "ColorPlusBrightnessPlusRevealagePlusDepth",
+                colorAttachments: [
+                    ColorAttachment(
+                        description: "Revealage",
+                        pixelFormat: .r16Float,
+                        enableTransparency: true),
+                    ColorAttachment(
+                        description: "Color Accumulation",
+                        pixelFormat: .rgba16Float,
+                        enableTransparency: true),
+                    ColorAttachment(
+                        description: "Brightness Accumulation",
+                        pixelFormat: .rgba16Float,
+                        enableTransparency: true),
+                ],
+                depthAttachment: DepthAttachment(pixelFormat: .depth32)
+            ),
+            AttachmentLayout(
+                name: "GBuffer",
+                colorAttachments: [
+                    ColorAttachment(
+                        description: "Albedo (xyz), MaterialId (w)",
+                        pixelFormat: .rgba32Float),
+                    ColorAttachment(
+                        description: "Normal",
+                        pixelFormat: .rgba32Float),
+                ],
+                depthAttachment: DepthAttachment(pixelFormat: .depth32)
+            ),
+            AttachmentLayout(
+                name: "Color",
+                colorAttachments: [
+                    ColorAttachment(
+                        description: "Color",
+                        pixelFormat: .bgra8Unorm),
+                ],
+                depthAttachment: nil
+            ),
+            AttachmentLayout(
+                name: "Depth",
+                colorAttachments: [],
+                depthAttachment: DepthAttachment(pixelFormat: .depth32)
+            ),
+        ]
+    )
 
     // todo: can/should this be incremented rather than hard coded? downside to hard coding is that
     // it's inflexible and error prone, but incrementing means that some optimisation opportunities

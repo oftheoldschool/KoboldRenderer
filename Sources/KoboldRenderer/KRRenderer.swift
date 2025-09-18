@@ -51,13 +51,7 @@ public class KRRenderer {
         rendererSettings: KRRendererSettings,
         gpuDataManager: GPUDataManager,
         additionalPipelineDefinitions: [RenderPipelineDefinition] = [],
-        additionalVertexLayouts: [VertexLayout] = [],
-        additionalBufferLayouts: [BufferLayout] = [],
-        additionalTextureLayouts: [TextureLayout] = [],
-        additionalMaterialLayouts: [MaterialLayout] = [],
-        additionalInOutLayouts: [InOutLayout] = [],
-        additionalUniformLayouts: [StructLayout] = [],
-        additionalAttachmentLayouts: [AttachmentLayout] = [],
+        additionalLayouts: RendererLayouts? = nil,
         additionalShaderCode: [String] = [],
         additionalVertexFunctionTemplates: [VertexShaderFunctionTemplate.Type] = [],
         additionalFragmentFunctionTemplates: [FragmentShaderFunctionTemplate.Type] = [],
@@ -96,9 +90,7 @@ public class KRRenderer {
             device: device,
             cascadeFrustumDistances: rendererSettings.cascadeFrustumDistances)
 
-        self.layoutLibrary = LayoutLibrary(
-            additionalBufferLayouts: [],
-            additionalUniformLayouts: [])
+        self.layoutLibrary = LayoutLibrary(additionalLayouts: additionalLayouts)
         self.shaderLibrary = try ShaderLibrary(
             device: device,
             layoutLibrary: self.layoutLibrary,
