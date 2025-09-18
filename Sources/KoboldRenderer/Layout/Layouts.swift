@@ -1,4 +1,4 @@
-public final class RendererLayouts {
+public struct RendererLayouts {
     public let vertexLayouts: [VertexLayout]
     public let bufferLayouts: [BufferLayout]
     public let textureLayouts: [TextureLayout]
