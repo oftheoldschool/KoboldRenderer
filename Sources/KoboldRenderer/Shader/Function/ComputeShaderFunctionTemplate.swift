@@ -39,8 +39,8 @@ open class ComputeShaderFunctionTemplate {
         functionName: String,
         shaderVariant: ComputeFunctionVariant,
         computeCode: String,
-        bufferLayout: BufferLayout,
-        textureLayout: TextureLayout,
+        bufferLayout: KBufferLayout,
+        textureLayout: KTextureLayout,
         variableMap: [String: String]
     ) -> String {
         let functionParameters = bufferLayout.bufferLayoutBindings.map { bufferLayoutBinding in

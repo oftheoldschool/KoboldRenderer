@@ -56,9 +56,9 @@ open class VertexShaderFunctionTemplate {
         vertexAnimationCode: String?,
         vertexAdditionalCode: String?,
         vertexConstantCode: String?,
-        vertexLayout: VertexLayout?,
-        outputLayout: InOutLayout,
-        bufferLayout: BufferLayout,
+        vertexLayout: KVertexLayout?,
+        outputLayout: KInOutLayout,
+        bufferLayout: KBufferLayout,
         isInstanced: Bool,
         isShadow: Bool,
         isAnimated: Bool

@@ -26,23 +26,23 @@ struct FragmentShaderFunctionGroup {
 class FragmentShaderFunction {
     let functionName: String
     let shaderCode: String
-    let inputLayout: InOutLayout
-    let outputLayout: InOutLayout
-    let bufferLayout: BufferLayout
-    let textureLayout: TextureLayout
-    let materialLayout: MaterialLayout
-    let attachmentLayout: AttachmentLayout?
+    let inputLayout: KInOutLayout
+    let outputLayout: KInOutLayout
+    let bufferLayout: KBufferLayout
+    let textureLayout: KTextureLayout
+    let materialLayout: KMaterialLayout
+    let attachmentLayout: KAttachmentLayout?
 
     init(
         functionName: String,
         shaderVariant: FragmentFunctionVariant,
         shaderCode: String,
-        inputLayout: InOutLayout,
-        outputLayout: InOutLayout,
-        bufferLayout: BufferLayout,
-        textureLayout: TextureLayout,
-        materialLayout: MaterialLayout,
-        attachmentLayout: AttachmentLayout,
+        inputLayout: KInOutLayout,
+        outputLayout: KInOutLayout,
+        bufferLayout: KBufferLayout,
+        textureLayout: KTextureLayout,
+        materialLayout: KMaterialLayout,
+        attachmentLayout: KAttachmentLayout,
         variableMap: [String: String]
     ) {
         self.functionName = functionName

@@ -93,8 +93,8 @@ inline float3x3 upperLeft(float4x4 in) {
     static func getShaderCode(
         includeHeader: Bool = false,
         variableMap: [String: String] = [:],
-        vertexLayouts: [VertexLayout],
-        structLayouts: [StructLayout]
+        vertexLayouts: [KVertexLayout],
+        structLayouts: [KStructLayout]
     ) -> String {
         let header =
 """

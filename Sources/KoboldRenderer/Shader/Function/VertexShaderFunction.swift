@@ -30,18 +30,18 @@ struct VertexShaderFunctionGroup {
 class VertexShaderFunction {
     let functionName: String
     let shaderCode: String
-    let vertexLayout: VertexLayout?
-    let outputLayout: InOutLayout
-    let bufferLayout: BufferLayout
-    let attachmentLayout: AttachmentLayout?
+    let vertexLayout: KVertexLayout?
+    let outputLayout: KInOutLayout
+    let bufferLayout: KBufferLayout
+    let attachmentLayout: KAttachmentLayout?
 
     init(
         functionName: String,
         shaderCode: String,
-        vertexLayout: VertexLayout?,
-        outputLayout: InOutLayout,
-        bufferLayout: BufferLayout,
-        attachmentLayout: AttachmentLayout? = nil
+        vertexLayout: KVertexLayout?,
+        outputLayout: KInOutLayout,
+        bufferLayout: KBufferLayout,
+        attachmentLayout: KAttachmentLayout? = nil
     ) {
         self.functionName = functionName
         self.shaderCode = shaderCode

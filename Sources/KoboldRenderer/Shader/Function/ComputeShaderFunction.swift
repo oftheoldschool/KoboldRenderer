@@ -27,14 +27,14 @@ struct ComputeShaderFunctionGroup {
 class ComputeShaderFunction {
     let functionName: String
     let shaderCode: String
-    let bufferLayout: BufferLayout
-    let textureLayout: TextureLayout
+    let bufferLayout: KBufferLayout
+    let textureLayout: KTextureLayout
 
     init(
         functionName: String,
         shaderCode: String,
-        bufferLayout: BufferLayout,
-        textureLayout: TextureLayout
+        bufferLayout: KBufferLayout,
+        textureLayout: KTextureLayout
     ) {
         self.functionName = functionName
         self.shaderCode = shaderCode

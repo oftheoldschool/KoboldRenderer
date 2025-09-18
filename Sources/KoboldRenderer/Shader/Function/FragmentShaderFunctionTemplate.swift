@@ -64,12 +64,12 @@ open class FragmentShaderFunctionTemplate {
         fragmentLightingCode: String?,
         fragmentTransparencyCode: String?,
         fragmentOutputCode: String,
-        inputLayout: InOutLayout,
-        outputLayout: InOutLayout,
-        bufferLayout: BufferLayout,
-        textureLayout: TextureLayout,
-        materialLayout: MaterialLayout,
-        attachmentLayout: AttachmentLayout,
+        inputLayout: KInOutLayout,
+        outputLayout: KInOutLayout,
+        bufferLayout: KBufferLayout,
+        textureLayout: KTextureLayout,
+        materialLayout: KMaterialLayout,
+        attachmentLayout: KAttachmentLayout,
         isInstanced: Bool
     ) -> String {
         let functionParameters = bufferLayout.bufferLayoutBindings.map { bufferLayoutBinding in

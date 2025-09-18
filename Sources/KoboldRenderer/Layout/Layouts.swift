@@ -1,20 +1,20 @@
-public struct RendererLayouts {
-    public let vertexLayouts: [VertexLayout]
-    public let bufferLayouts: [BufferLayout]
-    public let textureLayouts: [TextureLayout]
-    public let materialLayouts: [MaterialLayout]
-    public let inOutLayouts: [InOutLayout]
-    public let uniformLayouts: [StructLayout]
-    public let attachmentLayouts: [AttachmentLayout]
+public struct KRendererLayouts: Sendable {
+    public let vertexLayouts: [KVertexLayout]
+    public let bufferLayouts: [KBufferLayout]
+    public let textureLayouts: [KTextureLayout]
+    public let materialLayouts: [KMaterialLayout]
+    public let inOutLayouts: [KInOutLayout]
+    public let uniformLayouts: [KStructLayout]
+    public let attachmentLayouts: [KAttachmentLayout]
 
     public init(
-        vertexLayouts: [VertexLayout] = [],
-        bufferLayouts: [BufferLayout] = [],
-        textureLayouts: [TextureLayout] = [],
-        materialLayouts: [MaterialLayout] = [],
-        inOutLayouts: [InOutLayout] = [],
-        uniformLayouts: [StructLayout] = [],
-        attachmentLayouts: [AttachmentLayout] = []
+        vertexLayouts: [KVertexLayout] = [],
+        bufferLayouts: [KBufferLayout] = [],
+        textureLayouts: [KTextureLayout] = [],
+        materialLayouts: [KMaterialLayout] = [],
+        inOutLayouts: [KInOutLayout] = [],
+        uniformLayouts: [KStructLayout] = [],
+        attachmentLayouts: [KAttachmentLayout] = []
     ) {
         self.vertexLayouts = vertexLayouts
         self.bufferLayouts = bufferLayouts
@@ -27,16 +27,16 @@ public struct RendererLayouts {
 }
 
 public class LayoutLibrary {
-    public let vertexLayouts: [String: VertexLayout]
-    public let bufferLayouts: [String: BufferLayout]
-    public let textureLayouts: [String: TextureLayout]
-    public let materialLayouts: [String: MaterialLayout]
-    public let inOutLayouts: [String: InOutLayout]
-    public let uniformLayouts: [String: StructLayout]
-    public let attachmentLayouts: [String: AttachmentLayout]
+    public let vertexLayouts: [String: KVertexLayout]
+    public let bufferLayouts: [String: KBufferLayout]
+    public let textureLayouts: [String: KTextureLayout]
+    public let materialLayouts: [String: KMaterialLayout]
+    public let inOutLayouts: [String: KInOutLayout]
+    public let uniformLayouts: [String: KStructLayout]
+    public let attachmentLayouts: [String: KAttachmentLayout]
 
     public init(
-        additionalLayouts: RendererLayouts? = nil
+        additionalLayouts: KRendererLayouts? = nil
     ) {
         self.vertexLayouts = (
             Self.coreLayouts.vertexLayouts + (additionalLayouts?.vertexLayouts ?? [])
@@ -81,59 +81,59 @@ public class LayoutLibrary {
         }
     }
 
-    public static var coreLayouts: RendererLayouts {
-        RendererLayouts(
+    public static var coreLayouts: KRendererLayouts {
+        KRendererLayouts(
             vertexLayouts: [
-                VertexLayout(
+                KVertexLayout(
                     name: "FullVertex",
                     attributes: [
-                        VertexAttributeLayout(
+                        KVertexAttributeLayout(
                             binding: LayoutLibrary.getBufferLayoutBinding(.attributePosition),
                             type: .float3,
                             offset: 0),
-                        VertexAttributeLayout(
+                        KVertexAttributeLayout(
                             binding: LayoutLibrary.getBufferLayoutBinding(.attributeNormal),
                             type: .float3,
                             offset: 0),
-                        VertexAttributeLayout(
+                        KVertexAttributeLayout(
                             binding: LayoutLibrary.getBufferLayoutBinding(.attributeTexCoords),
                             type: .float2,
                             offset: 0),
-                        VertexAttributeLayout(
+                        KVertexAttributeLayout(
                             binding: LayoutLibrary.getBufferLayoutBinding(.attributeWeights),
                             type: .float4,
                             offset: 0),
-                        VertexAttributeLayout(
+                        KVertexAttributeLayout(
                             binding: LayoutLibrary.getBufferLayoutBinding(.attributeJoints),
                             type: .int4,
                             offset: 0),
                     ]
                 ),
-                VertexLayout(
+                KVertexLayout(
                     name: "BasicVertex",
                     attributes: [
-                        VertexAttributeLayout(
+                        KVertexAttributeLayout(
                             binding: LayoutLibrary.getBufferLayoutBinding(.attributePosition),
                             type: .float3,
                             offset: 0),
-                        VertexAttributeLayout(
+                        KVertexAttributeLayout(
                             binding: LayoutLibrary.getBufferLayoutBinding(.attributeNormal),
                             type: .float3,
                             offset: 0),
-                        VertexAttributeLayout(
+                        KVertexAttributeLayout(
                             binding: LayoutLibrary.getBufferLayoutBinding(.attributeTexCoords),
                             type: .float2,
                             offset: 0),
                     ]
                 ),
-                VertexLayout(
+                KVertexLayout(
                     name: "SkyboxVertex",
                     attributes: [
-                        VertexAttributeLayout(
+                        KVertexAttributeLayout(
                             binding: LayoutLibrary.getBufferLayoutBinding(.attributePosition),
                             type: .float3,
                             offset: 0),
-                        VertexAttributeLayout(
+                        KVertexAttributeLayout(
                             binding: LayoutLibrary.getBufferLayoutBinding(.attributeNormal),
                             type: .float3,
                             offset: 0),
@@ -144,7 +144,7 @@ public class LayoutLibrary {
                 // vertex layouts
 
                 // used for cascading shadow pass for static objects
-                BufferLayout(
+                KBufferLayout(
                     name: "BaseUniforms",
                     bufferLayoutBindings: [
                         LayoutLibrary.getBufferLayoutBinding(.uniformsShared),
@@ -153,7 +153,7 @@ public class LayoutLibrary {
                 ),
 
                 // used for cascading shadow pass for animated objects
-                BufferLayout(
+                KBufferLayout(
                     name: "BaseUniformsPlusAnimation",
                     bufferLayoutBindings: [
                         LayoutLibrary.getBufferLayoutBinding(.uniformsShared),
@@ -164,7 +164,7 @@ public class LayoutLibrary {
                 ),
 
                 // used for regular color pass for static objects with light space volumes used to calculate which volume the vertex is in
-                BufferLayout(
+                KBufferLayout(
                     name: "BaseUniformsPlusLightSpaceVolumes",
                     bufferLayoutBindings: [
                         LayoutLibrary.getBufferLayoutBinding(.uniformsShared),
@@ -174,7 +174,7 @@ public class LayoutLibrary {
                 ),
 
                 // used for regular color pass for animated objects with light space volumes used to calculate which volume the vertex is in
-                BufferLayout(
+                KBufferLayout(
                     name: "BaseUniformsPlusAnimationPlusLightSpaceVolumes",
                     bufferLayoutBindings: [
                         LayoutLibrary.getBufferLayoutBinding(.uniformsShared),
@@ -188,7 +188,7 @@ public class LayoutLibrary {
                 // fragment layouts
 
                 // used for shading fragments without lighting, for example in skybox or writing to gbuffer
-                BufferLayout(
+                KBufferLayout(
                     name: "BaseUniformsPlusMaterials",
                     bufferLayoutBindings: [
                         LayoutLibrary.getBufferLayoutBinding(.uniformsShared),
@@ -199,7 +199,7 @@ public class LayoutLibrary {
 
                 // used for shading fragments with lighting
                 // object uniforms contain material id which is used to look up material
-                BufferLayout(
+                KBufferLayout(
                     name: "BaseUniformsPlusLightUniforms",
                     bufferLayoutBindings: [
                         LayoutLibrary.getBufferLayoutBinding(.uniformsShared),
@@ -213,7 +213,7 @@ public class LayoutLibrary {
                 // used for shading fragments with lighting in the deferred pass
                 // the albedo texture's alpha channel contains the material id which is used to look up material
                 // light space volumes are required to calculate the cascade the fragment is in
-                BufferLayout(
+                KBufferLayout(
                     name: "GBufferCombine",
                     bufferLayoutBindings: [
                         LayoutLibrary.getBufferLayoutBinding(.uniformsShared),
@@ -224,317 +224,317 @@ public class LayoutLibrary {
                     ]
                 ),
 
-                BufferLayout(
+                KBufferLayout(
                     name: "None",
                     bufferLayoutBindings: []
                 ),
             ],
             textureLayouts: [
-                TextureLayout(
+                KTextureLayout(
                     name: "CascadedShadowMap",
                     textureLayoutBindings: [
-                        TextureLayoutBinding(index: 1, type: .textureArrayCascadedShadowMap, accessType: .sample),
+                        KTextureLayoutBinding(index: 1, type: .textureArrayCascadedShadowMap, accessType: .sample),
                     ]
                 ),
-                TextureLayout(
+                KTextureLayout(
                     name: "PassThrough",
                     textureLayoutBindings: [
-                        TextureLayoutBinding(index: 1, type: .texturePassThrough, accessType: .sample),
+                        KTextureLayoutBinding(index: 1, type: .texturePassThrough, accessType: .sample),
                     ]
                 ),
-                TextureLayout(
+                KTextureLayout(
                     name: "ComputeOutputTexture",
                     textureLayoutBindings: [
-                        TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .sample),
+                        KTextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .sample),
                     ]
                 ),
-                TextureLayout(
+                KTextureLayout(
                     name: "ComputeOutputBloomTexture",
                     textureLayoutBindings: [
-                        TextureLayoutBinding(index: 3, type: .textureComputeBloomOutput, accessType: .sample),
+                        KTextureLayoutBinding(index: 3, type: .textureComputeBloomOutput, accessType: .sample),
                     ]
                 ),
-                TextureLayout(
+                KTextureLayout(
                     name: "DepthTexture",
                     textureLayoutBindings: [
-                        TextureLayoutBinding(index: 4, type: .textureGBufferDepth, accessType: .sample),
+                        KTextureLayoutBinding(index: 4, type: .textureGBufferDepth, accessType: .sample),
                     ]
                 ),
-                TextureLayout(
+                KTextureLayout(
                     name: "GBufferNormals",
                     textureLayoutBindings: [
-                        TextureLayoutBinding(index: 6, type: .textureGBufferNormals, accessType: .sample),
+                        KTextureLayoutBinding(index: 6, type: .textureGBufferNormals, accessType: .sample),
                     ]
                 ),
-                TextureLayout(
+                KTextureLayout(
                     name: "GBufferAlbedos",
                     textureLayoutBindings: [
-                        TextureLayoutBinding(index: 7, type: .textureGBufferAlbedos, accessType: .sample),
+                        KTextureLayoutBinding(index: 7, type: .textureGBufferAlbedos, accessType: .sample),
                     ]
                 ),
-                TextureLayout(
+                KTextureLayout(
                     name: "GBufferCombine",
                     textureLayoutBindings: [
-                        TextureLayoutBinding(index: 1, type: .textureArrayCascadedShadowMap, accessType: .sample),
-                        TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
-                        TextureLayoutBinding(index: 4, type: .textureGBufferDepth, accessType: .read),
-                        TextureLayoutBinding(index: 5, type: .textureGBufferNormals, accessType: .read),
-                        TextureLayoutBinding(index: 6, type: .textureGBufferAlbedos, accessType: .read),
+                        KTextureLayoutBinding(index: 1, type: .textureArrayCascadedShadowMap, accessType: .sample),
+                        KTextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
+                        KTextureLayoutBinding(index: 4, type: .textureGBufferDepth, accessType: .read),
+                        KTextureLayoutBinding(index: 5, type: .textureGBufferNormals, accessType: .read),
+                        KTextureLayoutBinding(index: 6, type: .textureGBufferAlbedos, accessType: .read),
                     ]
                 ),
-                TextureLayout(
+                KTextureLayout(
                     name: "GBufferCombineBloom",
                     textureLayoutBindings: [
-                        TextureLayoutBinding(index: 1, type: .textureArrayCascadedShadowMap, accessType: .sample),
-                        TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
-                        TextureLayoutBinding(index: 3, type: .textureComputeBloomOutput, accessType: .write),
-                        TextureLayoutBinding(index: 4, type: .textureGBufferDepth, accessType: .read),
-                        TextureLayoutBinding(index: 5, type: .textureGBufferNormals, accessType: .read),
-                        TextureLayoutBinding(index: 6, type: .textureGBufferAlbedos, accessType: .read),
+                        KTextureLayoutBinding(index: 1, type: .textureArrayCascadedShadowMap, accessType: .sample),
+                        KTextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
+                        KTextureLayoutBinding(index: 3, type: .textureComputeBloomOutput, accessType: .write),
+                        KTextureLayoutBinding(index: 4, type: .textureGBufferDepth, accessType: .read),
+                        KTextureLayoutBinding(index: 5, type: .textureGBufferNormals, accessType: .read),
+                        KTextureLayoutBinding(index: 6, type: .textureGBufferAlbedos, accessType: .read),
                     ]
                 ),
-                TextureLayout(
+                KTextureLayout(
                     name: "Combine",
                     textureLayoutBindings: [
-                        TextureLayoutBinding(index: 1, type: .textureCombineRevealage, accessType: .read),
-                        TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
-                        TextureLayoutBinding(index: 3, type: .textureCombineColor, accessType: .read),
-                        TextureLayoutBinding(index: 4, type: .textureCombineColorAlpha, accessType: .read),
+                        KTextureLayoutBinding(index: 1, type: .textureCombineRevealage, accessType: .read),
+                        KTextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
+                        KTextureLayoutBinding(index: 3, type: .textureCombineColor, accessType: .read),
+                        KTextureLayoutBinding(index: 4, type: .textureCombineColorAlpha, accessType: .read),
                     ]
                 ),
-                TextureLayout(
+                KTextureLayout(
                     name: "CombineBloom",
                     textureLayoutBindings: [
-                        TextureLayoutBinding(index: 1, type: .textureCombineRevealage, accessType: .read),
-                        TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
-                        TextureLayoutBinding(index: 3, type: .textureCombineColor, accessType: .read),
-                        TextureLayoutBinding(index: 4, type: .textureCombineColorAlpha, accessType: .read),
-                        TextureLayoutBinding(index: 5, type: .textureCombineBrightness, accessType: .read),
-                        TextureLayoutBinding(index: 6, type: .textureCombineBrightnessAlpha, accessType: .read),
+                        KTextureLayoutBinding(index: 1, type: .textureCombineRevealage, accessType: .read),
+                        KTextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
+                        KTextureLayoutBinding(index: 3, type: .textureCombineColor, accessType: .read),
+                        KTextureLayoutBinding(index: 4, type: .textureCombineColorAlpha, accessType: .read),
+                        KTextureLayoutBinding(index: 5, type: .textureCombineBrightness, accessType: .read),
+                        KTextureLayoutBinding(index: 6, type: .textureCombineBrightnessAlpha, accessType: .read),
                     ]
                 ),
-                TextureLayout(
+                KTextureLayout(
                     name: "ConvertRGBA32FloatToBGRA8Unorm",
                     textureLayoutBindings: [
-                        TextureLayoutBinding(index: 0, type: .textureComputeInput, accessType: .read),
-                        TextureLayoutBinding(index: 1, type: .textureComputeOutput, accessType: .write),
+                        KTextureLayoutBinding(index: 0, type: .textureComputeInput, accessType: .read),
+                        KTextureLayoutBinding(index: 1, type: .textureComputeOutput, accessType: .write),
                     ]
                 ),
-                TextureLayout(
+                KTextureLayout(
                     name: "None",
                     textureLayoutBindings: []
                 ),
             ],
             materialLayouts: [
-                MaterialLayout(
+                KMaterialLayout(
                     name: "Textured",
                     textureLayoutBindings: [
-                        TextureLayoutBinding(index: 0, type: .textureBaseColor, accessType: .sample),
+                        KTextureLayoutBinding(index: 0, type: .textureBaseColor, accessType: .sample),
                     ]
                 ),
-                MaterialLayout(
+                KMaterialLayout(
                     name: "CubeTextured",
                     textureLayoutBindings: [
-                        TextureLayoutBinding(index: 0, type: .textureCubeMap, accessType: .sample),
+                        KTextureLayoutBinding(index: 0, type: .textureCubeMap, accessType: .sample),
                     ]
                 ),
-                MaterialLayout(name: "None", textureLayoutBindings: []),
+                KMaterialLayout(name: "None", textureLayoutBindings: []),
             ],
             inOutLayouts: [
                 .primitive(.float4),
                 .compound(
-                    StructLayout(
+                    KStructLayout(
                         name: "BloomFragmentOutput",
                         items: [
-                            StructItem(name: "color", type: .primitive(.float4), attributes: [.color(0)]),
-                            StructItem(name: "brightness", type: .primitive(.float4), attributes: [.color(1)]),
+                            KStructItem(name: "color", type: .primitive(.float4), attributes: [.color(0)]),
+                            KStructItem(name: "brightness", type: .primitive(.float4), attributes: [.color(1)]),
                         ]
                     )
                 ),
                 .compound(
-                    StructLayout(
+                    KStructLayout(
                         name: "AlphaFragmentOutput",
                         items: [
-                            StructItem(name: "revealage", type: .primitive(.float), attributes: [.color(0)]),
-                            StructItem(name: "color", type: .primitive(.float4), attributes: [.color(1)]),
+                            KStructItem(name: "revealage", type: .primitive(.float), attributes: [.color(0)]),
+                            KStructItem(name: "color", type: .primitive(.float4), attributes: [.color(1)]),
                         ]
                     )
                 ),
                 .compound(
-                    StructLayout(
+                    KStructLayout(
                         name: "AlphaBloomFragmentOutput",
                         items: [
-                            StructItem(name: "revealage", type: .primitive(.float), attributes: [.color(0)]),
-                            StructItem(name: "color", type: .primitive(.float4), attributes: [.color(1)]),
-                            StructItem(name: "brightness", type: .primitive(.float4), attributes: [.color(2)]),
+                            KStructItem(name: "revealage", type: .primitive(.float), attributes: [.color(0)]),
+                            KStructItem(name: "color", type: .primitive(.float4), attributes: [.color(1)]),
+                            KStructItem(name: "brightness", type: .primitive(.float4), attributes: [.color(2)]),
                         ]
                     )
                 ),
                 .compound(
-                    StructLayout(
+                    KStructLayout(
                         name: "GBufferFragmentOutput",
                         items: [
-                            StructItem(name: "normal", type: .primitive(.float4), attributes: [.color(0)]),
-                            StructItem(name: "albedo", type: .primitive(.float4), attributes: [.color(1)]),
+                            KStructItem(name: "normal", type: .primitive(.float4), attributes: [.color(0)]),
+                            KStructItem(name: "albedo", type: .primitive(.float4), attributes: [.color(1)]),
                         ]
                     )
                 ),
                 .compound(
-                    StructLayout(
+                    KStructLayout(
                         name: "FullFragmentInput",
                         items: [
-                            StructItem(name: "position", type: .primitive(.float4), attributes: [.position]),
-                            StructItem(name: "worldPosition", type: .primitive(.float3)),
-                            StructItem(name: "worldNormal", type: .primitive(.float3)),
-                            StructItem(name: "localPosition", type: .primitive(.float3)),
-                            StructItem(name: "normal", type: .primitive(.float3)),
-                            StructItem(
+                            KStructItem(name: "position", type: .primitive(.float4), attributes: [.position]),
+                            KStructItem(name: "worldPosition", type: .primitive(.float3)),
+                            KStructItem(name: "worldNormal", type: .primitive(.float3)),
+                            KStructItem(name: "localPosition", type: .primitive(.float3)),
+                            KStructItem(name: "normal", type: .primitive(.float3)),
+                            KStructItem(
                                 name: "lightSpacePos_",
                                 type: .repeated(
-                                    RepeatedItemType(
+                                    KRepeatedItemType(
                                         count: "${CASCADED_SHADOW_NUM_CASCADES}",
                                         type: .float4))),
-                            StructItem(name: "texCoords", type: .primitive(.float2)),
-                            StructItem(name: "clipSpacePosZ", type: .primitive(.float)),
-                            StructItem(name: "instanceId", type: .primitive(.int))
+                            KStructItem(name: "texCoords", type: .primitive(.float2)),
+                            KStructItem(name: "clipSpacePosZ", type: .primitive(.float)),
+                            KStructItem(name: "instanceId", type: .primitive(.int))
                         ]
                     )
                 ),
                 .compound(
-                    StructLayout(
+                    KStructLayout(
                         name: "ShadowCalculationData",
                         items: [
-                            StructItem(
+                            KStructItem(
                                 name: "lightSpacePos_",
                                 type: .repeated(
-                                    RepeatedItemType(
+                                    KRepeatedItemType(
                                         count: "${CASCADED_SHADOW_NUM_CASCADES}",
                                         type: .float4))),
-                            StructItem(name: "clipSpacePosZ", type: .primitive(.float)),
+                            KStructItem(name: "clipSpacePosZ", type: .primitive(.float)),
                         ]
                     )
                 ),
             ],
             uniformLayouts: [
-                StructLayout(
+                KStructLayout(
                     name: "SharedUniforms",
                     items: [
-                        StructItem(name: "viewProjection", type: .primitive(.float4x4)),
-                        StructItem(name: "invViewProjection", type: .primitive(.float4x4)),
-                        StructItem(name: "invViewMatrix", type: .primitive(.float4x4)),
-                        StructItem(name: "invProjectionMatrix", type: .primitive(.float4x4)),
-                        StructItem(name: "noTranslationViewProjection", type: .primitive(.float4x4)),
-                        StructItem(name: "cameraPosition", type: .primitive(.float3)),
-                        StructItem(name: "bloomThreshold", type: .primitive(.float3)),
-                        StructItem(name: "bloomMultiplier", type: .primitive(.float3)),
-                        StructItem(name: "globalLightingColor", type: .primitive(.float3)),
-                        StructItem(name: "elapsedTime", type: .primitive(.float)),
-                        StructItem(name: "globalMaterialId", type: .primitive(.int32_t)),
-                        StructItem(name: "lightCount", type: .primitive(.uint8_t)),
-                        StructItem(name: "enableShadows", type: .primitive(.bool)),
-                        StructItem(name: "enableLighting", type: .primitive(.bool)),
-                        StructItem(name: "enableFlatShading", type: .primitive(.bool)),
+                        KStructItem(name: "viewProjection", type: .primitive(.float4x4)),
+                        KStructItem(name: "invViewProjection", type: .primitive(.float4x4)),
+                        KStructItem(name: "invViewMatrix", type: .primitive(.float4x4)),
+                        KStructItem(name: "invProjectionMatrix", type: .primitive(.float4x4)),
+                        KStructItem(name: "noTranslationViewProjection", type: .primitive(.float4x4)),
+                        KStructItem(name: "cameraPosition", type: .primitive(.float3)),
+                        KStructItem(name: "bloomThreshold", type: .primitive(.float3)),
+                        KStructItem(name: "bloomMultiplier", type: .primitive(.float3)),
+                        KStructItem(name: "globalLightingColor", type: .primitive(.float3)),
+                        KStructItem(name: "elapsedTime", type: .primitive(.float)),
+                        KStructItem(name: "globalMaterialId", type: .primitive(.int32_t)),
+                        KStructItem(name: "lightCount", type: .primitive(.uint8_t)),
+                        KStructItem(name: "enableShadows", type: .primitive(.bool)),
+                        KStructItem(name: "enableLighting", type: .primitive(.bool)),
+                        KStructItem(name: "enableFlatShading", type: .primitive(.bool)),
                     ]
                 ),
-                StructLayout(
+                KStructLayout(
                     name: "LightUniforms",
                     items: [
-                        StructItem(name: "float3Data", type: .primitive(.float3)),
-                        StructItem(name: "intensity", type: .primitive(.float)),
-                        StructItem(name: "color", type: .primitive(.float3)),
-                        StructItem(name: "range", type: .primitive(.float)),
-                        StructItem(name: "attenuation", type: .primitive(.float3)),
-                        StructItem(name: "type", type: .custom("LightUniformsType")),
+                        KStructItem(name: "float3Data", type: .primitive(.float3)),
+                        KStructItem(name: "intensity", type: .primitive(.float)),
+                        KStructItem(name: "color", type: .primitive(.float3)),
+                        KStructItem(name: "range", type: .primitive(.float)),
+                        KStructItem(name: "attenuation", type: .primitive(.float3)),
+                        KStructItem(name: "type", type: .custom("LightUniformsType")),
                     ]
                 ),
-                StructLayout(
+                KStructLayout(
                     name: "DrawObjectUniforms",
                     items: [
-                        StructItem(name: "model", type: .primitive(.float4x4)),
-                        StructItem(name: "normalMatrix", type: .primitive(.float3x3)),
-                        StructItem(name: "materialId", type: .primitive(.int)),
+                        KStructItem(name: "model", type: .primitive(.float4x4)),
+                        KStructItem(name: "normalMatrix", type: .primitive(.float3x3)),
+                        KStructItem(name: "materialId", type: .primitive(.int)),
                     ]
                 ),
             ],
             attachmentLayouts: [
-                AttachmentLayout(
+                KAttachmentLayout(
                     name: "ColorPlusDepth",
                     colorAttachments: [
-                        ColorAttachment(
+                        KColorAttachment(
                             description: "Color",
                             pixelFormat: .bgra8Unorm),
                     ],
-                    depthAttachment: DepthAttachment(pixelFormat: .depth32)
+                    depthAttachment: KDepthAttachment(pixelFormat: .depth32)
                 ),
-                AttachmentLayout(
+                KAttachmentLayout(
                     name: "ColorPlusRevealagePlusDepth",
                     colorAttachments: [
-                        ColorAttachment(
+                        KColorAttachment(
                             description: "Revealage",
                             pixelFormat: .r16Float,
                             enableTransparency: true),
-                        ColorAttachment(
+                        KColorAttachment(
                             description: "Color Accumulation",
                             pixelFormat: .rgba16Float,
                             enableTransparency: true),
                     ],
-                    depthAttachment: DepthAttachment(pixelFormat: .depth32)
+                    depthAttachment: KDepthAttachment(pixelFormat: .depth32)
                 ),
-                AttachmentLayout(
+                KAttachmentLayout(
                     name: "ColorPlusBrightnessPlusDepth",
                     colorAttachments: [
-                        ColorAttachment(
+                        KColorAttachment(
                             description: "Color",
                             pixelFormat: .bgra8Unorm),
-                        ColorAttachment(
+                        KColorAttachment(
                             description: "Brightness",
                             pixelFormat: .bgra8Unorm),
                     ],
-                    depthAttachment: DepthAttachment(pixelFormat: .depth32)
+                    depthAttachment: KDepthAttachment(pixelFormat: .depth32)
                 ),
-                AttachmentLayout(
+                KAttachmentLayout(
                     name: "ColorPlusBrightnessPlusRevealagePlusDepth",
                     colorAttachments: [
-                        ColorAttachment(
+                        KColorAttachment(
                             description: "Revealage",
                             pixelFormat: .r16Float,
                             enableTransparency: true),
-                        ColorAttachment(
+                        KColorAttachment(
                             description: "Color Accumulation",
                             pixelFormat: .rgba16Float,
                             enableTransparency: true),
-                        ColorAttachment(
+                        KColorAttachment(
                             description: "Brightness Accumulation",
                             pixelFormat: .rgba16Float,
                             enableTransparency: true),
                     ],
-                    depthAttachment: DepthAttachment(pixelFormat: .depth32)
+                    depthAttachment: KDepthAttachment(pixelFormat: .depth32)
                 ),
-                AttachmentLayout(
+                KAttachmentLayout(
                     name: "GBuffer",
                     colorAttachments: [
-                        ColorAttachment(
+                        KColorAttachment(
                             description: "Albedo (xyz), MaterialId (w)",
                             pixelFormat: .rgba32Float),
-                        ColorAttachment(
+                        KColorAttachment(
                             description: "Normal",
                             pixelFormat: .rgba32Float),
                     ],
-                    depthAttachment: DepthAttachment(pixelFormat: .depth32)
+                    depthAttachment: KDepthAttachment(pixelFormat: .depth32)
                 ),
-                AttachmentLayout(
+                KAttachmentLayout(
                     name: "Color",
                     colorAttachments: [
-                        ColorAttachment(
+                        KColorAttachment(
                             description: "Color",
                             pixelFormat: .bgra8Unorm),
                     ],
                     depthAttachment: nil
                 ),
-                AttachmentLayout(
+                KAttachmentLayout(
                     name: "Depth",
                     colorAttachments: [],
-                    depthAttachment: DepthAttachment(pixelFormat: .depth32)
+                    depthAttachment: KDepthAttachment(pixelFormat: .depth32)
                 ),
             ]
         )
@@ -543,7 +543,7 @@ public class LayoutLibrary {
     // todo: can/should this be incremented rather than hard coded? downside to hard coding is that
     // it's inflexible and error prone, but incrementing means that some optimisation opportunities
     // are a bit harder since you can't rely on the same buffer having the same binding across draw calls
-    private static func getBufferLayoutBinding(_ bufferBindingType: KBufferBindingType) -> BufferLayoutBinding {
-        return BufferLayoutBinding(index: bufferBindingType.bindingIndex, type: bufferBindingType)
+    private static func getBufferLayoutBinding(_ bufferBindingType: KBufferBindingType) -> KBufferLayoutBinding {
+        return KBufferLayoutBinding(index: bufferBindingType.bindingIndex, type: bufferBindingType)
     }
 }

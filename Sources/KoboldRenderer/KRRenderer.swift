@@ -51,7 +51,7 @@ public class KRRenderer {
         rendererSettings: KRRendererSettings,
         gpuDataManager: GPUDataManager,
         additionalPipelineDefinitions: [RenderPipelineDefinition] = [],
-        additionalLayouts: RendererLayouts? = nil,
+        additionalLayouts: KRendererLayouts? = nil,
         additionalShaderCode: [String] = [],
         additionalVertexFunctionTemplates: [VertexShaderFunctionTemplate.Type] = [],
         additionalFragmentFunctionTemplates: [FragmentShaderFunctionTemplate.Type] = [],
