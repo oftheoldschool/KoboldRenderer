@@ -81,7 +81,7 @@ public class LayoutLibrary {
         }
     }
 
-    public static let coreLayouts: RendererLayouts = {
+    public static var coreLayouts: RendererLayouts {
         RendererLayouts(
             vertexLayouts: [
                 VertexLayout(
@@ -538,7 +538,7 @@ public class LayoutLibrary {
                 ),
             ]
         )
-    }()
+    }
 
     // todo: can/should this be incremented rather than hard coded? downside to hard coding is that
     // it's inflexible and error prone, but incrementing means that some optimisation opportunities
