@@ -1,12 +1,12 @@
 import Metal
 
-struct AttachmentLayout {
-    let name: String
-    let colorAttachments: [ColorAttachment]
-    let depthAttachment: DepthAttachment?
+public struct AttachmentLayout {
+    public let name: String
+    public let colorAttachments: [ColorAttachment]
+    public let depthAttachment: DepthAttachment?
 }
 
-enum PixelFormat {
+public enum PixelFormat {
     case bgra8Unorm
     case rgba32Float
     case rgba16Float
@@ -32,15 +32,19 @@ enum PixelFormat {
     }
 }
 
-struct DepthAttachment {
-    let pixelFormat: PixelFormat
+public struct DepthAttachment {
+    public let pixelFormat: PixelFormat
+
+    public init(pixelFormat: PixelFormat) {
+        self.pixelFormat = pixelFormat
+    }
 }
 
-struct ColorAttachment {
-    let pixelFormat: PixelFormat
-    let enableTransparency: Bool
+public struct ColorAttachment {
+    public let pixelFormat: PixelFormat
+    public let enableTransparency: Bool
 
-    init(
+    public init(
         description: String,
         pixelFormat: PixelFormat,
         enableTransparency: Bool = false

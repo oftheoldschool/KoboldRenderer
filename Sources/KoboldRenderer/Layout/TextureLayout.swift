@@ -17,9 +17,17 @@ public enum KTextureBindingType {
 
 }
 
-struct TextureLayout {
-    let name: String
-    let textureLayoutBindings: [TextureLayoutBinding]
+public struct TextureLayout {
+    public let name: String
+    public let textureLayoutBindings: [TextureLayoutBinding]
+
+    public init(
+        name: String,
+        textureLayoutBindings: [TextureLayoutBinding]
+    ) {
+        self.name = name
+        self.textureLayoutBindings = textureLayoutBindings
+    }
 }
 
 indirect enum TextureDataType: CustomStringConvertible {
@@ -38,7 +46,7 @@ indirect enum TextureDataType: CustomStringConvertible {
     }
 }
 
-enum TextureAccessType: CustomStringConvertible {
+public enum TextureAccessType: CustomStringConvertible {
     case sample
     case read
     case write
@@ -52,10 +60,20 @@ enum TextureAccessType: CustomStringConvertible {
     }
 }
 
-struct TextureLayoutBinding: Equatable {
-    let index: Int
-    let type: KTextureBindingType
-    let accessType: TextureAccessType
+public struct TextureLayoutBinding: Equatable {
+    public let index: Int
+    public let type: KTextureBindingType
+    public let accessType: TextureAccessType
+
+    public init(
+        index: Int,
+        type: KTextureBindingType,
+        accessType: TextureAccessType
+    ) {
+        self.index = index
+        self.type = type
+        self.accessType = accessType
+    }
 }
 
 

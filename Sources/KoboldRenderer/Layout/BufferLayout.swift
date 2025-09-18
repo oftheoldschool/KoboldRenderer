@@ -1,9 +1,9 @@
 public struct KBufferBindingType: CustomStringConvertible, Hashable, Sendable {
-    let name: String
+    public let name: String
     public let description: String
-    let datatype: BufferDataType
-    let isAttribute: Bool
-    let bindingIndex: Int
+    public let datatype: BufferDataType
+    public let isAttribute: Bool
+    public let bindingIndex: Int
 
     public init(
         name: String,
@@ -127,9 +127,9 @@ public extension KBufferBindingType {
 }
 
 public struct BufferLayoutBinding: Equatable {
-    let index: Int
-    let type: KBufferBindingType
-    let repeated: Bool
+    public let index: Int
+    public let type: KBufferBindingType
+    public let repeated: Bool
 
     public init(
         index: Int,
@@ -144,8 +144,8 @@ public struct BufferLayoutBinding: Equatable {
 }
 
 public struct BufferLayout {
-    let name: String
-    let bufferLayoutBindings: [BufferLayoutBinding]
+    public let name: String
+    public let bufferLayoutBindings: [BufferLayoutBinding]
 
     public init(
         name: String,

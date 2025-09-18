@@ -1,6 +1,6 @@
 import Metal
 
-enum MetalVertexPrimitiveType: CustomStringConvertible {
+public enum MetalVertexPrimitiveType: CustomStringConvertible {
     case float
     case float2
     case float3
@@ -10,7 +10,7 @@ enum MetalVertexPrimitiveType: CustomStringConvertible {
     case int3
     case int4
 
-    var description: String {
+    public var description: String {
         switch self {
         case .float:
             return "float"

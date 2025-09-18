@@ -1,8 +1,8 @@
-enum InOutLayout: Equatable {
+public enum InOutLayout: Equatable {
     case primitive(MetalVertexPrimitiveType)
     case compound(StructLayout)
 
-    var name: String {
+    public var name: String {
         get {
             switch self {
             case .primitive(let type):

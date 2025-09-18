@@ -3,71 +3,78 @@ class LayoutLibrary {
     let bufferLayouts: [String: BufferLayout]
     let textureLayouts: [String: TextureLayout]
     let materialLayouts: [String: MaterialLayout]
-    let attachmentLayouts: [String: AttachmentLayout]
     let inOutLayouts: [String: InOutLayout]
     let uniformLayouts: [String: StructLayout]
+    let attachmentLayouts: [String: AttachmentLayout]
 
     init(
+        additionalVertexLayouts: [VertexLayout] = [],
         additionalBufferLayouts: [BufferLayout] = [],
-        additionalUniformLayouts: [StructLayout] = []
+        additionalTextureLayouts: [TextureLayout] = [],
+        additionalMaterialLayouts: [MaterialLayout] = [],
+        additionalInOutLayouts: [InOutLayout] = [],
+        additionalUniformLayouts: [StructLayout] = [],
+        additionalAttachmentLayouts: [AttachmentLayout] = []
     ) {
-        self.vertexLayouts = [
-            VertexLayout(
-                name: "FullVertex",
-                attributes: [
-                    VertexAttributeLayout(
-                        binding: Self.getBufferLayoutBinding(.attributePosition),
-                        type: .float3,
-                        offset: 0),
-                    VertexAttributeLayout(
-                        binding: Self.getBufferLayoutBinding(.attributeNormal),
-                        type: .float3,
-                        offset: 0),
-                    VertexAttributeLayout(
-                        binding: Self.getBufferLayoutBinding(.attributeTexCoords),
-                        type: .float2,
-                        offset: 0),
-                    VertexAttributeLayout(
-                        binding: Self.getBufferLayoutBinding(.attributeWeights),
-                        type: .float4,
-                        offset: 0),
-                    VertexAttributeLayout(
-                        binding: Self.getBufferLayoutBinding(.attributeJoints),
-                        type: .int4,
-                        offset: 0),
-                ]
-            ),
-            VertexLayout(
-                name: "BasicVertex",
-                attributes: [
-                    VertexAttributeLayout(
-                        binding: Self.getBufferLayoutBinding(.attributePosition),
-                        type: .float3,
-                        offset: 0),
-                    VertexAttributeLayout(
-                        binding: Self.getBufferLayoutBinding(.attributeNormal),
-                        type: .float3,
-                        offset: 0),
-                    VertexAttributeLayout(
-                        binding: Self.getBufferLayoutBinding(.attributeTexCoords),
-                        type: .float2,
-                        offset: 0),
-                ]
-            ),
-            VertexLayout(
-                name: "SkyboxVertex",
-                attributes: [
-                    VertexAttributeLayout(
-                        binding: Self.getBufferLayoutBinding(.attributePosition),
-                        type: .float3,
-                        offset: 0),
-                    VertexAttributeLayout(
-                        binding: Self.getBufferLayoutBinding(.attributeNormal),
-                        type: .float3,
-                        offset: 0),
-                ]
-            ),
-        ].reduce(into: [:]) { acc, next in
+        self.vertexLayouts = (
+            [
+                VertexLayout(
+                    name: "FullVertex",
+                    attributes: [
+                        VertexAttributeLayout(
+                            binding: Self.getBufferLayoutBinding(.attributePosition),
+                            type: .float3,
+                            offset: 0),
+                        VertexAttributeLayout(
+                            binding: Self.getBufferLayoutBinding(.attributeNormal),
+                            type: .float3,
+                            offset: 0),
+                        VertexAttributeLayout(
+                            binding: Self.getBufferLayoutBinding(.attributeTexCoords),
+                            type: .float2,
+                            offset: 0),
+                        VertexAttributeLayout(
+                            binding: Self.getBufferLayoutBinding(.attributeWeights),
+                            type: .float4,
+                            offset: 0),
+                        VertexAttributeLayout(
+                            binding: Self.getBufferLayoutBinding(.attributeJoints),
+                            type: .int4,
+                            offset: 0),
+                    ]
+                ),
+                VertexLayout(
+                    name: "BasicVertex",
+                    attributes: [
+                        VertexAttributeLayout(
+                            binding: Self.getBufferLayoutBinding(.attributePosition),
+                            type: .float3,
+                            offset: 0),
+                        VertexAttributeLayout(
+                            binding: Self.getBufferLayoutBinding(.attributeNormal),
+                            type: .float3,
+                            offset: 0),
+                        VertexAttributeLayout(
+                            binding: Self.getBufferLayoutBinding(.attributeTexCoords),
+                            type: .float2,
+                            offset: 0),
+                    ]
+                ),
+                VertexLayout(
+                    name: "SkyboxVertex",
+                    attributes: [
+                        VertexAttributeLayout(
+                            binding: Self.getBufferLayoutBinding(.attributePosition),
+                            type: .float3,
+                            offset: 0),
+                        VertexAttributeLayout(
+                            binding: Self.getBufferLayoutBinding(.attributeNormal),
+                            type: .float3,
+                            offset: 0),
+                    ]
+                ),
+            ] + additionalVertexLayouts
+        ).reduce(into: [:]) { acc, next in
             acc[next.name] = next
         }
 
@@ -165,204 +172,210 @@ class LayoutLibrary {
             acc[next.name] = next
         }
 
-        self.textureLayouts = [
-            TextureLayout(
-                name: "CascadedShadowMap",
-                textureLayoutBindings: [
-                    TextureLayoutBinding(index: 1, type: .textureArrayCascadedShadowMap, accessType: .sample),
-                ]
-            ),
-            TextureLayout(
-                name: "PassThrough",
-                textureLayoutBindings: [
-                    TextureLayoutBinding(index: 1, type: .texturePassThrough, accessType: .sample),
-                ]
-            ),
-            TextureLayout(
-                name: "ComputeOutputTexture",
-                textureLayoutBindings: [
-                    TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .sample),
-                ]
-            ),
-            TextureLayout(
-                name: "ComputeOutputBloomTexture",
-                textureLayoutBindings: [
-                    TextureLayoutBinding(index: 3, type: .textureComputeBloomOutput, accessType: .sample),
-                ]
-            ),
-            TextureLayout(
-                name: "DepthTexture",
-                textureLayoutBindings: [
-                    TextureLayoutBinding(index: 4, type: .textureGBufferDepth, accessType: .sample),
-                ]
-            ),
-            TextureLayout(
-                name: "GBufferNormals",
-                textureLayoutBindings: [
-                    TextureLayoutBinding(index: 6, type: .textureGBufferNormals, accessType: .sample),
-                ]
-            ),
-            TextureLayout(
-                name: "GBufferAlbedos",
-                textureLayoutBindings: [
-                    TextureLayoutBinding(index: 7, type: .textureGBufferAlbedos, accessType: .sample),
-                ]
-            ),
-            TextureLayout(
-                name: "GBufferCombine",
-                textureLayoutBindings: [
-                    TextureLayoutBinding(index: 1, type: .textureArrayCascadedShadowMap, accessType: .sample),
-                    TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
-                    TextureLayoutBinding(index: 4, type: .textureGBufferDepth, accessType: .read),
-                    TextureLayoutBinding(index: 5, type: .textureGBufferNormals, accessType: .read),
-                    TextureLayoutBinding(index: 6, type: .textureGBufferAlbedos, accessType: .read),
-                ]
-            ),
-            TextureLayout(
-                name: "GBufferCombineBloom",
-                textureLayoutBindings: [
-                    TextureLayoutBinding(index: 1, type: .textureArrayCascadedShadowMap, accessType: .sample),
-                    TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
-                    TextureLayoutBinding(index: 3, type: .textureComputeBloomOutput, accessType: .write),
-                    TextureLayoutBinding(index: 4, type: .textureGBufferDepth, accessType: .read),
-                    TextureLayoutBinding(index: 5, type: .textureGBufferNormals, accessType: .read),
-                    TextureLayoutBinding(index: 6, type: .textureGBufferAlbedos, accessType: .read),
-                ]
-            ),
-            TextureLayout(
-                name: "Combine",
-                textureLayoutBindings: [
-                    TextureLayoutBinding(index: 1, type: .textureCombineRevealage, accessType: .read),
-                    TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
-                    TextureLayoutBinding(index: 3, type: .textureCombineColor, accessType: .read),
-                    TextureLayoutBinding(index: 4, type: .textureCombineColorAlpha, accessType: .read),
-                ]
-            ),
-            TextureLayout(
-                name: "CombineBloom",
-                textureLayoutBindings: [
-                    TextureLayoutBinding(index: 1, type: .textureCombineRevealage, accessType: .read),
-                    TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
-                    TextureLayoutBinding(index: 3, type: .textureCombineColor, accessType: .read),
-                    TextureLayoutBinding(index: 4, type: .textureCombineColorAlpha, accessType: .read),
-                    TextureLayoutBinding(index: 5, type: .textureCombineBrightness, accessType: .read),
-                    TextureLayoutBinding(index: 6, type: .textureCombineBrightnessAlpha, accessType: .read),
-                ]
-            ),
-            TextureLayout(
-                name: "ConvertRGBA32FloatToBGRA8Unorm",
-                textureLayoutBindings: [
-                    TextureLayoutBinding(index: 0, type: .textureComputeInput, accessType: .read),
-                    TextureLayoutBinding(index: 1, type: .textureComputeOutput, accessType: .write),
-                ]
-            ),
-            TextureLayout(
-                name: "None",
-                textureLayoutBindings: []
-            ),
-        ].reduce(into: [:]) { acc, next in
+        self.textureLayouts = (
+            [
+                TextureLayout(
+                    name: "CascadedShadowMap",
+                    textureLayoutBindings: [
+                        TextureLayoutBinding(index: 1, type: .textureArrayCascadedShadowMap, accessType: .sample),
+                    ]
+                ),
+                TextureLayout(
+                    name: "PassThrough",
+                    textureLayoutBindings: [
+                        TextureLayoutBinding(index: 1, type: .texturePassThrough, accessType: .sample),
+                    ]
+                ),
+                TextureLayout(
+                    name: "ComputeOutputTexture",
+                    textureLayoutBindings: [
+                        TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .sample),
+                    ]
+                ),
+                TextureLayout(
+                    name: "ComputeOutputBloomTexture",
+                    textureLayoutBindings: [
+                        TextureLayoutBinding(index: 3, type: .textureComputeBloomOutput, accessType: .sample),
+                    ]
+                ),
+                TextureLayout(
+                    name: "DepthTexture",
+                    textureLayoutBindings: [
+                        TextureLayoutBinding(index: 4, type: .textureGBufferDepth, accessType: .sample),
+                    ]
+                ),
+                TextureLayout(
+                    name: "GBufferNormals",
+                    textureLayoutBindings: [
+                        TextureLayoutBinding(index: 6, type: .textureGBufferNormals, accessType: .sample),
+                    ]
+                ),
+                TextureLayout(
+                    name: "GBufferAlbedos",
+                    textureLayoutBindings: [
+                        TextureLayoutBinding(index: 7, type: .textureGBufferAlbedos, accessType: .sample),
+                    ]
+                ),
+                TextureLayout(
+                    name: "GBufferCombine",
+                    textureLayoutBindings: [
+                        TextureLayoutBinding(index: 1, type: .textureArrayCascadedShadowMap, accessType: .sample),
+                        TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
+                        TextureLayoutBinding(index: 4, type: .textureGBufferDepth, accessType: .read),
+                        TextureLayoutBinding(index: 5, type: .textureGBufferNormals, accessType: .read),
+                        TextureLayoutBinding(index: 6, type: .textureGBufferAlbedos, accessType: .read),
+                    ]
+                ),
+                TextureLayout(
+                    name: "GBufferCombineBloom",
+                    textureLayoutBindings: [
+                        TextureLayoutBinding(index: 1, type: .textureArrayCascadedShadowMap, accessType: .sample),
+                        TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
+                        TextureLayoutBinding(index: 3, type: .textureComputeBloomOutput, accessType: .write),
+                        TextureLayoutBinding(index: 4, type: .textureGBufferDepth, accessType: .read),
+                        TextureLayoutBinding(index: 5, type: .textureGBufferNormals, accessType: .read),
+                        TextureLayoutBinding(index: 6, type: .textureGBufferAlbedos, accessType: .read),
+                    ]
+                ),
+                TextureLayout(
+                    name: "Combine",
+                    textureLayoutBindings: [
+                        TextureLayoutBinding(index: 1, type: .textureCombineRevealage, accessType: .read),
+                        TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
+                        TextureLayoutBinding(index: 3, type: .textureCombineColor, accessType: .read),
+                        TextureLayoutBinding(index: 4, type: .textureCombineColorAlpha, accessType: .read),
+                    ]
+                ),
+                TextureLayout(
+                    name: "CombineBloom",
+                    textureLayoutBindings: [
+                        TextureLayoutBinding(index: 1, type: .textureCombineRevealage, accessType: .read),
+                        TextureLayoutBinding(index: 2, type: .textureComputeOutput, accessType: .write),
+                        TextureLayoutBinding(index: 3, type: .textureCombineColor, accessType: .read),
+                        TextureLayoutBinding(index: 4, type: .textureCombineColorAlpha, accessType: .read),
+                        TextureLayoutBinding(index: 5, type: .textureCombineBrightness, accessType: .read),
+                        TextureLayoutBinding(index: 6, type: .textureCombineBrightnessAlpha, accessType: .read),
+                    ]
+                ),
+                TextureLayout(
+                    name: "ConvertRGBA32FloatToBGRA8Unorm",
+                    textureLayoutBindings: [
+                        TextureLayoutBinding(index: 0, type: .textureComputeInput, accessType: .read),
+                        TextureLayoutBinding(index: 1, type: .textureComputeOutput, accessType: .write),
+                    ]
+                ),
+                TextureLayout(
+                    name: "None",
+                    textureLayoutBindings: []
+                ),
+            ] + additionalTextureLayouts
+        ).reduce(into: [:]) { acc, next in
             acc[next.name] = next
         }
 
-        self.materialLayouts = [
-            MaterialLayout(
-                name: "Textured",
-                textureLayoutBindings: [
-                    TextureLayoutBinding(index: 0, type: .textureBaseColor, accessType: .sample),
-                ]
-            ),
-            MaterialLayout(
-                name: "CubeTextured",
-                textureLayoutBindings: [
-                    TextureLayoutBinding(index: 0, type: .textureCubeMap, accessType: .sample),
-                ]
-            ),
-            MaterialLayout(name: "None", textureLayoutBindings: []),
-        ].reduce(into: [:]) { acc, next in
+        self.materialLayouts = (
+            [
+                MaterialLayout(
+                    name: "Textured",
+                    textureLayoutBindings: [
+                        TextureLayoutBinding(index: 0, type: .textureBaseColor, accessType: .sample),
+                    ]
+                ),
+                MaterialLayout(
+                    name: "CubeTextured",
+                    textureLayoutBindings: [
+                        TextureLayoutBinding(index: 0, type: .textureCubeMap, accessType: .sample),
+                    ]
+                ),
+                MaterialLayout(name: "None", textureLayoutBindings: []),
+            ] + additionalMaterialLayouts
+        ).reduce(into: [:]) { acc, next in
             acc[next.name] = next
         }
 
-        self.attachmentLayouts = [
-            AttachmentLayout(
-                name: "ColorPlusDepth",
-                colorAttachments: [
-                    ColorAttachment(
-                        description: "Color",
-                        pixelFormat: .bgra8Unorm),
-                ],
-                depthAttachment: DepthAttachment(pixelFormat: .depth32)
-            ),
-            AttachmentLayout(
-                name: "ColorPlusRevealagePlusDepth",
-                colorAttachments: [
-                    ColorAttachment(
-                        description: "Revealage",
-                        pixelFormat: .r16Float,
-                        enableTransparency: true),
-                    ColorAttachment(
-                        description: "Color Accumulation",
-                        pixelFormat: .rgba16Float,
-                        enableTransparency: true),
-                ],
-                depthAttachment: DepthAttachment(pixelFormat: .depth32)
-            ),
-            AttachmentLayout(
-                name: "ColorPlusBrightnessPlusDepth",
-                colorAttachments: [
-                    ColorAttachment(
-                        description: "Color",
-                        pixelFormat: .bgra8Unorm),
-                    ColorAttachment(
-                        description: "Brightness",
-                        pixelFormat: .bgra8Unorm),
-                ],
-                depthAttachment: DepthAttachment(pixelFormat: .depth32)
-            ),
-            AttachmentLayout(
-                name: "ColorPlusBrightnessPlusRevealagePlusDepth",
-                colorAttachments: [
-                    ColorAttachment(
-                        description: "Revealage",
-                        pixelFormat: .r16Float,
-                        enableTransparency: true),
-                    ColorAttachment(
-                        description: "Color Accumulation",
-                        pixelFormat: .rgba16Float,
-                        enableTransparency: true),
-                    ColorAttachment(
-                        description: "Brightness Accumulation",
-                        pixelFormat: .rgba16Float,
-                        enableTransparency: true),
-                ],
-                depthAttachment: DepthAttachment(pixelFormat: .depth32)
-            ),
-            AttachmentLayout(
-                name: "GBuffer",
-                colorAttachments: [
-                    ColorAttachment(
-                        description: "Albedo (xyz), MaterialId (w)",
-                        pixelFormat: .rgba32Float),
-                    ColorAttachment(
-                        description: "Normal",
-                        pixelFormat: .rgba32Float),
-                ],
-                depthAttachment: DepthAttachment(pixelFormat: .depth32)
-            ),
-            AttachmentLayout(
-                name: "Color",
-                colorAttachments: [
-                    ColorAttachment(
-                        description: "Color",
-                        pixelFormat: .bgra8Unorm),
-                ],
-                depthAttachment: nil
-            ),
-            AttachmentLayout(
-                name: "Depth",
-                colorAttachments: [],
-                depthAttachment: DepthAttachment(pixelFormat: .depth32)
-            ),
-        ].reduce(into: [:]) { acc, next in
+        self.attachmentLayouts = (
+            [
+                AttachmentLayout(
+                    name: "ColorPlusDepth",
+                    colorAttachments: [
+                        ColorAttachment(
+                            description: "Color",
+                            pixelFormat: .bgra8Unorm),
+                    ],
+                    depthAttachment: DepthAttachment(pixelFormat: .depth32)
+                ),
+                AttachmentLayout(
+                    name: "ColorPlusRevealagePlusDepth",
+                    colorAttachments: [
+                        ColorAttachment(
+                            description: "Revealage",
+                            pixelFormat: .r16Float,
+                            enableTransparency: true),
+                        ColorAttachment(
+                            description: "Color Accumulation",
+                            pixelFormat: .rgba16Float,
+                            enableTransparency: true),
+                    ],
+                    depthAttachment: DepthAttachment(pixelFormat: .depth32)
+                ),
+                AttachmentLayout(
+                    name: "ColorPlusBrightnessPlusDepth",
+                    colorAttachments: [
+                        ColorAttachment(
+                            description: "Color",
+                            pixelFormat: .bgra8Unorm),
+                        ColorAttachment(
+                            description: "Brightness",
+                            pixelFormat: .bgra8Unorm),
+                    ],
+                    depthAttachment: DepthAttachment(pixelFormat: .depth32)
+                ),
+                AttachmentLayout(
+                    name: "ColorPlusBrightnessPlusRevealagePlusDepth",
+                    colorAttachments: [
+                        ColorAttachment(
+                            description: "Revealage",
+                            pixelFormat: .r16Float,
+                            enableTransparency: true),
+                        ColorAttachment(
+                            description: "Color Accumulation",
+                            pixelFormat: .rgba16Float,
+                            enableTransparency: true),
+                        ColorAttachment(
+                            description: "Brightness Accumulation",
+                            pixelFormat: .rgba16Float,
+                            enableTransparency: true),
+                    ],
+                    depthAttachment: DepthAttachment(pixelFormat: .depth32)
+                ),
+                AttachmentLayout(
+                    name: "GBuffer",
+                    colorAttachments: [
+                        ColorAttachment(
+                            description: "Albedo (xyz), MaterialId (w)",
+                            pixelFormat: .rgba32Float),
+                        ColorAttachment(
+                            description: "Normal",
+                            pixelFormat: .rgba32Float),
+                    ],
+                    depthAttachment: DepthAttachment(pixelFormat: .depth32)
+                ),
+                AttachmentLayout(
+                    name: "Color",
+                    colorAttachments: [
+                        ColorAttachment(
+                            description: "Color",
+                            pixelFormat: .bgra8Unorm),
+                    ],
+                    depthAttachment: nil
+                ),
+                AttachmentLayout(
+                    name: "Depth",
+                    colorAttachments: [],
+                    depthAttachment: DepthAttachment(pixelFormat: .depth32)
+                ),
+            ] + additionalAttachmentLayouts
+        ).reduce(into: [:]) { acc, next in
             acc[next.name] = next
         }
 
@@ -412,84 +425,85 @@ class LayoutLibrary {
 
         // todo: separate fragment out layouts from vertex out/fragment in
         // also there's overlap between these and the attachments which were developed simultaneously
-        self.inOutLayouts = [
-            .primitive(.float4),
-            .compound(
-                StructLayout(
-                    name: "BloomFragmentOutput",
-                    items: [
-                        StructItem(name: "color", type: .primitive(.float4), attributes: [.color(0)]),
-                        StructItem(name: "brightness", type: .primitive(.float4), attributes: [.color(1)]),
-                    ]
-                )
-            ),
-            .compound(
-                StructLayout(
-                    name: "AlphaFragmentOutput",
-                    items: [
-                        StructItem(name: "revealage", type: .primitive(.float), attributes: [.color(0)]),
-                        StructItem(name: "color", type: .primitive(.float4), attributes: [.color(1)]),
-                    ]
-                )
-            ),
-            .compound(
-                StructLayout(
-                    name: "AlphaBloomFragmentOutput",
-                    items: [
-                        StructItem(name: "revealage", type: .primitive(.float), attributes: [.color(0)]),
-                        StructItem(name: "color", type: .primitive(.float4), attributes: [.color(1)]),
-                        StructItem(name: "brightness", type: .primitive(.float4), attributes: [.color(2)]),
-                    ]
-                )
-            ),
-            .compound(
-                StructLayout(
-                    name: "GBufferFragmentOutput",
-                    items: [
-                        StructItem(name: "normal", type: .primitive(.float4), attributes: [.color(0)]),
-                        StructItem(name: "albedo", type: .primitive(.float4), attributes: [.color(1)]),
-                    ]
-                )
-            ),
-            .compound(
-                StructLayout(
-                    name: "FullFragmentInput",
-                    items: [
-                        StructItem(name: "position", type: .primitive(.float4), attributes: [.position]),
-                        StructItem(name: "worldPosition", type: .primitive(.float3)),
-                        StructItem(name: "worldNormal", type: .primitive(.float3)),
-                        StructItem(name: "localPosition", type: .primitive(.float3)),
-                        StructItem(name: "normal", type: .primitive(.float3)),
-                        StructItem(
-                            name: "lightSpacePos_",
-                            type: .repeated(
-                                RepeatedItemType(
-                                    count: "${CASCADED_SHADOW_NUM_CASCADES}",
-                                    type: .float4))),
-                        StructItem(name: "texCoords", type: .primitive(.float2)),
-                        StructItem(name: "clipSpacePosZ", type: .primitive(.float)),
-                        StructItem(name: "instanceId", type: .primitive(.int))
-                    ]
-                )
-            ),
-            .compound(
-                StructLayout(
-                    name: "ShadowCalculationData",
-                    items: [
-                        StructItem(
-                            name: "lightSpacePos_",
-                            type: .repeated(
-                                RepeatedItemType(
-                                    count: "${CASCADED_SHADOW_NUM_CASCADES}",
-                                    type: .float4))),
-                        StructItem(name: "clipSpacePosZ", type: .primitive(.float)),
-                    ]
-                )
-            ),
-        ].reduce(into: [:]) { acc, next in
+        self.inOutLayouts = (
+            [
+                .primitive(.float4),
+                .compound(
+                    StructLayout(
+                        name: "BloomFragmentOutput",
+                        items: [
+                            StructItem(name: "color", type: .primitive(.float4), attributes: [.color(0)]),
+                            StructItem(name: "brightness", type: .primitive(.float4), attributes: [.color(1)]),
+                        ]
+                    )
+                ),
+                .compound(
+                    StructLayout(
+                        name: "AlphaFragmentOutput",
+                        items: [
+                            StructItem(name: "revealage", type: .primitive(.float), attributes: [.color(0)]),
+                            StructItem(name: "color", type: .primitive(.float4), attributes: [.color(1)]),
+                        ]
+                    )
+                ),
+                .compound(
+                    StructLayout(
+                        name: "AlphaBloomFragmentOutput",
+                        items: [
+                            StructItem(name: "revealage", type: .primitive(.float), attributes: [.color(0)]),
+                            StructItem(name: "color", type: .primitive(.float4), attributes: [.color(1)]),
+                            StructItem(name: "brightness", type: .primitive(.float4), attributes: [.color(2)]),
+                        ]
+                    )
+                ),
+                .compound(
+                    StructLayout(
+                        name: "GBufferFragmentOutput",
+                        items: [
+                            StructItem(name: "normal", type: .primitive(.float4), attributes: [.color(0)]),
+                            StructItem(name: "albedo", type: .primitive(.float4), attributes: [.color(1)]),
+                        ]
+                    )
+                ),
+                .compound(
+                    StructLayout(
+                        name: "FullFragmentInput",
+                        items: [
+                            StructItem(name: "position", type: .primitive(.float4), attributes: [.position]),
+                            StructItem(name: "worldPosition", type: .primitive(.float3)),
+                            StructItem(name: "worldNormal", type: .primitive(.float3)),
+                            StructItem(name: "localPosition", type: .primitive(.float3)),
+                            StructItem(name: "normal", type: .primitive(.float3)),
+                            StructItem(
+                                name: "lightSpacePos_",
+                                type: .repeated(
+                                    RepeatedItemType(
+                                        count: "${CASCADED_SHADOW_NUM_CASCADES}",
+                                        type: .float4))),
+                            StructItem(name: "texCoords", type: .primitive(.float2)),
+                            StructItem(name: "clipSpacePosZ", type: .primitive(.float)),
+                            StructItem(name: "instanceId", type: .primitive(.int))
+                        ]
+                    )
+                ),
+                .compound(
+                    StructLayout(
+                        name: "ShadowCalculationData",
+                        items: [
+                            StructItem(
+                                name: "lightSpacePos_",
+                                type: .repeated(
+                                    RepeatedItemType(
+                                        count: "${CASCADED_SHADOW_NUM_CASCADES}",
+                                        type: .float4))),
+                            StructItem(name: "clipSpacePosZ", type: .primitive(.float)),
+                        ]
+                    )
+                ),
+            ] + additionalInOutLayouts
+        ).reduce(into: [:]) { acc, next in
             acc[next.name] = next
         }
-        
     }
 
     // todo: can/should this be incremented rather than hard coded? downside to hard coding is that

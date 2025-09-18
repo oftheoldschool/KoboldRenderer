@@ -1,6 +1,14 @@
-struct StructLayout: Equatable {
-    let name: String
-    let items: [StructItem]
+public struct StructLayout: Equatable {
+    public let name: String
+    public let items: [StructItem]
+
+    public init(
+        name: String,
+        items: [StructItem]
+    ) {
+        self.name = name
+        self.items = items
+    }
 
     func toMetalShaderStruct() -> String {
         return
@@ -14,12 +22,12 @@ struct \(name) {
     }
 }
 
-struct StructItem: Equatable {
-    let name: String
-    let type: StructItemType
-    let attributes: [StructItemAttribute]
+public struct StructItem: Equatable {
+    public let name: String
+    public let type: StructItemType
+    public let attributes: [StructItemAttribute]
 
-    init(
+    public init(
         name: String,
         type: StructItemType,
         attributes: [StructItemAttribute] = []
@@ -42,11 +50,11 @@ struct StructItem: Equatable {
     }
 }
 
-enum StructItemAttribute: CustomStringConvertible, Equatable {
+public enum StructItemAttribute: CustomStringConvertible, Equatable {
     case position
     case color(Int)
 
-    var description: String {
+    public var description: String {
         switch self {
         case .position:
             return "position"
@@ -56,14 +64,21 @@ enum StructItemAttribute: CustomStringConvertible, Equatable {
     }
 }
 
-indirect enum StructItemType: Equatable {
+indirect public enum StructItemType: Equatable {
     case primitive(MetalPrimitiveType)
     case repeated(RepeatedItemType)
     case custom(String)
 }
 
-struct RepeatedItemType: Equatable {
-    let count: String
-    let type: MetalPrimitiveType
-}
+public struct RepeatedItemType: Equatable {
+    public let count: String
+    public let type: MetalPrimitiveType
 
+    public init(
+        count: String,
+        type: MetalPrimitiveType
+    ) {
+        self.count = count
+        self.type = type
+    }
+}

@@ -1,8 +1,13 @@
 import Metal
 
-struct VertexLayout: Equatable {
-    let name: String
-    let attributes: [VertexAttributeLayout]
+public struct VertexLayout: Equatable {
+    public let name: String
+    public let attributes: [VertexAttributeLayout]
+
+    public init(name: String, attributes: [VertexAttributeLayout]) {
+        self.name = name
+        self.attributes = attributes
+    }
 
     func toMetalShaderStruct() -> String {
         return
@@ -16,8 +21,18 @@ struct \(name) {
     }
 }
 
-struct VertexAttributeLayout: Equatable {
-    let binding: BufferLayoutBinding
-    let type: MetalVertexPrimitiveType
-    let offset: Int
+public struct VertexAttributeLayout: Equatable {
+    public let binding: BufferLayoutBinding
+    public let type: MetalVertexPrimitiveType
+    public let offset: Int
+
+    public init(
+        binding: BufferLayoutBinding,
+        type: MetalVertexPrimitiveType,
+        offset: Int
+    ) {
+        self.binding = binding
+        self.type = type
+        self.offset = offset
+    }
 }
