@@ -24,19 +24,21 @@ MaterialParameters resolveMaterial(
         ? globalMaterial
         : material;
 
+    float originalMaterialAlpha = material.color.a;
+
     if (finalMaterial.materialType == MaterialUniformsType::debugPosition) {
-        materialParameters = float4((worldPosition + 1) / 2, 1);
+        materialParameters = float4((worldPosition + 1) / 2, originalMaterialAlpha);
     } else if (finalMaterial.materialType == MaterialUniformsType::debugNormal) {
-        materialParameters = float4((worldNormal + 1) / 2, 1);
+        materialParameters = float4((worldNormal + 1) / 2, originalMaterialAlpha);
     } else if (finalMaterial.materialType == MaterialUniformsType::debugColor) {
-        materialParameters = finalMaterial.color;
+        materialParameters = float4(finalMaterial.color.rgb, originalMaterialAlpha);
     } else if (finalMaterial.materialType == MaterialUniformsType::debugCascade) {
         if (cascadeIndex == 0) {
-            materialParameters = float4(1, 0, 0, 1);
+            materialParameters = float4(1, 0, 0, originalMaterialAlpha);
         } else if (cascadeIndex == 1) {
-            materialParameters = float4(0, 1, 0, 1);
+            materialParameters = float4(0, 1, 0, originalMaterialAlpha);
         } else if (cascadeIndex == 2) {
-            materialParameters = float4(0, 0, 1, 1);
+            materialParameters = float4(0, 0, 1, originalMaterialAlpha);
         }
     }
 

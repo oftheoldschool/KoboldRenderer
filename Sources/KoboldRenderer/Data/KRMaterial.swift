@@ -1,10 +1,44 @@
+public struct KRProceduralProperties: Hashable {
+    public let scale: Float
+    public let octaves: Int
+    public let persistence: Float
+    public let lacunarity: Float
+    public let offset: SIMD3<Float>
+    public let colorA: SIMD4<Float>
+    public let colorB: SIMD4<Float>
+    public let threshold: Float
+    public let varyWithTime: Bool
+
+    public init(
+        scale: Float = 1.0,
+        octaves: Int = 4,
+        persistence: Float = 0.5,
+        lacunarity: Float = 2.0,
+        offset: SIMD3<Float> = SIMD3<Float>(0.0, 0.0, 0.0),
+        colorA: SIMD4<Float> = SIMD4<Float>(0.0, 0.0, 0.0, 1.0),
+        colorB: SIMD4<Float> = SIMD4<Float>(1.0, 1.0, 1.0, 1.0),
+        threshold: Float = 0.0,
+        varyWithTime: Bool = false
+    ) {
+        self.scale = scale
+        self.octaves = octaves
+        self.persistence = persistence
+        self.lacunarity = lacunarity
+        self.offset = offset
+        self.colorA = colorA
+        self.colorB = colorB
+        self.threshold = threshold
+        self.varyWithTime = varyWithTime
+    }
+}
+
 public enum KRMaterialType: Hashable {
     case none
     case debugPosition
     case debugNormal
     case debugColor(SIMD3<Float>)
     case debugCascade
-    case procedural(SIMD4<Float>)
+    case procedural(KRProceduralProperties)
     case color(SIMD4<Float>)
     case texture
 }
@@ -84,17 +118,6 @@ public struct KRMaterial {
     }
 
     func toGPUData() -> MaterialUniforms {
-        let (materialType, color): (MaterialUniformsType, SIMD4<Float>) = switch type {
-        case .none: (.none, .zero)
-        case .debugPosition: (.debugPosition, .zero)
-        case .debugNormal: (.debugNormal, .zero)
-        case .debugColor(let color): (.debugColor, SIMD4<Float>(color.x, color.y, color.z, 1))
-        case .debugCascade: (.debugCascade, .zero)
-        case .procedural(let color): (.procedural, color)
-        case .color(let color): (.color, color)
-        case .texture: (.texture, .zero)
-        }
-
         let rimLightingMode: RimLightingMode = switch rim.mode {
         case .none: .none
         case .artistic: .artistic
@@ -102,19 +125,136 @@ public struct KRMaterial {
         case .directional: .directional
         }
 
-        return MaterialUniforms(
-            color: color,
-            ambientFactor: lighting.ambientFactor,
-            shininess: lighting.shininess,
-            specularIntensity: lighting.specularIntensity,
-            rimIntensity: rim.intensity,
-            rimColor: rim.color,
-            rimPower: rim.power,
-            materialType: materialType,
-            flatShadingMode: behavior.flatShading ? .enabled : .global,
-            rimLightingMode: rimLightingMode,
-            applyLight: behavior.applyLight,
-            receiveShadow: behavior.receiveShadow
-        )
+        switch type {
+        case .none:
+            return MaterialUniforms(
+                color: .zero,
+                ambientFactor: lighting.ambientFactor,
+                shininess: lighting.shininess,
+                specularIntensity: lighting.specularIntensity,
+                rimIntensity: rim.intensity,
+                rimColor: rim.color,
+                rimPower: rim.power,
+                materialType: .none,
+                flatShadingMode: behavior.flatShading ? .enabled : .global,
+                rimLightingMode: rimLightingMode,
+                applyLight: behavior.applyLight,
+                receiveShadow: behavior.receiveShadow
+            )
+        case .debugPosition:
+            return MaterialUniforms(
+                color: .zero,
+                ambientFactor: lighting.ambientFactor,
+                shininess: lighting.shininess,
+                specularIntensity: lighting.specularIntensity,
+                rimIntensity: rim.intensity,
+                rimColor: rim.color,
+                rimPower: rim.power,
+                materialType: .debugPosition,
+                flatShadingMode: behavior.flatShading ? .enabled : .global,
+                rimLightingMode: rimLightingMode,
+                applyLight: behavior.applyLight,
+                receiveShadow: behavior.receiveShadow
+            )
+        case .debugNormal:
+            return MaterialUniforms(
+                color: .zero,
+                ambientFactor: lighting.ambientFactor,
+                shininess: lighting.shininess,
+                specularIntensity: lighting.specularIntensity,
+                rimIntensity: rim.intensity,
+                rimColor: rim.color,
+                rimPower: rim.power,
+                materialType: .debugNormal,
+                flatShadingMode: behavior.flatShading ? .enabled : .global,
+                rimLightingMode: rimLightingMode,
+                applyLight: behavior.applyLight,
+                receiveShadow: behavior.receiveShadow
+            )
+        case .debugColor(let color):
+            return MaterialUniforms(
+                color: SIMD4<Float>(color.x, color.y, color.z, 1),
+                ambientFactor: lighting.ambientFactor,
+                shininess: lighting.shininess,
+                specularIntensity: lighting.specularIntensity,
+                rimIntensity: rim.intensity,
+                rimColor: rim.color,
+                rimPower: rim.power,
+                materialType: .debugColor,
+                flatShadingMode: behavior.flatShading ? .enabled : .global,
+                rimLightingMode: rimLightingMode,
+                applyLight: behavior.applyLight,
+                receiveShadow: behavior.receiveShadow
+            )
+        case .debugCascade:
+            return MaterialUniforms(
+                color: .zero,
+                ambientFactor: lighting.ambientFactor,
+                shininess: lighting.shininess,
+                specularIntensity: lighting.specularIntensity,
+                rimIntensity: rim.intensity,
+                rimColor: rim.color,
+                rimPower: rim.power,
+                materialType: .debugCascade,
+                flatShadingMode: behavior.flatShading ? .enabled : .global,
+                rimLightingMode: rimLightingMode,
+                applyLight: behavior.applyLight,
+                receiveShadow: behavior.receiveShadow
+            )
+        case .procedural(let proceduralProps):
+            return MaterialUniforms(
+                materialType: .procedural,
+                flatShadingMode: behavior.flatShading ? .enabled : .global,
+                applyLight: behavior.applyLight,
+                receiveShadow: behavior.receiveShadow,
+                ambientFactor: lighting.ambientFactor,
+                shininess: lighting.shininess,
+                specularIntensity: lighting.specularIntensity,
+                rimIntensity: rim.intensity,
+                rimColor: rim.color,
+                rimPower: rim.power,
+                rimLightingMode: rimLightingMode,
+                color: proceduralProps.colorA, // Use colorA as the base color for compatibility
+                noiseScale: proceduralProps.scale,
+                noiseOctaves: Int32(proceduralProps.octaves),
+                noisePersistence: proceduralProps.persistence,
+                noiseLacunarity: proceduralProps.lacunarity,
+                noiseOffset: proceduralProps.offset,
+                noiseColorA: proceduralProps.colorA,
+                noiseColorB: proceduralProps.colorB,
+                noiseThreshold: proceduralProps.threshold,
+                varyWithTime: proceduralProps.varyWithTime
+            )
+        case .color(let color):
+            return MaterialUniforms(
+                color: color,
+                ambientFactor: lighting.ambientFactor,
+                shininess: lighting.shininess,
+                specularIntensity: lighting.specularIntensity,
+                rimIntensity: rim.intensity,
+                rimColor: rim.color,
+                rimPower: rim.power,
+                materialType: .color,
+                flatShadingMode: behavior.flatShading ? .enabled : .global,
+                rimLightingMode: rimLightingMode,
+                applyLight: behavior.applyLight,
+                receiveShadow: behavior.receiveShadow
+            )
+        case .texture:
+            return MaterialUniforms(
+                color: .zero,
+                ambientFactor: lighting.ambientFactor,
+                shininess: lighting.shininess,
+                specularIntensity: lighting.specularIntensity,
+                rimIntensity: rim.intensity,
+                rimColor: rim.color,
+                rimPower: rim.power,
+                materialType: .texture,
+                flatShadingMode: behavior.flatShading ? .enabled : .global,
+                rimLightingMode: rimLightingMode,
+                applyLight: behavior.applyLight,
+                receiveShadow: behavior.receiveShadow
+            )
+        }
     }
 }

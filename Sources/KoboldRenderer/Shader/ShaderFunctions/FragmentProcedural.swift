@@ -1,9 +1,7 @@
-class FragmentShaderFunctionTemplateColor: FragmentShaderFunctionTemplate {
-    override class var functionName: String { "colorFragment" }
+class FragmentShaderFunctionTemplateProcedural: FragmentShaderFunctionTemplate {
+    override class var functionName: String { "proceduralFragment" }
     override class var inputLayout: String { "FullFragmentInput" }
 
-    // todo: can we dedupe these and remove the need for variants with "instanced" in the name?
-    // can we switch the FragmentFunctionaVariant to an OptionSet? How would we resolve? Most specific to least?
     override class var perVariantLayouts: [FragmentFunctionVariant: FragmentShaderVariantLayouts] {
         [
             .color: FragmentShaderVariantLayouts(
@@ -53,7 +51,6 @@ class FragmentShaderFunctionTemplateColor: FragmentShaderFunctionTemplate {
         ]
     }
 
-    // todo: not required for gbuffer pass. how will we handle this?
     override class var textureLayout: String {
         "CascadedShadowMap"
     }
@@ -66,7 +63,38 @@ class FragmentShaderFunctionTemplateColor: FragmentShaderFunctionTemplate {
 """
     constant MaterialUniforms & material = materials[uniformsObject.materialId];
     constant MaterialUniforms & globalMaterial = materials[uniformsShared.globalMaterialId];
-    float4 fragmentColor = material.color;
+    
+    FractalNoiseMetalParameters noiseParameters {
+        .lacunarity = material.noiseLacunarity,
+        .gain = material.noisePersistence,
+        .startingAmplitude = 2,
+        .startingFrequency = material.noiseScale,
+        .octaves = material.noiseOctaves,
+        .warpIterations = 1,
+        .warpScale = 1,
+        .coordinateScale = 25,
+        .noiseType = FractalNoiseMetalType::openSimplex2,
+        .noiseTypeParameters = {
+            .openSimplex2Parameters = {
+                .seed = 1337,
+                .noise3Variant = OpenSimplex2MetalNoise3Variant::xz,
+            },
+        },
+    };
+    
+    float noiseValue = map3dNoiseToRange(
+        fbm3Warp(noiseParameters, fragmentIn.worldPosition + material.noiseOffset + (material.varyWithTime ? uniformsShared.elapsedTime / 20 : 0.0)),
+        -0.9,
+        1.2);
+    
+    if (material.noiseThreshold > 0.0) {
+        float falloffStrength = 3.0;
+        float normalizedDistance = clamp((material.noiseThreshold - noiseValue) / material.noiseThreshold, 0.0, 1.0);
+        float falloff = pow(normalizedDistance, falloffStrength);
+        noiseValue = mix(noiseValue, 1.0, falloff);
+    }
+    
+    float4 fragmentColor = mix(material.noiseColorA, material.noiseColorB, noiseValue);
 """
     }
 
@@ -123,7 +151,7 @@ class FragmentShaderFunctionTemplateColor: FragmentShaderFunctionTemplate {
 
     override class func getFragmentTransparencyCode(shaderVariant: FragmentFunctionVariant) -> String? {
 """
-    float4 weightColor = fragmentColor; // Use lit but unshadowed color
+    float4 weightColor = fragmentColor;
     float transparencyWeight = max(
         min(
             1.0f, 
@@ -132,7 +160,7 @@ class FragmentShaderFunctionTemplateColor: FragmentShaderFunctionTemplate {
                     weightColor.r, 
                     weightColor.g), 
                 weightColor.b) * weightColor.a), 
-            weightColor.a) * clamp(0.03 / (1e-5 + pow(fragmentIn.clipSpacePosZ / 200, 4)), 
+        weightColor.a) * clamp(0.03 / (1e-5 + pow(fragmentIn.clipSpacePosZ / 200, 4)), 
         1e-2,
     3e3);
 
@@ -148,46 +176,33 @@ class FragmentShaderFunctionTemplateColor: FragmentShaderFunctionTemplate {
     fragmentOut = fragmentColor;
 """
 
-    private static let gbufferOutput: String =
+    private static let alphaOutput: String =
 """
-    fragmentOut = {
-        .normal = float4(fragmentIn.worldNormal, 1),
-        .albedo = float4(fragmentColor.rgb, float(uniformsObject.materialId)),
-    };
+    fragmentOut.color = fragmentColor;
+    fragmentOut.revealage = revealage;
 """
 
     private static let bloomOutput: String =
 """
-    float4 brightness = calculateBloom(
-        fragmentColor,
-        uniformsShared.bloomThreshold,
-        uniformsShared.bloomMultiplier
-    );
-    fragmentOut = {
-        .color = fragmentColor,
-        .brightness = brightness,
-    };
-"""
-
-    private static let alphaOutput: String =
-"""
-    fragmentOut = {
-        .revealage = revealage,
-        .color = fragmentColor,
-    };
+    fragmentOut.color = fragmentColor;
+    
+    // Simple bloom threshold
+    float brightness = dot(fragmentColor.rgb, float3(0.2126, 0.7152, 0.0722));
+    fragmentOut.brightness = (brightness > 1.0) ? fragmentColor : float4(0.0);
 """
 
     private static let alphaBloomOutput: String =
 """
-    float4 brightness = calculateBloom(
-        fragmentColor,
-        uniformsShared.bloomThreshold,
-        uniformsShared.bloomMultiplier
-    );
-    fragmentOut = {
-        .revealage = revealage,
-        .color = fragmentColor,
-        .brightness = brightness,
-    };
+    fragmentOut.color = fragmentColor;
+    fragmentOut.revealage = revealage;
+    
+    float brightness = dot(fragmentColor.rgb, float3(0.2126, 0.7152, 0.0722));
+    fragmentOut.brightness = (brightness > 1.0) ? fragmentColor : float4(0.0);
+"""
+
+    private static let gbufferOutput: String =
+"""
+    fragmentOut.normal = float4(fragmentIn.worldNormal, 1);
+    fragmentOut.albedo = float4(fragmentColor.rgb, float(uniformsObject.materialId));
 """
 }

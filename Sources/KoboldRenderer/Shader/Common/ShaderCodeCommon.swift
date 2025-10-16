@@ -56,18 +56,30 @@ enum class RimLightingMode: int8_t {
 };
 
 struct MaterialUniforms {
-    float4 color;
+    MaterialUniformsType materialType;
+    FlatShadingMode flatShadingMode;
+    bool applyLight;
+    bool receiveShadow;
+    
     float ambientFactor;
     float shininess;
     float specularIntensity;
     float rimIntensity;
     float3 rimColor;
     float rimPower;
-    MaterialUniformsType materialType;
-    FlatShadingMode flatShadingMode;
     RimLightingMode rimLightingMode;
-    bool applyLight;
-    bool receiveShadow;
+    
+    float4 color;
+    
+    float noiseScale;
+    int noiseOctaves;
+    float noisePersistence;
+    float noiseLacunarity;
+    float3 noiseOffset;
+    float4 noiseColorA;
+    float4 noiseColorB;
+    float noiseThreshold;
+    bool varyWithTime;
 };
 
 struct MaterialParameters {

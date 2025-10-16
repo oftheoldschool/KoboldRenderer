@@ -23,7 +23,7 @@ public class KRRenderer {
     private var instanceBuffers: [String: GPUDataMultiBuffer]
 
     private let layoutLibrary: LayoutLibrary
-    private var shaderLibrary: ShaderLibrary
+    public var shaderLibrary: ShaderLibrary
     private var additionalPipelineDefinitions: [RenderPipelineDefinition]
     private var additionalShaderCode: [String]
     private var additionalVertexFunctionTemplates: [VertexShaderFunctionTemplate.Type]
