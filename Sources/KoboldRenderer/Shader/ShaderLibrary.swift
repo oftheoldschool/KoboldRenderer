@@ -88,7 +88,6 @@ public class ShaderLibrary {
             FragmentShaderFunctionTemplateTexture.self,
             FragmentShaderFunctionTemplateCubeTexture.self,
             FragmentShaderFunctionTemplatePassThrough.self,
-            FragmentShaderFunctionTemplateProcedural.self,
         ] + additionalFragmentFunctionTemplates
 
         let computeFunctionTemplates: [ComputeShaderFunctionTemplate.Type] = [
@@ -213,19 +212,6 @@ public class ShaderLibrary {
                 name: "Basic",
                 vertexFunction: vertexFunctions["basicVertex"]!,
                 fragmentFunction: fragmentFunctions["colorFragment"]!,
-                shaderVariants: [
-                    ShaderVariant(renderTarget: .colorPlusDepth, shaderOptions: [.instanced, .msaa, .transparency]),
-                    ShaderVariant(renderTarget: .colorPlusBrightnessPlusDepth, shaderOptions: [.instanced, .msaa, .transparency]),
-                    ShaderVariant(renderTarget: .gbuffer, shaderOptions: [.instanced]),
-                    ShaderVariant(renderTarget: .depth, shaderOptions: [.instanced]),
-                ],
-                msaaSampleCount: msaaSampleCount),
-            try! RenderPipeline(
-                device: device,
-                library: library,
-                name: "Procedural",
-                vertexFunction: vertexFunctions["basicVertex"]!,
-                fragmentFunction: fragmentFunctions["proceduralFragment"]!,
                 shaderVariants: [
                     ShaderVariant(renderTarget: .colorPlusDepth, shaderOptions: [.instanced, .msaa, .transparency]),
                     ShaderVariant(renderTarget: .colorPlusBrightnessPlusDepth, shaderOptions: [.instanced, .msaa, .transparency]),
