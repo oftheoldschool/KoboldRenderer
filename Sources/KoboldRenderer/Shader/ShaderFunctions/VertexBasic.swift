@@ -34,6 +34,7 @@ class VertexShaderFunctionTemplateBasic: VertexShaderFunctionTemplate {
     vertexOut.position = outputPosition;
     vertexOut.normal = vertexIn.normal;
     vertexOut.texCoords = vertexIn.texCoords;
+    vertexOut.localPosition = vertexIn.position;
     vertexOut.worldPosition = worldPosition.xyz;
     vertexOut.worldNormal = worldNormal;
     vertexOut.clipSpacePosZ = vertexOut.position.z;

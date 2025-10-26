@@ -22,6 +22,7 @@ class VertexShaderFunctionTemplateSkySphere: VertexShaderFunctionTemplate {
     vertexOut.position = outputPosition;
     vertexOut.normal = vertexIn.normal;
 
+    vertexOut.localPosition = vertexIn.position;
     vertexOut.worldPosition = worldPosition.xyz;
     vertexOut.worldNormal = uniformsObject.normalMatrix * vertexIn.normal;
 """
