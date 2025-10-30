@@ -1,3 +1,22 @@
+public enum KROpenSimplex2Noise2Variant: Int8, Hashable {
+    case standard
+    case x
+}
+
+public enum KROpenSimplex2Noise3Variant: Int8, Hashable {
+    case xy
+    case xz
+    case fallback
+}
+
+public enum KROpenSimplex2Noise4Variant: Int8, Hashable {
+    case xyz
+    case xyz_xy
+    case xyz_xz
+    case xy_zw
+    case fallback
+}
+
 public struct KRProceduralProperties: Hashable {
     public let scale: Float
     public let octaves: Int
@@ -9,6 +28,19 @@ public struct KRProceduralProperties: Hashable {
     public let threshold: Float
     public let varyWithTime: Bool
 
+    // Extended fractal controls
+    public let startingAmplitude: Float
+    public let startingFrequency: Float
+    public let coordinateScale: Float
+    public let warpIterations: Int
+    public let warpScale: Float
+
+    // OpenSimplex2-specific (KR-level enums)
+    public let openSimplex2Seed: Int32
+    public let openSimplex2Noise2Variant: KROpenSimplex2Noise2Variant
+    public let openSimplex2Noise3Variant: KROpenSimplex2Noise3Variant
+    public let openSimplex2Noise4Variant: KROpenSimplex2Noise4Variant
+
     public init(
         scale: Float = 1.0,
         octaves: Int = 4,
@@ -18,7 +50,16 @@ public struct KRProceduralProperties: Hashable {
         colorA: SIMD4<Float> = SIMD4<Float>(0.0, 0.0, 0.0, 1.0),
         colorB: SIMD4<Float> = SIMD4<Float>(1.0, 1.0, 1.0, 1.0),
         threshold: Float = 0.0,
-        varyWithTime: Bool = false
+        varyWithTime: Bool = false,
+        startingAmplitude: Float = 1.0,
+        startingFrequency: Float = 1.0,
+        coordinateScale: Float = 1.0,
+        warpIterations: Int = 0,
+        warpScale: Float = 1.0,
+        openSimplex2Seed: Int32 = 1337,
+        openSimplex2Noise2Variant: KROpenSimplex2Noise2Variant = .standard,
+        openSimplex2Noise3Variant: KROpenSimplex2Noise3Variant = .xy,
+        openSimplex2Noise4Variant: KROpenSimplex2Noise4Variant = .xyz
     ) {
         self.scale = scale
         self.octaves = octaves
@@ -29,6 +70,17 @@ public struct KRProceduralProperties: Hashable {
         self.colorB = colorB
         self.threshold = threshold
         self.varyWithTime = varyWithTime
+
+        self.startingAmplitude = startingAmplitude
+        self.startingFrequency = startingFrequency
+        self.coordinateScale = coordinateScale
+        self.warpIterations = warpIterations
+        self.warpScale = warpScale
+
+        self.openSimplex2Seed = openSimplex2Seed
+        self.openSimplex2Noise2Variant = openSimplex2Noise2Variant
+        self.openSimplex2Noise3Variant = openSimplex2Noise3Variant
+        self.openSimplex2Noise4Variant = openSimplex2Noise4Variant
     }
 }
 
@@ -201,7 +253,7 @@ public struct KRMaterial {
                 applyLight: behavior.applyLight,
                 receiveShadow: behavior.receiveShadow
             )
-        case .procedural(let proceduralProps):
+        case .procedural(let p):
             return MaterialUniforms(
                 materialType: .procedural,
                 flatShadingMode: behavior.flatShading ? .enabled : .global,
@@ -214,16 +266,31 @@ public struct KRMaterial {
                 rimColor: rim.color,
                 rimPower: rim.power,
                 rimLightingMode: rimLightingMode,
-                color: proceduralProps.colorA, // Use colorA as the base color for compatibility
-                noiseScale: proceduralProps.scale,
-                noiseOctaves: Int32(proceduralProps.octaves),
-                noisePersistence: proceduralProps.persistence,
-                noiseLacunarity: proceduralProps.lacunarity,
-                noiseOffset: proceduralProps.offset,
-                noiseColorA: proceduralProps.colorA,
-                noiseColorB: proceduralProps.colorB,
-                noiseThreshold: proceduralProps.threshold,
-                varyWithTime: proceduralProps.varyWithTime
+                color: p.colorA, // base color for compatibility
+                noiseOffset: p.offset,
+                noiseColorA: p.colorA,
+                noiseColorB: p.colorB,
+                noiseThreshold: p.threshold,
+                varyWithTime: p.varyWithTime,
+                fractalLacunarity: p.lacunarity,
+                fractalGain: p.persistence,
+                fractalStartingAmplitude: p.startingAmplitude,
+                fractalStartingFrequency: p.startingFrequency,
+                fractalOctaves: Int32(p.octaves),
+                fractalWarpIterations: Int32(p.warpIterations),
+                fractalWarpScale: p.warpScale,
+                fractalCoordinateScale: p.coordinateScale,
+                fractalNoiseType: 0, // openSimplex2
+                openSimplex2Seed: p.openSimplex2Seed,
+                openSimplex2Noise2Variant: Int8(p.openSimplex2Noise2Variant.rawValue),
+                openSimplex2Noise3Variant: Int8(p.openSimplex2Noise3Variant.rawValue),
+                openSimplex2Noise4Variant: Int8(p.openSimplex2Noise4Variant.rawValue),
+                // Voronoi placeholders
+                voronoiSeed: 0,
+                voronoiDistanceFunction: 0,
+                voronoiReturnType: 0,
+                voronoiJitter: 1.0,
+                voronoiMinkowskiP: 2.0
             )
         case .color(let color):
             return MaterialUniforms(

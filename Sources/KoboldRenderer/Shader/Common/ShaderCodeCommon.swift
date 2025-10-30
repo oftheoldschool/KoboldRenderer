@@ -50,9 +50,9 @@ enum class LightUniformsType: int8_t {
 
 enum class RimLightingMode: int8_t {
     none = 0,
-    artistic = 1,          // Pure artistic rim using material color only
-    lightInfluenced = 2,   // Rim influenced by all lights equally
-    directional = 3,       // Rim influenced by lights with directional consideration
+    artistic = 1,
+    lightInfluenced = 2,
+    directional = 3,
 };
 
 struct MaterialUniforms {
@@ -70,16 +70,34 @@ struct MaterialUniforms {
     RimLightingMode rimLightingMode;
     
     float4 color;
-    
-    float noiseScale;
-    int noiseOctaves;
-    float noisePersistence;
-    float noiseLacunarity;
+
     float3 noiseOffset;
     float4 noiseColorA;
     float4 noiseColorB;
     float noiseThreshold;
     bool varyWithTime;
+
+    float fractalLacunarity;
+    float fractalGain;
+    float fractalStartingAmplitude;
+    float fractalStartingFrequency;
+    int fractalOctaves;
+    int fractalWarpIterations;
+    float fractalWarpScale;
+    float fractalCoordinateScale;
+
+    int8_t fractalNoiseType;
+
+    int openSimplex2Seed;
+    int8_t openSimplex2Noise2Variant;
+    int8_t openSimplex2Noise3Variant;
+    int8_t openSimplex2Noise4Variant;
+
+    int voronoiSeed;
+    int8_t voronoiDistanceFunction;
+    int8_t voronoiReturnType;
+    float voronoiJitter;
+    float voronoiMinkowskiP;
 };
 
 struct MaterialParameters {
