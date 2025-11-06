@@ -96,7 +96,7 @@ extension SharedUniforms {
     // useful when dealing with colour only scenarios such as when writing the skybox
     init(
         camera: KRCamera,
-        elapsedTime: Float = .zero,
+        elapsedTime: Float = .zero
     ) {
         let viewMatrix = camera.viewMatrix()
         let projectionMatrix = camera.projectionMatrix()
