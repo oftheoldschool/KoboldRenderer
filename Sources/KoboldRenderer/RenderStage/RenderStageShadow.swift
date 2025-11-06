@@ -140,11 +140,7 @@ class RenderStageShadow {
                 modelManager: modelManager,
                 commandBuffer: commandBuffer,
                 outputRenderPassDescriptor: cascadedShadowRenderPassDescriptor,
-                drawDataList: drawDataList
-                    .filter {
-                        let pipeline = shaderLibrary[$0.pipeline]!
-                        return pipeline.shaderVariants.keys.contains { $0.renderTarget == .depth }
-                    }, // todo: this should be a property of the object - whether it casts a shadow or not,
+                drawDataList: drawDataList.filter { $0.castsShadow },
                 dataBindings: dataBindings,
                 currentFrame: currentFrame,
                 renderTarget: .depth,

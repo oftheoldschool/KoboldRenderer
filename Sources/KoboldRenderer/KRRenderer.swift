@@ -418,7 +418,8 @@ public class KRRenderer {
                 pipeline: drawData.pipeline,
                 instanceCount: drawData.instanceCount,
                 perObjectBufferBindings: getPerObjectBufferBindings(drawData),
-                drawFirst: drawData.drawFirst)
+                drawFirst: drawData.drawFirst,
+                castsShadow: drawData.castsShadow)
         }
     }
 
