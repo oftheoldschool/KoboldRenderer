@@ -62,7 +62,8 @@ class RenderStageOpaqueTechniqueForward: RenderStageOpaqueTechnique {
             textureBindings: textureBindings,
             currentFrame: currentFrame,
             renderTarget: rendererSettings.bloomEnabled ? .colorPlusBrightnessPlusDepth : .colorPlusDepth,
-            msaaEnabled: rendererSettings.msaaEnabled)
+            msaaEnabled: rendererSettings.msaaEnabled,
+            rendererSettings: rendererSettings)
     }
 
     static func createForwardResources(

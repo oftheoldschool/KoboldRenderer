@@ -60,7 +60,10 @@ class RenderStageOpaque {
             rendererSettings: rendererSettings,
             globalLightingColor: globalLightingColor,
             elapsedTime: elapsedTime,
-            globalMaterialId: globalMaterialId)
+            globalMaterialId: globalMaterialId,
+            shadowNormalBias: rendererSettings.shadowNormalBias,
+            shadowBiasAngleFactor: rendererSettings.shadowBiasAngleFactor,
+            shadowCascadeFactor: rendererSettings.shadowCascadeFactor)
 
         let dataBindings: [KBufferBindingType: GPUData] = [
             .uniformsShared: .wrapper(GPUDataWrapper(sharedUniforms)),

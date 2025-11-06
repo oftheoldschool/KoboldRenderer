@@ -66,7 +66,8 @@ class RenderStageOpaqueTechniqueDeferred: RenderStageOpaqueTechnique {
             textureBindings: textureBindings,
             currentFrame: currentFrame,
             renderTarget: .gbuffer,
-            msaaEnabled: rendererSettings.msaaEnabled)
+            msaaEnabled: rendererSettings.msaaEnabled,
+            rendererSettings: rendererSettings)
 
         let deferredTextures = resources.deferredTextures
 

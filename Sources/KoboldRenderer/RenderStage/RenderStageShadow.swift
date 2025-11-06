@@ -79,7 +79,8 @@ class RenderStageShadow {
     }
 
     func renderCascadedShadowMap(
-        shaderLibrary: ShaderLibrary, // todo: don't do this - look up pipelines before
+        shaderLibrary: ShaderLibrary, // todo: don't do this - look up pipelines before,
+        rendererSettings: KRRendererSettings,
         modelManager: ModelManager,
         renderPass: RenderPass,
         commandBuffer: MTLCommandBuffer,
@@ -147,7 +148,8 @@ class RenderStageShadow {
                 dataBindings: dataBindings,
                 currentFrame: currentFrame,
                 renderTarget: .depth,
-                isShadowPass: true)
+                isShadowPass: true,
+                rendererSettings: rendererSettings)
         }
 
         let lightVolumeViewProjections = orthographicVolumes.map { lightVolume in

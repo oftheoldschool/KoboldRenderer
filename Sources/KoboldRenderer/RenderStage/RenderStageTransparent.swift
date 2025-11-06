@@ -51,7 +51,10 @@ class RenderStageTransparent {
             rendererSettings: rendererSettings,
             globalLightingColor: globalLightingColor,
             elapsedTime: elapsedTime,
-            globalMaterialId: globalMaterialId)
+            globalMaterialId: globalMaterialId,
+            shadowNormalBias: rendererSettings.shadowNormalBias,
+            shadowBiasAngleFactor: rendererSettings.shadowBiasAngleFactor,
+            shadowCascadeFactor: rendererSettings.shadowCascadeFactor)
 
         let dataBindings: [KBufferBindingType: GPUData] = [
             .uniformsShared: .wrapper(GPUDataWrapper(sharedUniforms)),
@@ -79,7 +82,8 @@ class RenderStageTransparent {
             currentFrame: currentFrame,
             renderTarget: rendererSettings.bloomEnabled ? .colorPlusBrightnessPlusDepth : .colorPlusDepth,
             isTransparencyPass: true,
-            msaaEnabled: false // todo: hardcode msaa off since maintaining multiple transparency targets will be very expensive
+            msaaEnabled: false, // todo: hardcode msaa off since maintaining multiple transparency targets will be very expensive
+            rendererSettings: rendererSettings
         )
 
         return resources.output
@@ -172,7 +176,7 @@ class RenderStageTransparent {
         height: Int
     ) -> MTLTexture {
         let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(
-            pixelFormat: .r16Float, // how to tie this up with the value in the render pass?
+            pixelFormat: .r16Float,  // how to tie this up with the value in the render pass?
             width: width,
             height: height,
             mipmapped: false

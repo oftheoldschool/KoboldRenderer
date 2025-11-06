@@ -24,11 +24,11 @@ class ComputeShaderFunctionTemplateGBufferCombine: ComputeShaderFunctionTemplate
     
     // Create a position in clip space
     float4 clipSpacePos = float4(ndcXY, depth, 1.0);
-    
+
     // Transform to world space using the inverse view-projection matrix
     // A limitation of this is that it assumes all fragments were created as a result of
     // regular view projection, while the skybox removes the translation aspect of the view
-    // This is fine for lighting calculations as the skybox isn't affected by lighting, but 
+    // This is fine for lighting calculations as the skybox isn't affected by lighting, but
     // debug information for skybox in deferred rendering won't be accurate
     float4 worldSpacePos = uniformsShared.invViewProjection * clipSpacePos;
     worldSpacePos /= worldSpacePos.w; // Perspective divide
@@ -54,7 +54,8 @@ class ComputeShaderFunctionTemplateGBufferCombine: ComputeShaderFunctionTemplate
         textureArrayCascadedShadowMap,
         textureArrayCascadedShadowMapSampler,
         uniformsCascadeEndClipSpace,
-        enableShadows);
+        enableShadows,
+        uniformsShared);
 
     MaterialParameters materialParameters = resolveMaterial(
         material,

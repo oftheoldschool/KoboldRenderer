@@ -434,6 +434,9 @@ public class LayoutLibrary {
                         KStructItem(name: "enableShadows", type: .primitive(.bool)),
                         KStructItem(name: "enableLighting", type: .primitive(.bool)),
                         KStructItem(name: "enableFlatShading", type: .primitive(.bool)),
+                        KStructItem(name: "shadowNormalBias", type: .primitive(.float)),
+                        KStructItem(name: "shadowBiasAngleFactor", type: .primitive(.float)),
+                        KStructItem(name: "shadowCascadeFactor", type: .primitive(.float)),
                     ]
                 ),
                 KStructLayout(

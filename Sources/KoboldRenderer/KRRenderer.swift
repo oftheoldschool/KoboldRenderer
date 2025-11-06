@@ -223,6 +223,7 @@ public class KRRenderer {
 
         let cascadedShadowMap = try! renderStageShadow.renderCascadedShadowMap(
             shaderLibrary: shaderLibrary,
+            rendererSettings: rendererSettings,
             modelManager: modelManager,
             renderPass: renderPass,
             commandBuffer: commandBuffer,

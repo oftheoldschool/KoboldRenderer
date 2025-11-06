@@ -16,18 +16,25 @@ struct SharedUniforms {
     let enableShadows: Bool
     let enableLighting: Bool
     let enableFlatShading: Bool
+    let shadowNormalBias: Float
+    let shadowBiasAngleFactor: Float
+    let shadowCascadeFactor: Float
 }
 
+// general purpose init - used for primary rendering scenarios
+// for example perspective camera and lighting
+// want to avoid specifying defaults in SharedUniforms though
 extension SharedUniforms {
-    // general purpose init - used for primary rendering scenarios
-    // for example perspective camera and lighting
     init(
         camera: KRCamera,
         lightingData: LightingData,
         rendererSettings: KRRendererSettings,
         globalLightingColor: SIMD3<Float>,
         elapsedTime: Float,
-        globalMaterialId: Int
+        globalMaterialId: Int,
+        shadowNormalBias: Float,
+        shadowBiasAngleFactor: Float,
+        shadowCascadeFactor: Float
     ) {
         let viewMatrix = camera.viewMatrix()
         let projectionMatrix = camera.projectionMatrix()
@@ -48,7 +55,10 @@ extension SharedUniforms {
             lightCount: UInt8(lightingData.lights.count),
             enableShadows: lightingData.enableShadows,
             enableLighting: lightingData.enableLighting,
-            enableFlatShading: rendererSettings.flatShadingEnabled
+            enableFlatShading: rendererSettings.flatShadingEnabled,
+            shadowNormalBias: shadowNormalBias,
+            shadowBiasAngleFactor: shadowBiasAngleFactor,
+            shadowCascadeFactor: shadowCascadeFactor
         )
     }
 
@@ -76,13 +86,17 @@ extension SharedUniforms {
             lightCount: .zero,
             enableShadows: false,
             enableLighting: false,
-            enableFlatShading: false)
+            enableFlatShading: false,
+            shadowNormalBias: 0,
+            shadowBiasAngleFactor: 0,
+            shadowCascadeFactor: 0
+        )
     }
 
-    // useful when dealing with no lighting info for example rendering skybox
+    // useful when dealing with colour only scenarios such as when writing the skybox
     init(
         camera: KRCamera,
-        elapsedTime: Float = .zero
+        elapsedTime: Float = .zero,
     ) {
         let viewMatrix = camera.viewMatrix()
         let projectionMatrix = camera.projectionMatrix()
@@ -103,6 +117,10 @@ extension SharedUniforms {
             lightCount: .zero,
             enableShadows: false,
             enableLighting: false,
-            enableFlatShading: false)
+            enableFlatShading: false,
+            shadowNormalBias: 0,
+            shadowBiasAngleFactor: 0,
+            shadowCascadeFactor: 0
+        )
     }
 }

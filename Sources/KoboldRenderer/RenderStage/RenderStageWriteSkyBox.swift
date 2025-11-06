@@ -81,7 +81,8 @@ public class RenderStageWriteSkyBox {
                 drawDataList: drawDataList,
                 dataBindings: dataBindings,
                 currentFrame: 0,
-                renderTarget: .colorPlusDepth)
+                renderTarget: .colorPlusDepth,
+                rendererSettings: rendererSettings)
         }
 
         return getSkybox(

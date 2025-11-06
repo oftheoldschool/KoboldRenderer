@@ -27,6 +27,12 @@ public struct KRRendererSettings {
     public var globalLightingColor: SIMD3<Float>
     public var cascadeFrustumDistances: [Float]
     public var clearColor: SIMD3<Float>
+    public var shadowNormalBias: Float
+    public var shadowBiasAngleFactor: Float
+    public var shadowCascadeFactor: Float
+    public var depthBias: Float
+    public var depthSlopeScale: Float
+    public var depthClamp: Float
 
     public init(
         renderingMode: KRRenderingMode = .forward,
@@ -44,7 +50,13 @@ public struct KRRendererSettings {
         globalMaterial: String = "none",
         globalLightingColor: SIMD3<Float>,
         cascadeFrustumDistances: [Float],
-        clearColor: SIMD3<Float>
+        clearColor: SIMD3<Float>,
+        shadowNormalBias: Float = 0.0001,
+        shadowBiasAngleFactor: Float = 0.2,
+        shadowCascadeFactor: Float = 0.3,
+        depthBias: Float = 1,
+        depthSlopeScale: Float = 3,
+        depthClamp: Float = 0.008
     ) {
         self.renderingMode = renderingMode
         self.transparencyEnabled = transparencyEnabled
@@ -62,6 +74,12 @@ public struct KRRendererSettings {
         self.globalLightingColor = globalLightingColor
         self.cascadeFrustumDistances = cascadeFrustumDistances
         self.clearColor = clearColor
+        self.shadowNormalBias = shadowNormalBias
+        self.shadowBiasAngleFactor = shadowBiasAngleFactor
+        self.shadowCascadeFactor = shadowCascadeFactor
+        self.depthBias = depthBias
+        self.depthSlopeScale = depthSlopeScale
+        self.depthClamp = depthClamp
     }
 
     func requiresReinit(previous: KRRendererSettings) -> Bool {

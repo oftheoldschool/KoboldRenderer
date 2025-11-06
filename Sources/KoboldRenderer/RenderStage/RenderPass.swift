@@ -34,7 +34,8 @@ class RenderPass {
         renderTarget: ShaderRenderTarget,
         isShadowPass: Bool = false,
         isTransparencyPass: Bool = false,
-        msaaEnabled: Bool = false
+        msaaEnabled: Bool = false,
+        rendererSettings: KRRendererSettings
     ) {
         if let commandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: outputRenderPassDescriptor) {
             if isTransparencyPass {
@@ -45,9 +46,10 @@ class RenderPass {
 
             if isShadowPass {
                 commandEncoder.setDepthBias(
-                    1,
-                    slopeScale: 3,
-                    clamp: 0.008)
+                    rendererSettings.depthBias,
+                    slopeScale: rendererSettings.depthSlopeScale,
+                    clamp: rendererSettings.depthClamp
+                )
 
                 let viewport = MTLViewport(
                     originX: 0,
