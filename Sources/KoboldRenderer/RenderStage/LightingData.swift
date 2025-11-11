@@ -2,8 +2,6 @@ struct LightingData {
     let globalLight: KRLight
     let lights: [KRLight]
     let cascadedShadowMap: CascadedShadowMap
-    let bloomThreshold: SIMD3<Float>
-    let bloomMultiplier: SIMD3<Float>
     let enableLighting: Bool
     let enableShadows: Bool
 
@@ -12,8 +10,6 @@ struct LightingData {
         maxLights: Int,
         lights: [KRLight],
         cascadedShadowMap: CascadedShadowMap,
-        bloomThreshold: SIMD3<Float>,
-        bloomMultiplier: SIMD3<Float>,
         enableLighting: Bool,
         enableShadows: Bool
     ) {
@@ -27,8 +23,6 @@ struct LightingData {
         self.globalLight = globalLight
         self.lights = cappedLights
         self.cascadedShadowMap = cascadedShadowMap
-        self.bloomThreshold = bloomThreshold
-        self.bloomMultiplier = bloomMultiplier
         self.enableLighting = enableLighting
         self.enableShadows = enableShadows
     }

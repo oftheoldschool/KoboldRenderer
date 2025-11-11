@@ -238,8 +238,6 @@ public class KRRenderer {
             maxLights: Self.maxLights,
             lights: lights,
             cascadedShadowMap: cascadedShadowMap,
-            bloomThreshold: rendererSettings.bloomThreshold,
-            bloomMultiplier: rendererSettings.bloomMultiplier,
             enableLighting: rendererSettings.lightingEnabled,
             enableShadows: rendererSettings.shadowsEnabled)
 

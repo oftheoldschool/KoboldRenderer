@@ -28,25 +28,22 @@ ShadowCalculationData getShadowCalculationData(
     return shadowCalculationData;
 }
 
-// Helper function to resolve light color
 float3 resolveLightColor(
-    constant SharedUniforms & uniformsShared, 
+    constant LightingUniforms & uniformsLighting, 
     constant LightUniforms & light
 ) {
-    return (uniformsShared.globalLightingColor.x == 0 
-            && uniformsShared.globalLightingColor.y == 0 
-            && uniformsShared.globalLightingColor.z == 0)
+    return (uniformsLighting.globalLightingColor.x == 0 
+            && uniformsLighting.globalLightingColor.y == 0 
+            && uniformsLighting.globalLightingColor.z == 0)
         ? light.color
-        : uniformsShared.globalLightingColor;
+        : uniformsLighting.globalLightingColor;
 }
 
-// Calculate light direction and attenuation
 struct LightContribution {
     float3 direction;
     float attenuation;
 };
 
-// Calculate diffuse and specular lighting
 struct SurfaceLighting {
     float3 diffuse;
     float3 specular;
@@ -153,6 +150,7 @@ SurfaceLighting calculateSurfaceLighting(
 
 float3 calculateRimLighting(
     constant SharedUniforms & uniformsShared,
+    constant LightingUniforms & uniformsLighting,
     constant LightUniforms * uniformsLights,
     float3 worldPosition, 
     float3 normal,
@@ -174,10 +172,10 @@ float3 calculateRimLighting(
         float3 totalRimLight = float3(0);
         float3 viewDirection = normalize(uniformsShared.cameraPosition - worldPosition);
         
-        for (uint8_t i = 0; i < uniformsShared.lightCount; ++i) {
+        for (uint8_t i = 0; i < uniformsLighting.lightCount; ++i) {
             constant LightUniforms & light = uniformsLights[i];
             float3 lightColor = resolveLightColor(
-                uniformsShared, 
+                uniformsLighting, 
                 light
             );
             
@@ -210,6 +208,7 @@ float3 calculateRimLighting(
 
 float4 calculateLighting(
     constant SharedUniforms & uniformsShared,
+    constant LightingUniforms & uniformsLighting,
     constant LightUniforms * uniformsLights,
     float3 worldPosition,
     float3 normal,
@@ -227,10 +226,10 @@ float4 calculateLighting(
     float3 totalSpecular = float3(0);
 
     // Process each light
-    for (uint8_t i = 0; i < uniformsShared.lightCount; ++i) {
+    for (uint8_t i = 0; i < uniformsLighting.lightCount; ++i) {
         constant LightUniforms & light = uniformsLights[i];
         float3 lightColor = resolveLightColor(
-            uniformsShared, 
+            uniformsLighting, 
             light
         );
         
@@ -275,6 +274,7 @@ float4 calculateLighting(
     // Add rim lighting
     float3 rimTerm = calculateRimLighting(
         uniformsShared,
+        uniformsLighting,
         uniformsLights,
         worldPosition,
         N,

@@ -47,18 +47,23 @@ class RenderStageTransparent {
 
         let sharedUniforms = SharedUniforms(
             camera: camera,
-            lightingData: lightingData,
             rendererSettings: rendererSettings,
-            globalLightingColor: globalLightingColor,
             elapsedTime: elapsedTime,
-            globalMaterialId: globalMaterialId,
+            globalMaterialId: globalMaterialId)
+
+        let lightingUniforms = LightingUniforms(
+            globalLightingColor: globalLightingColor,
             shadowNormalBias: rendererSettings.shadowNormalBias,
             shadowBiasAngleFactor: rendererSettings.shadowBiasAngleFactor,
-            shadowCascadeFactor: rendererSettings.shadowCascadeFactor)
+            shadowCascadeFactor: rendererSettings.shadowCascadeFactor,
+            lightCount: UInt8(lightingData.lights.count),
+            enableShadows: lightingData.enableShadows,
+            enableLighting: lightingData.enableLighting)
 
         let dataBindings: [KBufferBindingType: GPUData] = [
             .uniformsShared: .wrapper(GPUDataWrapper(sharedUniforms)),
             .uniformsLights: .buffer(lightsBuffer[currentFrame]),
+            .uniformsLighting: .wrapper(GPUDataWrapper(lightingUniforms)),
             .uniformsCascadeFrustumLimitsClipSpace: .wrapper(GPUDataWrapper(lightingData.cascadedShadowMap.cascadeFrustumLimitsClipSpace)),
             .uniformsLightSpaceVolumes: .wrapper(GPUDataWrapper(lightingData.cascadedShadowMap.lightVolumeViewProjections)),
             .materials: .buffer(materialsBuffer[currentFrame]),

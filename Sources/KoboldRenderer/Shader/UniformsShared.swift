@@ -9,16 +9,9 @@ struct SharedUniforms {
     let cameraPosition: SIMD3<Float>
     let bloomThreshold: SIMD3<Float>
     let bloomMultiplier: SIMD3<Float>
-    let globalLightingColor: SIMD3<Float>
     let elapsedTime: Float
     let globalMaterialId: Int32
-    let lightCount: UInt8
-    let enableShadows: Bool
-    let enableLighting: Bool
     let enableFlatShading: Bool
-    let shadowNormalBias: Float
-    let shadowBiasAngleFactor: Float
-    let shadowCascadeFactor: Float
 }
 
 // general purpose init - used for primary rendering scenarios
@@ -27,14 +20,9 @@ struct SharedUniforms {
 extension SharedUniforms {
     init(
         camera: KRCamera,
-        lightingData: LightingData,
         rendererSettings: KRRendererSettings,
-        globalLightingColor: SIMD3<Float>,
         elapsedTime: Float,
-        globalMaterialId: Int,
-        shadowNormalBias: Float,
-        shadowBiasAngleFactor: Float,
-        shadowCascadeFactor: Float
+        globalMaterialId: Int
     ) {
         let viewMatrix = camera.viewMatrix()
         let projectionMatrix = camera.projectionMatrix()
@@ -47,18 +35,11 @@ extension SharedUniforms {
             invProjectionMatrix: projectionMatrix.inverse,
             noTranslationViewProjection: projectionMatrix * viewMatrix.upperLeft.toFloat4x4(),
             cameraPosition: camera.position,
-            bloomThreshold: lightingData.bloomThreshold,
-            bloomMultiplier: lightingData.bloomMultiplier,
-            globalLightingColor: globalLightingColor,
+            bloomThreshold: rendererSettings.bloomThreshold,
+            bloomMultiplier: rendererSettings.bloomMultiplier,
             elapsedTime: elapsedTime,
             globalMaterialId: Int32(globalMaterialId),
-            lightCount: UInt8(lightingData.lights.count),
-            enableShadows: lightingData.enableShadows,
-            enableLighting: lightingData.enableLighting,
-            enableFlatShading: rendererSettings.flatShadingEnabled,
-            shadowNormalBias: shadowNormalBias,
-            shadowBiasAngleFactor: shadowBiasAngleFactor,
-            shadowCascadeFactor: shadowCascadeFactor
+            enableFlatShading: rendererSettings.flatShadingEnabled
         )
     }
 
@@ -80,16 +61,9 @@ extension SharedUniforms {
             cameraPosition: .zero,
             bloomThreshold: .zero,
             bloomMultiplier: .zero,
-            globalLightingColor: .zero,
             elapsedTime: elapsedTime,
             globalMaterialId: 0,
-            lightCount: .zero,
-            enableShadows: false,
-            enableLighting: false,
-            enableFlatShading: false,
-            shadowNormalBias: 0,
-            shadowBiasAngleFactor: 0,
-            shadowCascadeFactor: 0
+            enableFlatShading: false
         )
     }
 
@@ -111,16 +85,9 @@ extension SharedUniforms {
             cameraPosition: camera.position,
             bloomThreshold: .zero,
             bloomMultiplier: .zero,
-            globalLightingColor: .zero,
             elapsedTime: elapsedTime,
             globalMaterialId: 0,
-            lightCount: .zero,
-            enableShadows: false,
-            enableLighting: false,
-            enableFlatShading: false,
-            shadowNormalBias: 0,
-            shadowBiasAngleFactor: 0,
-            shadowCascadeFactor: 0
+            enableFlatShading: false
         )
     }
 }

@@ -205,6 +205,7 @@ public class LayoutLibrary {
                         LayoutLibrary.getBufferLayoutBinding(.uniformsShared),
                         LayoutLibrary.getBufferLayoutBinding(.uniformsObject),
                         LayoutLibrary.getBufferLayoutBinding(.uniformsLights),
+                        LayoutLibrary.getBufferLayoutBinding(.uniformsLighting),
                         LayoutLibrary.getBufferLayoutBinding(.uniformsCascadeFrustumLimitsClipSpace),
                         LayoutLibrary.getBufferLayoutBinding(.materials),
                     ]
@@ -218,6 +219,7 @@ public class LayoutLibrary {
                     bufferLayoutBindings: [
                         LayoutLibrary.getBufferLayoutBinding(.uniformsShared),
                         LayoutLibrary.getBufferLayoutBinding(.uniformsLights),
+                        LayoutLibrary.getBufferLayoutBinding(.uniformsLighting),
                         LayoutLibrary.getBufferLayoutBinding(.uniformsLightSpaceVolumes),
                         LayoutLibrary.getBufferLayoutBinding(.uniformsCascadeFrustumLimitsClipSpace),
                         LayoutLibrary.getBufferLayoutBinding(.materials),
@@ -427,16 +429,21 @@ public class LayoutLibrary {
                         KStructItem(name: "cameraPosition", type: .primitive(.float3)),
                         KStructItem(name: "bloomThreshold", type: .primitive(.float3)),
                         KStructItem(name: "bloomMultiplier", type: .primitive(.float3)),
-                        KStructItem(name: "globalLightingColor", type: .primitive(.float3)),
                         KStructItem(name: "elapsedTime", type: .primitive(.float)),
                         KStructItem(name: "globalMaterialId", type: .primitive(.int32_t)),
-                        KStructItem(name: "lightCount", type: .primitive(.uint8_t)),
-                        KStructItem(name: "enableShadows", type: .primitive(.bool)),
-                        KStructItem(name: "enableLighting", type: .primitive(.bool)),
                         KStructItem(name: "enableFlatShading", type: .primitive(.bool)),
+                    ]
+                ),
+                KStructLayout(
+                    name: "LightingUniforms",
+                    items: [
+                        KStructItem(name: "globalLightingColor", type: .primitive(.float3)),
                         KStructItem(name: "shadowNormalBias", type: .primitive(.float)),
                         KStructItem(name: "shadowBiasAngleFactor", type: .primitive(.float)),
                         KStructItem(name: "shadowCascadeFactor", type: .primitive(.float)),
+                        KStructItem(name: "lightCount", type: .primitive(.uint8_t)),
+                        KStructItem(name: "enableShadows", type: .primitive(.bool)),
+                        KStructItem(name: "enableLighting", type: .primitive(.bool)),
                     ]
                 ),
                 KStructLayout(

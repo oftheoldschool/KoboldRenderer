@@ -59,8 +59,8 @@ class FragmentShaderFunctionTemplateTexture: FragmentShaderFunctionTemplate {
         textureArrayCascadedShadowMap,
         textureArrayCascadedShadowMapSampler,
         uniformsCascadeEndClipSpace,
-        uniformsShared.enableShadows && material.applyLight,
-        uniformsShared);
+        uniformsLighting.enableShadows && material.applyLight,
+        uniformsLighting);
 
     MaterialParameters materialParameters = resolveMaterial(
         material,
@@ -72,12 +72,13 @@ class FragmentShaderFunctionTemplateTexture: FragmentShaderFunctionTemplate {
 
     fragmentColor = calculateLighting(
         uniformsShared,
+        uniformsLighting,
         uniformsLights, 
         fragmentIn.worldPosition,
         normal,
         materialParameters, 
         shadowResult.shadowFactor,
-        uniformsShared.enableLighting && material.applyLight);
+        uniformsLighting.enableLighting && material.applyLight);
 """
     }
 

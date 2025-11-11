@@ -46,8 +46,8 @@ class ComputeShaderFunctionTemplateGBufferCombine: ComputeShaderFunctionTemplate
     constant MaterialUniforms & material = materials[materialId];
     constant MaterialUniforms & globalMaterial = materials[uniformsShared.globalMaterialId];
 
-    bool enableLighting = uniformsShared.enableLighting && material.applyLight;
-    bool enableShadows = uniformsShared.enableShadows && material.receiveShadow;
+    bool enableLighting = uniformsLighting.enableLighting && material.applyLight;
+    bool enableShadows = uniformsLighting.enableShadows && material.receiveShadow;
 
     ShadowResult shadowResult = calculateShadow(
         shadowCalculationData,
@@ -55,7 +55,7 @@ class ComputeShaderFunctionTemplateGBufferCombine: ComputeShaderFunctionTemplate
         textureArrayCascadedShadowMapSampler,
         uniformsCascadeEndClipSpace,
         enableShadows,
-        uniformsShared);
+        uniformsLighting);
 
     MaterialParameters materialParameters = resolveMaterial(
         material,
@@ -67,6 +67,7 @@ class ComputeShaderFunctionTemplateGBufferCombine: ComputeShaderFunctionTemplate
 
     float4 finalColor = calculateLighting(
         uniformsShared,
+        uniformsLighting,
         uniformsLights,
         worldSpacePos.xyz,
         normal,
@@ -80,7 +81,7 @@ class ComputeShaderFunctionTemplateGBufferCombine: ComputeShaderFunctionTemplate
     float4 brightness = calculateBloom(
         float4(finalColor.rgb, 1),
         uniformsShared.bloomThreshold,
-        uniformsShared.bloomMultiplier
+                uniformsShared.bloomMultiplier
     );
     textureComputeBloomOutput.write(float4(brightness.rgb, 1.0), gid);
 """ : "")

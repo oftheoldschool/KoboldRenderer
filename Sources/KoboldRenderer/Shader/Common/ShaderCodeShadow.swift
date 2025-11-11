@@ -9,12 +9,58 @@ class ShaderCodeShadow {
 
     private static let shaderCode =
 """
+
+float calculateSphereShadowFactor(
+    float3 light, 
+    float lightRadius,
+    float3 occluder, 
+    float occluderRadius, 
+    float3 fragmentPosition
+) {
+    float3 v0 = light - fragmentPosition;
+    float3 v1 = occluder - fragmentPosition;
+    
+    if (dot(v0, v1) < 0) {
+        return 1;
+    }
+    
+    float3 v2 = light - occluder;
+    if (dot(v0, v2) < 0) {
+        return 1;
+    }
+
+    float R0 = length(v0);
+    float R1 = length(v1);
+
+    float a0 = lightRadius / R0;
+    float a1 = occluderRadius / R1;
+
+    float a = length(cross(v0, v1)) / (R0 * R1);
+    a = smoothstep(a0 - a1, a0 + a1, a);
+    float shadowTerm = 1 - (1 - a) * pow(a1 / a0, 2);
+
+    return clamp(shadowTerm, 0.0, 1.0);
+}
+
+#define CALCULATE_OCCLUDER_SHADOW_FACTOR(INDEX) \
+    if (occluders[INDEX].size > 0 \
+        && occluders[INDEX].entityId != entityId \
+        && occluders[INDEX].isSun == 0.f) \
+    { \
+        occluderShadowFactor *= soft_shadow( \
+            light.position, \
+            light.size, \
+            occluders[INDEX].position, \
+            occluders[INDEX].size, \
+            fragmentIn.worldPosition); \
+    }
+
 float calculateCSMShadowFactor(
     float4 lightSpacePos,
     depth2d_array<float, access::sample> shadowTextures,
     sampler shadowSampler,
     float cascadeIndex,
-    constant SharedUniforms & uniformsShared
+    constant LightingUniforms & uniformsLighting
 ) {
     float3 projCoords = (lightSpacePos.xyz / lightSpacePos.w);
     float2 uvCoords = (projCoords.xy * 0.5) + 0.5;
@@ -22,9 +68,9 @@ float calculateCSMShadowFactor(
 
     float shadow = 0.0;
 
-    float bias = uniformsShared.shadowNormalBias;
-    bias *= 1.0 + (1.0 - abs(dot(float3(0, 0, 1), normalize(projCoords)))) * uniformsShared.shadowBiasAngleFactor;
-    bias *= (1.0 + cascadeIndex * uniformsShared.shadowCascadeFactor);
+    float bias = uniformsLighting.shadowNormalBias;
+    bias *= 1.0 + (1.0 - abs(dot(float3(0, 0, 1), normalize(projCoords)))) * uniformsLighting.shadowBiasAngleFactor;
+    bias *= (1.0 + cascadeIndex * uniformsLighting.shadowCascadeFactor);
 
     float currentDepth = projCoords.z - bias;
 
@@ -60,10 +106,10 @@ float calculateCSMShadowFactor(
 }
 
 #define CALCULATE_LIGHTSPACE_POS( \
-INDEX, \
-IN_WORLD_POSITION, \
-IN_LIGHT_VOLUMES, \
-OUT_LIGHTSPACE_PREFIX \
+    INDEX, \
+    IN_WORLD_POSITION, \
+    IN_LIGHT_VOLUMES, \
+    OUT_LIGHTSPACE_PREFIX \
 ) \
 OUT_LIGHTSPACE_PREFIX ## INDEX = IN_LIGHT_VOLUMES[INDEX] * IN_WORLD_POSITION;
 
@@ -76,7 +122,7 @@ OUT_LIGHTSPACE_PREFIX ## INDEX = IN_LIGHT_VOLUMES[INDEX] * IN_WORLD_POSITION;
     IN_CASCADED_SHADOW_SAMPLER, \
     OUT_CASCADE_INDEX, \
     OUT_SHADOW_FACTOR, \
-    IN_UNIFORMS_SHARED \
+    IN_UNIFORMS_SHADOW \
 ) \
 if (OUT_CASCADE_INDEX < 0 && IN_CLIP_SPACE_POS_Z <= IN_CASCADE_END_CLIP_SPACE[INDEX]) { \
     OUT_SHADOW_FACTOR = calculateCSMShadowFactor( \
@@ -84,7 +130,7 @@ if (OUT_CASCADE_INDEX < 0 && IN_CLIP_SPACE_POS_Z <= IN_CASCADE_END_CLIP_SPACE[IN
         IN_CASCADED_SHADOW_TEXTURE, \
         IN_CASCADED_SHADOW_SAMPLER, \
         INDEX, \
-        IN_UNIFORMS_SHARED); \
+        IN_UNIFORMS_SHADOW); \
     OUT_CASCADE_INDEX = INDEX; \
     if (INDEX == (${CASCADED_SHADOW_NUM_CASCADES} - 1)) { \
         OUT_SHADOW_FACTOR = mix( \
@@ -107,7 +153,7 @@ ShadowResult calculateShadow(
     sampler shadowSampler,
     constant float * cascadeEndClipSpace,
     bool enableShadows,
-    constant SharedUniforms & uniformsShared
+    constant LightingUniforms & uniformsLighting
 ) {
     float csmShadowFactor = 1;
     int csmCascadeIndex = -1;
@@ -126,7 +172,7 @@ ShadowResult calculateShadow(
                 shadowSampler,
                 csmCascadeIndex,
                 csmShadowFactor,
-                uniformsShared)
+                uniformsLighting)
         }
     }
 
