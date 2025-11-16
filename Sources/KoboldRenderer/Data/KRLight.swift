@@ -37,14 +37,17 @@ public struct KRLight {
     let type: KRLightType
     let color: SIMD3<Float>
     let intensity: Float
+    let radius: Float
 
     public init(
         type: KRLightType,
         color: SIMD3<Float>,
-        intensity: Float
+        intensity: Float,
+        radius: Float
     ) {
         self.type = type
         self.intensity = intensity
         self.color = color
+        self.radius = radius
     }
 }

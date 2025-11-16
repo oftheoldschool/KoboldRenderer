@@ -4,6 +4,7 @@ struct LightingUniforms {
     let shadowBiasAngleFactor: Float
     let shadowCascadeFactor: Float
     let lightCount: UInt8
+    let occluderCount: UInt8
     let enableShadows: Bool
     let enableLighting: Bool
 }

@@ -5,6 +5,7 @@ import MetalPerformanceShaders
 public class KRRenderer {
     public static let maxFramesInFlight: Int = 3
     public static let maxLights: Int = 64
+    public static let maxOccluders: Int = 8
     public static let maxMaterials: Int = 64
 
     private let device: MTLDevice
@@ -20,6 +21,7 @@ public class KRRenderer {
 
     private let materialsBuffer: GPUDataMultiBuffer
     private let lightsBuffer: GPUDataMultiBuffer
+    private let occludersBuffer: GPUDataMultiBuffer
     private var instanceBuffers: [String: GPUDataMultiBuffer]
 
     private let layoutLibrary: LayoutLibrary
@@ -126,6 +128,11 @@ public class KRRenderer {
             count: Self.maxFramesInFlight,
             length: MemoryLayout<LightUniforms>.stride * Self.maxLights)
 
+        self.occludersBuffer = GPUDataMultiBuffer(
+            gpuDataManager: gpuDataManager,
+            count: Self.maxFramesInFlight,
+            length: MemoryLayout<OccluderUniforms>.stride * Self.maxLights)
+
         self.instanceBuffers = [:]
     }
 
@@ -166,7 +173,7 @@ public class KRRenderer {
         guard let commandBuffer = commandQueue.makeCommandBuffer() else {
             return nil
         }
-        materialsBuffer[currentFrame].copy(data: materials.map { $0.toGPUData() })
+        materialsBuffer[currentFrame].copy(data: materials.map { $0.toMaterialUniforms() })
         let updatedDrawDataList = getInternalDrawData(drawDataList)
 
         let renderStageWriteSkybox = RenderStageWriteSkyBox()
@@ -197,6 +204,7 @@ public class KRRenderer {
         globalLight: KRLight,
         globalMaterialId: Int,
         lights: [KRLight],
+        occluders: [KROccluder],
         materials: [KRMaterial],
         drawDataList: [KRDrawData],
         elapsedTime: Float
@@ -219,7 +227,8 @@ public class KRRenderer {
             fatalError("Unable to acquire semaphore for frame")
         }
 
-        let opaqueDrawData = getInternalDrawData(drawDataList.filter { !$0.hasTransparency || !rendererSettings.transparencyEnabled } )
+        let opaqueDrawData = getInternalDrawData(
+            drawDataList.filter { !$0.hasTransparency || !rendererSettings.transparencyEnabled } )
 
         let cascadedShadowMap = try! renderStageShadow.renderCascadedShadowMap(
             shaderLibrary: shaderLibrary,
@@ -230,20 +239,22 @@ public class KRRenderer {
             drawDataList: opaqueDrawData,
             globalLight: globalLight,
             camera: camera,
-            currentFrame: currentFrame
-        )
+            currentFrame: currentFrame)
 
         let lightingData = LightingData(
             globalLight: globalLight,
             maxLights: Self.maxLights,
+            maxOccluders: Self.maxOccluders,
             lights: lights,
+            occluders: occluders,
             cascadedShadowMap: cascadedShadowMap,
             enableLighting: rendererSettings.lightingEnabled,
             enableShadows: rendererSettings.shadowsEnabled)
 
         // todo: make Lighting a stateful concept and have it store lights buffer? responsible for max light setting?
         lightsBuffer[currentFrame].copy(data: lightingData.toLightUniforms())
-        materialsBuffer[currentFrame].copy(data: materials.map { $0.toGPUData() })
+        occludersBuffer[currentFrame].copy(data: occluders.map { $0.toOccluderUniforms() })
+        materialsBuffer[currentFrame].copy(data: materials.map { $0.toMaterialUniforms() })
 
         guard let opaqueTargets = renderStageOpaque.render(
             shaderLibrary: shaderLibrary,
@@ -259,6 +270,7 @@ public class KRRenderer {
             globalMaterialId: globalMaterialId,
             globalLightingColor: rendererSettings.globalLightingColor,
             lightsBuffer: lightsBuffer,
+            occludersBuffer: occludersBuffer,
             drawDataList: opaqueDrawData
         ) else {
             return
@@ -283,6 +295,7 @@ public class KRRenderer {
                 globalMaterialId: globalMaterialId,
                 globalLightingColor: rendererSettings.globalLightingColor,
                 lightsBuffer: lightsBuffer,
+                occludersBuffer: occludersBuffer,
                 drawDataList: transparentDrawData,
                 opaqueDepthTexture: opaqueTargets.depth)
         }
@@ -417,7 +430,8 @@ public class KRRenderer {
                 instanceCount: drawData.instanceCount,
                 perObjectBufferBindings: getPerObjectBufferBindings(drawData),
                 drawFirst: drawData.drawFirst,
-                castsShadow: drawData.castsShadow)
+                castsShadow: drawData.castsShadow,
+                isOccluder: drawData.isOccluder)
         }
     }
 

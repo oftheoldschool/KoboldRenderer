@@ -169,7 +169,7 @@ public struct KRMaterial {
         }
     }
 
-    func toGPUData() -> MaterialUniforms {
+    func toMaterialUniforms() -> MaterialUniforms {
         let rimLightingMode: RimLightingMode = switch rim.mode {
         case .none: .none
         case .artistic: .artistic

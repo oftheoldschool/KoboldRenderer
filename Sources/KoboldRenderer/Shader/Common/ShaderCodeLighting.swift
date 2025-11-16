@@ -15,6 +15,7 @@ ShadowCalculationData getShadowCalculationData(
     constant float4x4 * uniformsLightSpaceVolumes
 ) {
     ShadowCalculationData shadowCalculationData {
+        .worldPosition = worldSpacePosition,
         .clipSpacePosZ = clipSpacePosZ,
     };
 
