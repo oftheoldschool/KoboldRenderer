@@ -203,10 +203,6 @@ ShadowResult calculateShadow(
 
         REPEAT(8, CALCULATE_OCCLUDER_SHADOW_FACTOR)
 
-        if (occluderShadowFactor < 0) {
-            occluderShadowFactor = 0;
-        }
-
         if (fragmentIn.clipSpacePosZ > cascadeEndClipSpace[${CASCADED_SHADOW_NUM_CASCADES} - 1]) {
             csmShadowFactor = 1;
         } else {
