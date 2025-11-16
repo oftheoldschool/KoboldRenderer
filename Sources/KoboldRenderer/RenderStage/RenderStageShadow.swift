@@ -140,7 +140,9 @@ class RenderStageShadow {
                 modelManager: modelManager,
                 commandBuffer: commandBuffer,
                 outputRenderPassDescriptor: cascadedShadowRenderPassDescriptor,
-                drawDataList: drawDataList.filter { $0.castsShadow },
+                drawDataList: drawDataList
+                    .filter { $0.castsShadow }
+                    .filter { !$0.isOccluder },
                 dataBindings: dataBindings,
                 currentFrame: currentFrame,
                 renderTarget: .depth,

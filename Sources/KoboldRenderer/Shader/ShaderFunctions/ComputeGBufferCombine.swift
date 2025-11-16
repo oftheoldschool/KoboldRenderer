@@ -49,13 +49,16 @@ class ComputeShaderFunctionTemplateGBufferCombine: ComputeShaderFunctionTemplate
     bool enableLighting = uniformsLighting.enableLighting && material.applyLight;
     bool enableShadows = uniformsLighting.enableShadows && material.receiveShadow;
 
+//    ShadowResult shadowResult {};
     ShadowResult shadowResult = calculateShadow(
         shadowCalculationData,
         textureArrayCascadedShadowMap,
         textureArrayCascadedShadowMapSampler,
         uniformsCascadeEndClipSpace,
         enableShadows,
-        uniformsLighting);
+        uniformsLighting,
+        uniformsLights,
+        uniformsOccluders);
 
     MaterialParameters materialParameters = resolveMaterial(
         material,

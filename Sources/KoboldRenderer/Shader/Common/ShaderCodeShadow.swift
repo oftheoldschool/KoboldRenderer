@@ -11,48 +11,85 @@ class ShaderCodeShadow {
 """
 
 float calculateSphereShadowFactor(
-    float3 light, 
-    float lightRadius,
-    float3 occluder, 
-    float occluderRadius, 
-    float3 fragmentPosition
+    OccluderUniforms occluderUniforms,
+    LightUniforms light,
+    float3 fragmentPosition,
+    float3 fragmentToOccluder
 ) {
-    float3 v0 = light - fragmentPosition;
-    float3 v1 = occluder - fragmentPosition;
+    float3 occluder = occluderUniforms.position;
+    float occluderRadius = occluderUniforms.radius;
+    float penumbraFactor = occluderUniforms.penumbraFactor;
+    float sharpness = occluderUniforms.sharpness;
     
-    if (dot(v0, v1) < 0) {
-        return 1;
+    float occluderDistance = length(fragmentToOccluder);
+    float3 fragmentToOccluderNorm = fragmentToOccluder / occluderDistance;
+
+    if (light.type == LightUniformsType::point) {
+        float3 lightPosition = light.float3Data;
+        float lightRadius = light.radius;
+        
+        float3 fragmentToLight = lightPosition - fragmentPosition;
+        
+        if (dot(fragmentToLight, fragmentToOccluder) < 0) {
+            return 1.0;
+        }
+        
+        float3 lightToOccluder = occluder - lightPosition;
+        
+        if (dot(fragmentToLight, lightToOccluder) > 0) {
+            return 1.0;
+        }
+
+        float lightDistance = length(fragmentToLight);
+        float3 fragmentToLightNorm = fragmentToLight / lightDistance;
+
+        float lightAngularRadius = lightRadius / lightDistance;
+        float occluderAngularRadius = occluderRadius / occluderDistance;
+
+        float angularSeparation = asin(clamp(length(cross(fragmentToLightNorm, fragmentToOccluderNorm)), 0.0, 1.0));
+        
+        float normalizedSeparation = angularSeparation / (lightAngularRadius + occluderAngularRadius);
+        normalizedSeparation = smoothstep(0.0, 1.0, normalizedSeparation);
+        
+        float shadowIntensity = (1.0 - normalizedSeparation) * pow(occluderAngularRadius / lightAngularRadius, 2);
+
+        return clamp(1.0 - shadowIntensity, 0.0, 1.0);
+    } else {
+        float3 lightDirection = light.float3Data;
+        
+        float occluderAlignment = dot(fragmentToOccluderNorm, -lightDirection);
+        if (occluderAlignment <= 0) {
+            return 1.0;
+        }
+        
+        float projectionDistance = dot(fragmentToOccluder, -lightDirection);
+        
+        if (projectionDistance <= 0) {
+            return 1.0;
+        }
+        
+        float3 projectedPoint = fragmentPosition - lightDirection * projectionDistance;
+        float perpDistance = length(occluder - projectedPoint);
+        
+        float penumbraWidth = occluderRadius * penumbraFactor;
+        float shadowIntensity = 1.0 - smoothstep(occluderRadius - penumbraWidth, occluderRadius, perpDistance);
+        
+        shadowIntensity = pow(shadowIntensity, sharpness);
+        
+        return clamp(1.0 - shadowIntensity, 0.0, 1.0);
     }
-    
-    float3 v2 = light - occluder;
-    if (dot(v0, v2) < 0) {
-        return 1;
-    }
-
-    float R0 = length(v0);
-    float R1 = length(v1);
-
-    float a0 = lightRadius / R0;
-    float a1 = occluderRadius / R1;
-
-    float a = length(cross(v0, v1)) / (R0 * R1);
-    a = smoothstep(a0 - a1, a0 + a1, a);
-    float shadowTerm = 1 - (1 - a) * pow(a1 / a0, 2);
-
-    return clamp(shadowTerm, 0.0, 1.0);
 }
 
 #define CALCULATE_OCCLUDER_SHADOW_FACTOR(INDEX) \
-    if (occluders[INDEX].size > 0 \
-        && occluders[INDEX].entityId != entityId \
-        && occluders[INDEX].isSun == 0.f) \
+    float3 fragmentToOccluder_##INDEX = uniformsOccluders[INDEX].position - fragmentIn.worldPosition; \
+    if (uniformsOccluders[INDEX].radius > 0 \
+        && length(fragmentToOccluder_##INDEX) > uniformsOccluders[INDEX].radius) \
     { \
-        occluderShadowFactor *= soft_shadow( \
-            light.position, \
-            light.size, \
-            occluders[INDEX].position, \
-            occluders[INDEX].size, \
-            fragmentIn.worldPosition); \
+        occluderShadowFactor *= calculateSphereShadowFactor( \
+            uniformsOccluders[INDEX], \
+            light, \
+            fragmentIn.worldPosition, \
+            fragmentToOccluder_##INDEX); \
     }
 
 float calculateCSMShadowFactor(
@@ -153,12 +190,19 @@ ShadowResult calculateShadow(
     sampler shadowSampler,
     constant float * cascadeEndClipSpace,
     bool enableShadows,
-    constant LightingUniforms & uniformsLighting
+    constant LightingUniforms & uniformsLighting,
+    constant LightUniforms * uniformsLights,
+    constant OccluderUniforms * uniformsOccluders
 ) {
     float csmShadowFactor = 1;
     int csmCascadeIndex = -1;
 
     if (enableShadows) {
+        constant LightUniforms & light = uniformsLights[0];
+        float occluderShadowFactor = 1;
+
+        REPEAT(8, CALCULATE_OCCLUDER_SHADOW_FACTOR)
+
         if (fragmentIn.clipSpacePosZ > cascadeEndClipSpace[${CASCADED_SHADOW_NUM_CASCADES} - 1]) {
             csmShadowFactor = 1;
         } else {
@@ -174,6 +218,8 @@ ShadowResult calculateShadow(
                 csmShadowFactor,
                 uniformsLighting)
         }
+
+        csmShadowFactor *= occluderShadowFactor;
     }
 
     return {

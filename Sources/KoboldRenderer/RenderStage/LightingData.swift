@@ -1,6 +1,7 @@
 struct LightingData {
     let globalLight: KRLight
     let lights: [KRLight]
+    let occluders: [KROccluder]
     let cascadedShadowMap: CascadedShadowMap
     let enableLighting: Bool
     let enableShadows: Bool
@@ -8,7 +9,9 @@ struct LightingData {
     init(
         globalLight: KRLight,
         maxLights: Int,
+        maxOccluders: Int,
         lights: [KRLight],
+        occluders: [KROccluder],
         cascadedShadowMap: CascadedShadowMap,
         enableLighting: Bool,
         enableShadows: Bool
@@ -20,8 +23,18 @@ struct LightingData {
             print("Number of lights exceeded limit: \(maxLights). \(lights.count - maxLights) will not be included in rendering")
             cappedLights = lights.dropLast(lights.count - maxLights)
         }
+
+        let cappedOccluders: [KROccluder]
+        if occluders.count <= maxOccluders {
+            cappedOccluders = occluders
+        } else {
+            print("Number of occluders exceeded limit: \(maxOccluders). \(occluders.count - maxOccluders) will not be included in rendering")
+            cappedOccluders = occluders.dropLast(occluders.count - maxOccluders)
+        }
+
         self.globalLight = globalLight
         self.lights = cappedLights
+        self.occluders = cappedOccluders
         self.cascadedShadowMap = cascadedShadowMap
         self.enableLighting = enableLighting
         self.enableShadows = enableShadows
@@ -39,7 +52,8 @@ struct LightingData {
                 color: light.color,
                 intensity: light.intensity,
                 attenuation: attenuation,
-                range: range
+                range: range,
+                radius: light.radius
             )
         }
     }

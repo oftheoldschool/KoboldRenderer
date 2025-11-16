@@ -37,6 +37,7 @@ class RenderStageTransparent {
         globalMaterialId: Int,
         globalLightingColor: SIMD3<Float>,
         lightsBuffer: GPUDataMultiBuffer,
+        occludersBuffer: GPUDataMultiBuffer,
         drawDataList: [DrawData],
         opaqueDepthTexture: MTLTexture
     ) -> RenderStageTransparentOutput? {
@@ -57,12 +58,14 @@ class RenderStageTransparent {
             shadowBiasAngleFactor: rendererSettings.shadowBiasAngleFactor,
             shadowCascadeFactor: rendererSettings.shadowCascadeFactor,
             lightCount: UInt8(lightingData.lights.count),
+            occluderCount: UInt8(lightingData.occluders.count),
             enableShadows: lightingData.enableShadows,
             enableLighting: lightingData.enableLighting)
 
         let dataBindings: [KBufferBindingType: GPUData] = [
             .uniformsShared: .wrapper(GPUDataWrapper(sharedUniforms)),
             .uniformsLights: .buffer(lightsBuffer[currentFrame]),
+            .uniformsOccluders: .buffer(occludersBuffer[currentFrame]),
             .uniformsLighting: .wrapper(GPUDataWrapper(lightingUniforms)),
             .uniformsCascadeFrustumLimitsClipSpace: .wrapper(GPUDataWrapper(lightingData.cascadedShadowMap.cascadeFrustumLimitsClipSpace)),
             .uniformsLightSpaceVolumes: .wrapper(GPUDataWrapper(lightingData.cascadedShadowMap.lightVolumeViewProjections)),

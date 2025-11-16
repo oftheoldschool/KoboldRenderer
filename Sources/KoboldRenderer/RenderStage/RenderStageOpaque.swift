@@ -48,6 +48,7 @@ class RenderStageOpaque {
         globalMaterialId: Int,
         globalLightingColor: SIMD3<Float>,
         lightsBuffer: GPUDataMultiBuffer,
+        occludersBuffer: GPUDataMultiBuffer,
         drawDataList: [DrawData]
     ) -> RenderStageOpaqueOutput? {
         guard let outputTargets = renderTargets else {
@@ -66,16 +67,19 @@ class RenderStageOpaque {
             shadowBiasAngleFactor: rendererSettings.shadowBiasAngleFactor,
             shadowCascadeFactor: rendererSettings.shadowCascadeFactor,
             lightCount: UInt8(lightingData.lights.count),
+            occluderCount: UInt8(lightingData.occluders.count),
             enableShadows: lightingData.enableShadows,
             enableLighting: lightingData.enableLighting)
 
         let dataBindings: [KBufferBindingType: GPUData] = [
             .uniformsShared: .wrapper(GPUDataWrapper(sharedUniforms)),
             .uniformsLights: .buffer(lightsBuffer[currentFrame]),
+            .uniformsOccluders: .buffer(occludersBuffer[currentFrame]),
             .uniformsLighting: .wrapper(GPUDataWrapper(lightingUniforms)),
             .uniformsCascadeFrustumLimitsClipSpace: .wrapper(
                 GPUDataWrapper(lightingData.cascadedShadowMap.cascadeFrustumLimitsClipSpace)),
-            .uniformsLightSpaceVolumes: .wrapper(GPUDataWrapper(lightingData.cascadedShadowMap.lightVolumeViewProjections)),
+            .uniformsLightSpaceVolumes: .wrapper(
+                GPUDataWrapper(lightingData.cascadedShadowMap.lightVolumeViewProjections)),
             .materials: .buffer(materialsBuffer[currentFrame]),
         ]
 
@@ -98,10 +102,8 @@ class RenderStageOpaque {
             camera: camera,
             lightingData: lightingData,
             modelManager: modelManager,
-            materialsBuffer: materialsBuffer,
             globalMaterialId: globalMaterialId,
             globalLightingColor: rendererSettings.globalLightingColor,
-            lightsBuffer: lightsBuffer,
             drawDataList: drawDataList,
             outputTargets: outputTargets)
         return outputTargets

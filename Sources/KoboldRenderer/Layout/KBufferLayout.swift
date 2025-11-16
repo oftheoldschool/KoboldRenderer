@@ -69,20 +69,28 @@ public extension KBufferBindingType {
         bindingIndex: 5
     )
 
-    static let uniformsLights: KBufferBindingType = KBufferBindingType(
-        name: "uniformsLights",
-        description: "uniformsLights",
-        datatype: .pointer(.custom("LightUniforms")),
-        isAttribute: false,
-        bindingIndex: 6
-    )
-
     static let uniformsLighting: KBufferBindingType = KBufferBindingType(
         name: "uniformsLighting",
         description: "uniformsLighting",
         datatype: .custom("LightingUniforms"),
         isAttribute: false,
+        bindingIndex: 6
+    )
+
+    static let uniformsLights: KBufferBindingType = KBufferBindingType(
+        name: "uniformsLights",
+        description: "uniformsLights",
+        datatype: .pointer(.custom("LightUniforms")),
+        isAttribute: false,
         bindingIndex: 7
+    )
+
+    static let uniformsOccluders: KBufferBindingType = KBufferBindingType(
+        name: "uniformsOccluders",
+        description: "uniformsOccluders",
+        datatype: .pointer(.custom("OccluderUniforms")),
+        isAttribute: false,
+        bindingIndex: 8
     )
 
     static let uniformsObject: KBufferBindingType = KBufferBindingType(
@@ -90,7 +98,7 @@ public extension KBufferBindingType {
         description: "uniformsObject",
         datatype: .custom("DrawObjectUniforms"),
         isAttribute: false,
-        bindingIndex: 8
+        bindingIndex: 9
     )
 
     static let uniformsLightSpaceVolumes: KBufferBindingType = KBufferBindingType(
@@ -98,7 +106,7 @@ public extension KBufferBindingType {
         description: "uniformsLightSpaceVolumes",
         datatype: .pointer(.primitive(.float4x4)),
         isAttribute: false,
-        bindingIndex: 9
+        bindingIndex: 10
     )
 
     static let uniformsCascadeFrustumLimitsClipSpace: KBufferBindingType = KBufferBindingType(
@@ -106,7 +114,7 @@ public extension KBufferBindingType {
         description: "uniformsCascadeEndClipSpace",
         datatype: .pointer(.primitive(.float)),
         isAttribute: false,
-        bindingIndex: 10
+        bindingIndex: 11
     )
 
     static let uniformsAnimationPose: KBufferBindingType = KBufferBindingType(
@@ -114,7 +122,7 @@ public extension KBufferBindingType {
         description: "uniformsAnimationPose",
         datatype: .pointer(.primitive(.float4x4)),
         isAttribute: false,
-        bindingIndex: 11
+        bindingIndex: 12
     )
 
     static let uniformsAnimationInverseBindPose: KBufferBindingType = KBufferBindingType(
@@ -122,7 +130,7 @@ public extension KBufferBindingType {
         description: "uniformsAnimationInverseBindPose",
         datatype: .pointer(.primitive(.float4x4)),
         isAttribute: false,
-        bindingIndex: 12
+        bindingIndex: 13
     )
 
     static let materials: KBufferBindingType = KBufferBindingType(
@@ -130,7 +138,7 @@ public extension KBufferBindingType {
         description: "materials",
         datatype: .pointer(.custom("MaterialUniforms")),
         isAttribute: false,
-        bindingIndex: 13
+        bindingIndex: 14
     )
 }
 

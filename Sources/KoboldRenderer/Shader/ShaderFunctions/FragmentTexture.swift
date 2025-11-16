@@ -60,7 +60,9 @@ class FragmentShaderFunctionTemplateTexture: FragmentShaderFunctionTemplate {
         textureArrayCascadedShadowMapSampler,
         uniformsCascadeEndClipSpace,
         uniformsLighting.enableShadows && material.applyLight,
-        uniformsLighting);
+        uniformsLighting,
+        uniformsLights,
+        uniformsOccluders);
 
     MaterialParameters materialParameters = resolveMaterial(
         material,

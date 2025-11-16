@@ -205,6 +205,7 @@ public class LayoutLibrary {
                         LayoutLibrary.getBufferLayoutBinding(.uniformsShared),
                         LayoutLibrary.getBufferLayoutBinding(.uniformsObject),
                         LayoutLibrary.getBufferLayoutBinding(.uniformsLights),
+                        LayoutLibrary.getBufferLayoutBinding(.uniformsOccluders),
                         LayoutLibrary.getBufferLayoutBinding(.uniformsLighting),
                         LayoutLibrary.getBufferLayoutBinding(.uniformsCascadeFrustumLimitsClipSpace),
                         LayoutLibrary.getBufferLayoutBinding(.materials),
@@ -219,6 +220,7 @@ public class LayoutLibrary {
                     bufferLayoutBindings: [
                         LayoutLibrary.getBufferLayoutBinding(.uniformsShared),
                         LayoutLibrary.getBufferLayoutBinding(.uniformsLights),
+                        LayoutLibrary.getBufferLayoutBinding(.uniformsOccluders),
                         LayoutLibrary.getBufferLayoutBinding(.uniformsLighting),
                         LayoutLibrary.getBufferLayoutBinding(.uniformsLightSpaceVolumes),
                         LayoutLibrary.getBufferLayoutBinding(.uniformsCascadeFrustumLimitsClipSpace),
@@ -406,6 +408,7 @@ public class LayoutLibrary {
                     KStructLayout(
                         name: "ShadowCalculationData",
                         items: [
+                            KStructItem(name: "worldPosition", type: .primitive(.float3)),
                             KStructItem(
                                 name: "lightSpacePos_",
                                 type: .repeated(
@@ -442,6 +445,7 @@ public class LayoutLibrary {
                         KStructItem(name: "shadowBiasAngleFactor", type: .primitive(.float)),
                         KStructItem(name: "shadowCascadeFactor", type: .primitive(.float)),
                         KStructItem(name: "lightCount", type: .primitive(.uint8_t)),
+                        KStructItem(name: "occluderCount", type: .primitive(.uint8_t)),
                         KStructItem(name: "enableShadows", type: .primitive(.bool)),
                         KStructItem(name: "enableLighting", type: .primitive(.bool)),
                     ]
@@ -454,7 +458,17 @@ public class LayoutLibrary {
                         KStructItem(name: "color", type: .primitive(.float3)),
                         KStructItem(name: "range", type: .primitive(.float)),
                         KStructItem(name: "attenuation", type: .primitive(.float3)),
+                        KStructItem(name: "radius", type: .primitive(.float)),
                         KStructItem(name: "type", type: .custom("LightUniformsType")),
+                    ]
+                ),
+                KStructLayout(
+                    name: "OccluderUniforms",
+                    items: [
+                        KStructItem(name: "position", type: .primitive(.float3)),
+                        KStructItem(name: "radius", type: .primitive(.float)),
+                        KStructItem(name: "penumbraFactor", type: .primitive(.float)),
+                        KStructItem(name: "sharpness", type: .primitive(.float)),
                     ]
                 ),
                 KStructLayout(
@@ -462,7 +476,7 @@ public class LayoutLibrary {
                     items: [
                         KStructItem(name: "model", type: .primitive(.float4x4)),
                         KStructItem(name: "normalMatrix", type: .primitive(.float3x3)),
-                        KStructItem(name: "materialId", type: .primitive(.int)),
+                        KStructItem(name: "materialId", type: .primitive(.int))
                     ]
                 ),
             ],

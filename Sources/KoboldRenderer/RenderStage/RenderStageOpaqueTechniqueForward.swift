@@ -40,10 +40,8 @@ class RenderStageOpaqueTechniqueForward: RenderStageOpaqueTechnique {
         camera: KRCamera,
         lightingData: LightingData,
         modelManager: ModelManager,
-        materialsBuffer: GPUDataMultiBuffer,
         globalMaterialId: Int,
         globalLightingColor: SIMD3<Float>,
-        lightsBuffer: GPUDataMultiBuffer,
         drawDataList: [DrawData],
         outputTargets: RenderStageOpaqueOutput
     ) {

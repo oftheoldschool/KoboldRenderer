@@ -9,6 +9,7 @@ struct LightUniforms {
     public let color: SIMD3<Float>
     public let range: Float
     public let attenuation: SIMD3<Float>
+    public let radius: Float
     public let type: LightUniformsType
 
     public init(
@@ -17,13 +18,15 @@ struct LightUniforms {
         color: SIMD3<Float>,
         intensity: Float,
         attenuation: SIMD3<Float>,
-        range: Float
+        range: Float,
+        radius: Float
     ) {
         self.type = type
         self.float3Data = float3Data
         self.color = color
         self.intensity = intensity
         self.attenuation = attenuation
+        self.radius = radius
         self.range = range
     }
 }

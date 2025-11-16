@@ -5,6 +5,7 @@ struct DrawData {
     var perObjectBufferBindings: [KBufferBindingType: GPUData]
     let drawFirst: Bool
     let castsShadow: Bool
+    let isOccluder: Bool
 
     public init(
         model: String,
@@ -12,7 +13,8 @@ struct DrawData {
         instanceCount: Int,
         perObjectBufferBindings: [KBufferBindingType: GPUData],
         drawFirst: Bool,
-        castsShadow: Bool
+        castsShadow: Bool,
+        isOccluder: Bool
     ) {
         self.model = model
         self.pipeline = pipeline
@@ -20,5 +22,6 @@ struct DrawData {
         self.perObjectBufferBindings = perObjectBufferBindings
         self.drawFirst = drawFirst
         self.castsShadow = castsShadow
+        self.isOccluder = isOccluder
     }
 }
