@@ -10,13 +10,15 @@ public struct KRLightTypePoint {
     public let position: SIMD3<Float>
     public let attenuation: SIMD3<Float>
     public let range: Float
+    public let radius: Float
 
     public init(
         position: SIMD3<Float>,
         attenuationConstant: Float,
         attenuationLinear: Float,
         attenuationQuadratic: Float,
-        range: Float
+        range: Float,
+        radius: Float
     ) {
         self.position = position
         self.attenuation = SIMD3<Float>(
@@ -25,6 +27,7 @@ public struct KRLightTypePoint {
             attenuationQuadratic
         )
         self.range = range
+        self.radius = radius
     }
 }
 
@@ -37,17 +40,14 @@ public struct KRLight {
     let type: KRLightType
     let color: SIMD3<Float>
     let intensity: Float
-    let radius: Float
 
     public init(
         type: KRLightType,
         color: SIMD3<Float>,
-        intensity: Float,
-        radius: Float
+        intensity: Float
     ) {
         self.type = type
         self.intensity = intensity
         self.color = color
-        self.radius = radius
     }
 }

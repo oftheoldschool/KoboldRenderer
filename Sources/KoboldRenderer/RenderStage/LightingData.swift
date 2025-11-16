@@ -42,9 +42,9 @@ struct LightingData {
 
     func toLightUniforms() -> [LightUniforms] {
         return lights.map { light in
-            let (type, float3Data, attenuation, range): (LightUniformsType, SIMD3<Float>, SIMD3<Float>, Float) = switch light.type {
-            case .directional(let directional): (.directional, directional.direction, .zero, .zero)
-            case .point(let point): (.point, point.position, point.attenuation, point.range)
+            let (type, float3Data, attenuation, range, radius): (LightUniformsType, SIMD3<Float>, SIMD3<Float>, Float, Float) = switch light.type {
+            case .directional(let directional): (.directional, directional.direction, .zero, .zero, .zero)
+            case .point(let point): (.point, point.position, point.attenuation, point.range, point.radius)
             }
             return LightUniforms(
                 type: type,
@@ -53,7 +53,7 @@ struct LightingData {
                 intensity: light.intensity,
                 attenuation: attenuation,
                 range: range,
-                radius: light.radius
+                radius: radius
             )
         }
     }
