@@ -28,14 +28,12 @@ public struct KRProceduralProperties: Hashable {
     public let threshold: Float
     public let varyWithTime: Bool
 
-    // Extended fractal controls
     public let startingAmplitude: Float
     public let startingFrequency: Float
     public let coordinateScale: Float
     public let warpIterations: Int
     public let warpScale: Float
 
-    // OpenSimplex2-specific (KR-level enums)
     public let openSimplex2Seed: Int32
     public let openSimplex2Noise2Variant: KROpenSimplex2Noise2Variant
     public let openSimplex2Noise3Variant: KROpenSimplex2Noise3Variant
@@ -266,7 +264,7 @@ public struct KRMaterial {
                 rimColor: rim.color,
                 rimPower: rim.power,
                 rimLightingMode: rimLightingMode,
-                color: p.colorA, // base color for compatibility
+                color: p.colorA,
                 noiseOffset: p.offset,
                 noiseColorA: p.colorA,
                 noiseColorB: p.colorB,
@@ -280,12 +278,12 @@ public struct KRMaterial {
                 fractalWarpIterations: Int32(p.warpIterations),
                 fractalWarpScale: p.warpScale,
                 fractalCoordinateScale: p.coordinateScale,
-                fractalNoiseType: 0, // openSimplex2
+                fractalNoiseType: 0,
                 openSimplex2Seed: p.openSimplex2Seed,
                 openSimplex2Noise2Variant: Int8(p.openSimplex2Noise2Variant.rawValue),
                 openSimplex2Noise3Variant: Int8(p.openSimplex2Noise3Variant.rawValue),
                 openSimplex2Noise4Variant: Int8(p.openSimplex2Noise4Variant.rawValue),
-                // Voronoi placeholders
+
                 voronoiSeed: 0,
                 voronoiDistanceFunction: 0,
                 voronoiReturnType: 0,
