@@ -90,7 +90,7 @@ vertex \(outputLayout.name) \(functionName)(
     \(functionParameters.joined(separator: ",\n    "))
 )
 {
-    \(isInstanced ? vertexInstanceIdCode ?? "int instanceId = instance_id;" : "")
+    \(isInstanced ? vertexInstanceIdCode ?? "uint instanceId = instance_id;" : "")
     \(isInstanced ? "DrawObjectUniforms uniformsObject = instancedObjectUniforms[instanceId];" : "")
     \(isShadow ? "" : "\(outputLayout.name) vertexOut;")
 \(isAnimated ? vertexAnimationCode ?? vertexPositionCode : vertexPositionCode)
