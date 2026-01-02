@@ -1,6 +1,7 @@
 open class VertexShaderFunctionTemplate {
     open class var functionName: String { fatalError("unimplemented") }
     open class var vertexConstantCode: String? { nil }
+    open class var vertexInstanceIdCode: String? { nil }
     open class var vertexPositionCode: String { fatalError("unimplemented") }
     open class var vertexAnimationCode: String? { nil }
     open class var vertexAdditionalCode: String? { nil }
@@ -89,11 +90,12 @@ vertex \(outputLayout.name) \(functionName)(
     \(functionParameters.joined(separator: ",\n    "))
 )
 {
-    \(isInstanced ? "DrawObjectUniforms uniformsObject = instancedObjectUniforms[instance_id];" : "")
+    \(isInstanced ? vertexInstanceIdCode ?? "int instanceId = instance_id;" : "")
+    \(isInstanced ? "DrawObjectUniforms uniformsObject = instancedObjectUniforms[instanceId];" : "")
     \(isShadow ? "" : "\(outputLayout.name) vertexOut;")
 \(isAnimated ? vertexAnimationCode ?? vertexPositionCode : vertexPositionCode)
 \(!isShadow ? vertexAdditionalCode ?? "" : "")
-    \(isInstanced && !isShadow ? "vertexOut.instanceId = instance_id;" : "")
+    \(isInstanced && !isShadow ? "vertexOut.instanceId = instanceId;" : "")
     return \(isShadow ? "outputPosition" : "vertexOut");
 }
 """

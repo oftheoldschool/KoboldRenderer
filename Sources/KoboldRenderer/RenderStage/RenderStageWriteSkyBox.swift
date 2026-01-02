@@ -54,7 +54,7 @@ public class RenderStageWriteSkyBox {
             let camera = KRCamera(
                 volume: .perspective(
                     KRVolumePerspective(
-                    near: 0.1,
+                    near: 1,
                     far: 10,
                     aspectRatio: 1,
                     fov: .pi / 2)),

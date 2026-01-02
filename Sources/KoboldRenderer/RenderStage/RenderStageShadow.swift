@@ -13,7 +13,7 @@ enum RenderError: Error {
 }
 
 class RenderStageShadow {
-    static let defaultCascadeFrustumDistances: [Float] = [500, 5000, 0]
+    static let defaultCascadeFrustumDistances: [Float] = [50, 500, 0]
     static let defaultBaseTextureSize: Int = 2048
 
     let shadowTextureArray: MTLTexture
