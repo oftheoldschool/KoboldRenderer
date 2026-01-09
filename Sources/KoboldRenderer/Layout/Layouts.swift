@@ -567,7 +567,13 @@ public class LayoutLibrary {
     // todo: can/should this be incremented rather than hard coded? downside to hard coding is that
     // it's inflexible and error prone, but incrementing means that some optimisation opportunities
     // are a bit harder since you can't rely on the same buffer having the same binding across draw calls
-    private static func getBufferLayoutBinding(_ bufferBindingType: KBufferBindingType) -> KBufferLayoutBinding {
+    //
+    // the answer is that it needs to be generated. I need to add new buffer layouts in client code, and can't do so
+    // safely since I need to specify the binding index manually. Whatever I choose there could be overridden
+    // by the core renderer values at some later stage. Sure that would only happen on renderer version updates,
+    // but it's enough of a potential pain to solve by generating the indices
+    // one potential downside is that the hardcoded values are known at compile time...
+    public static func getBufferLayoutBinding(_ bufferBindingType: KBufferBindingType) -> KBufferLayoutBinding {
         return KBufferLayoutBinding(index: bufferBindingType.bindingIndex, type: bufferBindingType)
     }
 }
