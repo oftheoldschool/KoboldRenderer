@@ -120,7 +120,7 @@ public class KRRenderer {
 
         self.materialsBuffer = GPUDataMultiBuffer(
             gpuDataManager: gpuDataManager,
-            count: Self.maxMaterials,
+            count: Self.maxFramesInFlight,
             length: MemoryLayout<MaterialUniforms>.stride * Self.maxMaterials)
 
         self.lightsBuffer = GPUDataMultiBuffer(
@@ -131,7 +131,7 @@ public class KRRenderer {
         self.occludersBuffer = GPUDataMultiBuffer(
             gpuDataManager: gpuDataManager,
             count: Self.maxFramesInFlight,
-            length: MemoryLayout<OccluderUniforms>.stride * Self.maxLights)
+            length: MemoryLayout<OccluderUniforms>.stride * Self.maxOccluders)
 
         self.instanceBuffers = [:]
     }
