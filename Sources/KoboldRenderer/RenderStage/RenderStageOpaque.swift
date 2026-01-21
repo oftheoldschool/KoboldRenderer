@@ -49,6 +49,7 @@ class RenderStageOpaque {
         globalLightingColor: SIMD3<Float>,
         lightsBuffer: GPUDataMultiBuffer,
         occludersBuffer: GPUDataMultiBuffer,
+        additionalBufferBindings: [KBufferBindingType: GPUData],
         drawDataList: [DrawData]
     ) -> RenderStageOpaqueOutput? {
         guard let outputTargets = renderTargets else {
@@ -81,7 +82,7 @@ class RenderStageOpaque {
             .uniformsLightSpaceVolumes: .wrapper(
                 GPUDataWrapper(lightingData.cascadedShadowMap.lightVolumeViewProjections)),
             .materials: .buffer(materialsBuffer[currentFrame]),
-        ]
+        ] + additionalBufferBindings
 
         let textureBindings: [KTextureBindingType: GPUTexture] = [
             .textureArrayCascadedShadowMap: .textureArray(

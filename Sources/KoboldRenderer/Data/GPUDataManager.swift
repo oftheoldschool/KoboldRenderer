@@ -9,7 +9,7 @@ public class GPUDataManager {
         self.device = device
     }
 
-    func newBuffer(length: Int, padding: Int = defaultPadding) -> GPUDataBuffer {
+    public func newBuffer(length: Int, padding: Int = defaultPadding) -> GPUDataBuffer {
         let paddedLength = length + (padding > 0 ? (padding - length % padding) : 0)
         return GPUDataBuffer(
             buffer: device.makeBuffer(length: paddedLength)!,
@@ -17,23 +17,23 @@ public class GPUDataManager {
             length: length)
     }
 
-    func newBufferChunks(_ sizesBytes: Int..., padding: Int = defaultPadding) -> [GPUDataBuffer] {
+    public func newBufferChunks(_ sizesBytes: Int..., padding: Int = defaultPadding) -> [GPUDataBuffer] {
         return newBufferChunks(Array(sizesBytes), padding: padding)
     }
 
-    func newBufferArray(count: Int, sizeBytes: Int, padding: Int = defaultPadding) -> [GPUDataBuffer] {
+    public func newBufferArray(count: Int, sizeBytes: Int, padding: Int = defaultPadding) -> [GPUDataBuffer] {
         return newBufferChunksArray(count: count, sizesBytes: [sizeBytes], padding: padding).map { $0[0] }
     }
 
-    func newBufferChunks(_ sizesBytes: [Int], padding: Int = defaultPadding) -> [GPUDataBuffer] {
+    public func newBufferChunks(_ sizesBytes: [Int], padding: Int = defaultPadding) -> [GPUDataBuffer] {
         return newBufferChunksArray(count: 1, sizesBytes: sizesBytes, padding: padding)[0]
     }
 
-    func newBufferChunksArray(count: Int, sizesBytes: Int..., padding: Int = defaultPadding) -> [[GPUDataBuffer]] {
+    public func newBufferChunksArray(count: Int, sizesBytes: Int..., padding: Int = defaultPadding) -> [[GPUDataBuffer]] {
         return newBufferChunksArray(count: count, sizesBytes: sizesBytes, padding: padding)
     }
 
-    func newBufferChunksArray(count: Int, sizesBytes: [Int], padding: Int = defaultPadding) -> [[GPUDataBuffer]] {
+    public func newBufferChunksArray(count: Int, sizesBytes: [Int], padding: Int = defaultPadding) -> [[GPUDataBuffer]] {
         let paddedSizesBytes = sizesBytes.map { sizeBytes in
             (sizeBytes, sizeBytes + (padding > 0 ? (padding - sizeBytes % padding) : 0))
         }

@@ -38,6 +38,7 @@ class RenderStageTransparent {
         globalLightingColor: SIMD3<Float>,
         lightsBuffer: GPUDataMultiBuffer,
         occludersBuffer: GPUDataMultiBuffer,
+        additionalBufferBindings: [KBufferBindingType: GPUData],
         drawDataList: [DrawData],
         opaqueDepthTexture: MTLTexture
     ) -> RenderStageTransparentOutput? {
@@ -70,7 +71,7 @@ class RenderStageTransparent {
             .uniformsCascadeFrustumLimitsClipSpace: .wrapper(GPUDataWrapper(lightingData.cascadedShadowMap.cascadeFrustumLimitsClipSpace)),
             .uniformsLightSpaceVolumes: .wrapper(GPUDataWrapper(lightingData.cascadedShadowMap.lightVolumeViewProjections)),
             .materials: .buffer(materialsBuffer[currentFrame]),
-        ]
+        ] + additionalBufferBindings
 
         let textureBindings: [KTextureBindingType: GPUTexture] = [
             .textureArrayCascadedShadowMap: .textureArray(
