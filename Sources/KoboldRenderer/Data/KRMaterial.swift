@@ -144,26 +144,25 @@ public struct KRMaterial {
     public let lighting: KRLightingProperties
     public let rim: KRRimLightingProperties
     public let behavior: KRLightingBehavior
+    public let isTransparent: Bool
 
     public init(
         name: String,
         type: KRMaterialType,
         lighting: KRLightingProperties,
         rim: KRRimLightingProperties,
-        behavior: KRLightingBehavior
+        behavior: KRLightingBehavior,
+        isTransparent: Bool? = nil
     ) {
         self.name = name
         self.type = type
         self.lighting = lighting
         self.rim = rim
         self.behavior = behavior
-    }
-
-    public func hasTransparency() -> Bool {
-        return if case let .color(color) = type {
+        self.isTransparent = if case let .color(color) = type {
             color.w < 1
         } else {
-            false
+            isTransparent ?? false
         }
     }
 
