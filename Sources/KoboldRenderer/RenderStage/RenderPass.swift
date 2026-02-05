@@ -7,7 +7,7 @@ class RenderPass {
 
     init(device: MTLDevice) {
         let depthStencilStateEnabledDescriptor = MTLDepthStencilDescriptor()
-        depthStencilStateEnabledDescriptor.depthCompareFunction = .less
+        depthStencilStateEnabledDescriptor.depthCompareFunction = .greater
         depthStencilStateEnabledDescriptor.isDepthWriteEnabled = true
         self.depthStateYesTestYesWrite = device.makeDepthStencilState(descriptor: depthStencilStateEnabledDescriptor)!
 
@@ -17,7 +17,7 @@ class RenderPass {
         self.depthStateNoTestNoWrite = device.makeDepthStencilState(descriptor: depthStencilStateDisabledDescriptor)!
 
         let depthStencilStateTestNoWriteDescriptor = MTLDepthStencilDescriptor()
-        depthStencilStateTestNoWriteDescriptor.depthCompareFunction = .less
+        depthStencilStateTestNoWriteDescriptor.depthCompareFunction = .greater
         depthStencilStateTestNoWriteDescriptor.isDepthWriteEnabled = false
         self.depthStateYesTestNoWrite = device.makeDepthStencilState(descriptor: depthStencilStateTestNoWriteDescriptor)!
     }
@@ -46,8 +46,8 @@ class RenderPass {
 
             if isShadowPass {
                 commandEncoder.setDepthBias(
-                    rendererSettings.depthBias,
-                    slopeScale: rendererSettings.depthSlopeScale,
+                    -rendererSettings.depthBias,
+                    slopeScale: -rendererSettings.depthSlopeScale,
                     clamp: rendererSettings.depthClamp
                 )
 

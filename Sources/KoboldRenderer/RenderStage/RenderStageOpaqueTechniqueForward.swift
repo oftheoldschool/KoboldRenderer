@@ -95,11 +95,14 @@ class RenderStageOpaqueTechniqueForward: RenderStageOpaqueTechnique {
 
         let renderPassDescriptor = MTLRenderPassDescriptor()
 
+        let depthClearValue: Double = 0
+
         if rendererSettings.msaaEnabled {
             renderPassDescriptor.depthAttachment.texture = textures.msaaDepthTarget
             renderPassDescriptor.depthAttachment.resolveTexture = outputTargets.depth
             renderPassDescriptor.depthAttachment.loadAction = .clear
             renderPassDescriptor.depthAttachment.storeAction = .multisampleResolve
+            renderPassDescriptor.depthAttachment.clearDepth = depthClearValue
 
             renderPassDescriptor.colorAttachments[0].loadAction = .clear
             renderPassDescriptor.colorAttachments[0].storeAction = .multisampleResolve
@@ -117,6 +120,7 @@ class RenderStageOpaqueTechniqueForward: RenderStageOpaqueTechnique {
             renderPassDescriptor.depthAttachment.texture = outputTargets.depth
             renderPassDescriptor.depthAttachment.loadAction = .clear
             renderPassDescriptor.depthAttachment.storeAction = .store
+            renderPassDescriptor.depthAttachment.clearDepth = depthClearValue
 
             renderPassDescriptor.colorAttachments[0].loadAction = .clear
             renderPassDescriptor.colorAttachments[0].storeAction = .store

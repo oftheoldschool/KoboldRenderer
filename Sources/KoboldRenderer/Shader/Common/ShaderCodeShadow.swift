@@ -109,7 +109,7 @@ float calculateCSMShadowFactor(
     bias *= 1.0 + (1.0 - abs(dot(float3(0, 0, 1), normalize(projCoords)))) * uniformsLighting.shadowBiasAngleFactor;
     bias *= (1.0 + cascadeIndex * uniformsLighting.shadowCascadeFactor);
 
-    float currentDepth = projCoords.z - bias;
+    float currentDepth = projCoords.z + bias;
 
     float2 texelSize = 1.0 / float2(${CASCADED_SHADOW_BASE_SIZE});
     int filterSize = 5 + int(cascadeIndex);
@@ -151,7 +151,7 @@ float calculateCSMShadowFactor(
 OUT_LIGHTSPACE_PREFIX ## INDEX = IN_LIGHT_VOLUMES[INDEX] * IN_WORLD_POSITION;
 
 #define CALCULATE_CSM_SHADOW_FACTOR( \
-    INDEX, \ 
+    INDEX, \
     IN_LIGHTSPACE_PREFIX, \
     IN_CLIP_SPACE_POS_Z, \
     IN_CASCADE_END_CLIP_SPACE, \
@@ -161,7 +161,7 @@ OUT_LIGHTSPACE_PREFIX ## INDEX = IN_LIGHT_VOLUMES[INDEX] * IN_WORLD_POSITION;
     OUT_SHADOW_FACTOR, \
     IN_UNIFORMS_SHADOW \
 ) \
-if (OUT_CASCADE_INDEX < 0 && IN_CLIP_SPACE_POS_Z <= IN_CASCADE_END_CLIP_SPACE[INDEX]) { \
+if (OUT_CASCADE_INDEX < 0 && IN_CLIP_SPACE_POS_Z >= IN_CASCADE_END_CLIP_SPACE[INDEX]) { \
     OUT_SHADOW_FACTOR = calculateCSMShadowFactor( \
         IN_LIGHTSPACE_PREFIX ## INDEX, \
         IN_CASCADED_SHADOW_TEXTURE, \
@@ -170,11 +170,10 @@ if (OUT_CASCADE_INDEX < 0 && IN_CLIP_SPACE_POS_Z <= IN_CASCADE_END_CLIP_SPACE[IN
         IN_UNIFORMS_SHADOW); \
     OUT_CASCADE_INDEX = INDEX; \
     if (INDEX == (${CASCADED_SHADOW_NUM_CASCADES} - 1)) { \
-        OUT_SHADOW_FACTOR = mix( \
-            OUT_SHADOW_FACTOR, \
-            1, \
-            (IN_CLIP_SPACE_POS_Z - IN_CASCADE_END_CLIP_SPACE[1]) \
-                / (IN_CASCADE_END_CLIP_SPACE[2] - IN_CASCADE_END_CLIP_SPACE[1])); \
+        float fadeStart = IN_CASCADE_END_CLIP_SPACE[1]; \
+        float fadeEnd = IN_CASCADE_END_CLIP_SPACE[2]; \
+        float fadeFactor = (fadeStart - IN_CLIP_SPACE_POS_Z) / (fadeStart - fadeEnd); \
+        OUT_SHADOW_FACTOR = mix(OUT_SHADOW_FACTOR, 1, fadeFactor); \
     } \
 }
 
@@ -203,7 +202,7 @@ ShadowResult calculateShadow(
 
         REPEAT(8, CALCULATE_OCCLUDER_SHADOW_FACTOR)
 
-        if (fragmentIn.clipSpacePosZ > cascadeEndClipSpace[${CASCADED_SHADOW_NUM_CASCADES} - 1]) {
+        if (fragmentIn.clipSpacePosZ < cascadeEndClipSpace[${CASCADED_SHADOW_NUM_CASCADES} - 1]) {
             csmShadowFactor = 1;
         } else {
             REPEAT(

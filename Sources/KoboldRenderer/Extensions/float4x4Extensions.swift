@@ -57,12 +57,12 @@ extension float4x4 {
 
         let zx: Float = 0
         let zy: Float = 0
-        let zz: Float = -1.0 / (far - near)
+        let zz: Float = 1.0 / (far - near)
         let zw: Float = 0
 
         let wx: Float = -(right + left) / (right - left)
         let wy: Float = -(top + bottom) / (top - bottom)
-        let wz: Float = -near / (far - near)
+        let wz: Float = far / (far - near)
         let ww: Float = 1
 
         return Self(
@@ -79,9 +79,9 @@ extension float4x4 {
         near: Float,
         far: Float
     ) -> Self {
-        // corresponds to perspectiveRH_Z0=O
+        // Reverse-Z perspective projection: near -> 1, far -> 0
         let halfTanFovX = tan(fov * 0.5)
-        
+
         var xScale = 1 / halfTanFovX
         var yScale = 1 / (halfTanFovX / aspectRatio)
 
@@ -90,17 +90,17 @@ extension float4x4 {
             xScale = 1 / (halfTanFovX * aspectRatio)
             yScale = 1 / halfTanFovX
         }
-        
+
         let zRange = far - near
-        let zScale = far / (near - far)
-        let wzScale =  -(far * near) / zRange
-        
+        let zScale = near / zRange
+        let wzScale = (far * near) / zRange
+
         let xx = xScale
         let yy = yScale
         let zz = zScale
         let zw = Float(-1)
         let wz = wzScale
-        
+
         return Self.init(
             SIMD4<Float>(xx,  0,  0,  0),
             SIMD4<Float>( 0, yy,  0,  0),

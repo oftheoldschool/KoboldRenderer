@@ -113,7 +113,7 @@ class RenderStageOpaqueTechniqueDeferred: RenderStageOpaqueTechnique {
         let renderPassDescriptor = MTLRenderPassDescriptor()
         renderPassDescriptor.depthAttachment.loadAction = .clear
         renderPassDescriptor.depthAttachment.storeAction = .store
-        renderPassDescriptor.depthAttachment.clearDepth = 1
+        renderPassDescriptor.depthAttachment.clearDepth = 0
         renderPassDescriptor.depthAttachment.texture = outputTargets.depth
 
         renderPassDescriptor.colorAttachments[0].loadAction = .clear

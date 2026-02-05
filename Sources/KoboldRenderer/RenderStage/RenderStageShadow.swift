@@ -36,7 +36,7 @@ class RenderStageShadow {
             cascadeCount: cascadeCount)
         let cascadedShadowSamplerDescriptor = MTLSamplerDescriptor()
         cascadedShadowSamplerDescriptor.label = "Cascaded shadow sampler"
-        cascadedShadowSamplerDescriptor.compareFunction = .lessEqual
+        cascadedShadowSamplerDescriptor.compareFunction = .greaterEqual
         cascadedShadowSamplerDescriptor.normalizedCoordinates = true
         cascadedShadowSamplerDescriptor.rAddressMode = .clampToEdge
         cascadedShadowSamplerDescriptor.sAddressMode = .clampToEdge
@@ -49,7 +49,7 @@ class RenderStageShadow {
         self.cascadedShadowRenderPassDescriptor = MTLRenderPassDescriptor()
         self.cascadedShadowRenderPassDescriptor.depthAttachment.loadAction = .clear
         self.cascadedShadowRenderPassDescriptor.depthAttachment.storeAction = .store
-        self.cascadedShadowRenderPassDescriptor.depthAttachment.clearDepth = 1.0
+        self.cascadedShadowRenderPassDescriptor.depthAttachment.clearDepth = 0
         self.cascadedShadowRenderPassDescriptor.depthAttachment.texture = shadowTextureArray
         self.cascadeFrustumDistances = cascadeFrustumDistances
         self.baseTextureSize = baseTextureSize
