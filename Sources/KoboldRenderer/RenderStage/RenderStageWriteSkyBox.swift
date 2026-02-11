@@ -22,9 +22,10 @@ public class RenderStageWriteSkyBox {
             (.yPositive, .zPositive), (.yNegative, .zNegative),
             (.zNegative, .yPositive), (.zPositive, .yPositive),
         ]
+        let useDeferredRendering = rendererSettings.renderingMode == .deferred
 
         let cubeTextureDescriptor = MTLTextureDescriptor.textureCubeDescriptor(
-            pixelFormat: .bgra8Unorm,
+            pixelFormat: useDeferredRendering ? .rgba32Float : .bgra8Unorm,
             size: skyboxSize,
             mipmapped: false)
         cubeTextureDescriptor.usage = [.renderTarget, .shaderRead]
@@ -44,10 +45,38 @@ public class RenderStageWriteSkyBox {
         depthTexture.label = "Skybox Depth Texture"
 
         let renderPassDescriptor = MTLRenderPassDescriptor()
-        renderPassDescriptor.colorAttachments[0].texture = cubeTexture
         renderPassDescriptor.colorAttachments[0].loadAction = .clear
-        renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColor(rendererSettings.clearColor)
         renderPassDescriptor.depthAttachment.texture = depthTexture
+        renderPassDescriptor.depthAttachment.loadAction = .clear
+        renderPassDescriptor.depthAttachment.storeAction = .store
+        renderPassDescriptor.depthAttachment.clearDepth = 0
+
+        let deferredNormalsTexture: MTLTexture?
+
+        if useDeferredRendering {
+            let gbufferTextureDescriptor = MTLTextureDescriptor.texture2DDescriptor(
+                pixelFormat: .rgba32Float,
+                width: skyboxSize,
+                height: skyboxSize,
+                mipmapped: false)
+            gbufferTextureDescriptor.usage = [.renderTarget, .shaderRead]
+            gbufferTextureDescriptor.storageMode = .private
+
+            deferredNormalsTexture = device.makeTexture(descriptor: gbufferTextureDescriptor)!
+
+            renderPassDescriptor.colorAttachments[0].texture = deferredNormalsTexture
+            renderPassDescriptor.colorAttachments[0].storeAction = .store
+            renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColor.black
+            renderPassDescriptor.colorAttachments[1].texture = cubeTexture
+            renderPassDescriptor.colorAttachments[1].loadAction = .clear
+            renderPassDescriptor.colorAttachments[1].storeAction = .store
+            renderPassDescriptor.colorAttachments[1].clearColor = MTLClearColor(rendererSettings.clearColor)
+        } else {
+            deferredNormalsTexture = nil
+            renderPassDescriptor.colorAttachments[0].texture = cubeTexture
+            renderPassDescriptor.colorAttachments[0].storeAction = .store
+            renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColor(rendererSettings.clearColor)
+        }
 
         for (index, camParam) in camParams.enumerated() {
             let (forward, up) = camParam
@@ -60,9 +89,13 @@ public class RenderStageWriteSkyBox {
                     fov: .pi / 2)),
                 position: .zero,
                 direction: forward,
-                up: up,
-                leftHanded: true)
-            renderPassDescriptor.colorAttachments[0].slice = index
+                    up: up,
+                    leftHanded: true)
+            if !useDeferredRendering {
+                renderPassDescriptor.colorAttachments[0].slice = index
+            } else {
+                renderPassDescriptor.colorAttachments[1].slice = index
+            }
 
             let sharedUniforms = SharedUniforms(
                 camera: camera,
@@ -81,7 +114,7 @@ public class RenderStageWriteSkyBox {
                 drawDataList: drawDataList,
                 dataBindings: dataBindings,
                 currentFrame: 0,
-                renderTarget: .colorPlusDepth,
+                renderTarget: useDeferredRendering ? .gbuffer : .colorPlusDepth,
                 rendererSettings: rendererSettings)
         }
 

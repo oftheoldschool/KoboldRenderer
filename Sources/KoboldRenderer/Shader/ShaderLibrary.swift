@@ -67,6 +67,7 @@ public class ShaderLibrary {
     init(
         device: MTLDevice,
         layoutLibrary: LayoutLibrary,
+        renderingMode: KRRenderingMode,
         shadowTextureNumCascades: Int,
         shadowBaseTextureSize: Int,
         msaaSampleCount: Int,
@@ -90,11 +91,11 @@ public class ShaderLibrary {
             FragmentShaderFunctionTemplatePassThrough.self,
         ] + additionalFragmentFunctionTemplates
 
-        let computeFunctionTemplates: [ComputeShaderFunctionTemplate.Type] = [
-            ComputeShaderFunctionTemplateGBufferCombine.self,
+        let computeFunctionTemplates: [ComputeShaderFunctionTemplate.Type] = ([
             ComputeShaderFunctionTemplateCombine.self,
             ComputeShaderFunctionTemplateConvert.self,
-        ] + additionalComputeFunctionTemplates
+        ] + (renderingMode == .deferred ? [ComputeShaderFunctionTemplateGBufferCombine.self] : [])
+                                                                              + additionalComputeFunctionTemplates)
 
         // todo: we can probably do away with this too
         // some time later... can we though?
@@ -121,7 +122,10 @@ public class ShaderLibrary {
         }
 
         let fragmentFunctions = fragmentFunctionTemplates.map { template in
-            template.createFunctionGroup(layoutLibrary: layoutLibrary, variableMap: variableMap)
+            template.createFunctionGroup(
+                layoutLibrary: layoutLibrary,
+                variableMap: variableMap,
+                renderingMode: renderingMode)
         }.reduce(into: [:]) { result, element in
             result[element.functionName] = element
         }
@@ -156,26 +160,27 @@ public class ShaderLibrary {
             source: shaderCode,
             options: nil)
 
-        self.computePipelines = [
+        self.computePipelines = (([
             try! ComputePipelineConvert(
                 device: device,
                 library: library,
                 name: "convert",
                 computeFunctionGroup: computeFunctions["convertRGBA32FloatToBGRA8Unorm"]!,
                 computeVariants: [.color]),
-            try! ComputePipelineGBufferCombine(
-                device: device,
-                library: library,
-                name: "GBufferCombine",
-                computeFunctionGroup: computeFunctions["computeShaderGBufferCombine"]!,
-                computeVariants: [.color, .colorPlusBloom]),
             try! ComputePipelineCombine(
                 device: device,
                 library: library,
                 name: "computeShaderCombine",
                 computeFunctionGroup: computeFunctions["computeShaderCombine"]!,
                 computeVariants: [.color, .colorPlusBloom]),
-        ].reduce(into: [:]) { result, element in
+        ] as [ComputePipeline]) + (renderingMode == .deferred ? [
+            try! ComputePipelineGBufferCombine(
+                device: device,
+                library: library,
+                name: "GBufferCombine",
+                computeFunctionGroup: computeFunctions["computeShaderGBufferCombine"]!,
+                computeVariants: [.color, .colorPlusBloom]),
+        ] : [])).reduce(into: [:]) { result, element in
             result[element.name] = element
         }
 
@@ -186,12 +191,14 @@ public class ShaderLibrary {
                 name: "TexturedAnimated",
                 vertexFunction: vertexFunctions["fullVertex"]!,
                 fragmentFunction: fragmentFunctions["texturedFragment"]!,
-                shaderVariants: [
-                    ShaderVariant(renderTarget: .colorPlusDepth, shaderOptions: [.instanced, .msaa, .animated]),
-                    ShaderVariant(renderTarget: .colorPlusBrightnessPlusDepth, shaderOptions: [.instanced, .msaa, .animated]),
-                    ShaderVariant(renderTarget: .gbuffer, shaderOptions: [.instanced, .animated]),
-                    ShaderVariant(renderTarget: .depth, shaderOptions: [.instanced, .animated]),
-                ],
+                shaderVariants: Self.filterVariants(
+                    [
+                        ShaderVariant(renderTarget: .colorPlusDepth, shaderOptions: [.instanced, .msaa, .animated]),
+                        ShaderVariant(renderTarget: .colorPlusBrightnessPlusDepth, shaderOptions: [.instanced, .msaa, .animated]),
+                        ShaderVariant(renderTarget: .gbuffer, shaderOptions: [.instanced, .animated]),
+                        ShaderVariant(renderTarget: .depth, shaderOptions: [.instanced, .animated]),
+                    ],
+                    renderingMode: renderingMode),
                 msaaSampleCount: msaaSampleCount),
             try! RenderPipeline(
                 device: device,
@@ -199,12 +206,14 @@ public class ShaderLibrary {
                 name: "Textured",
                 vertexFunction: vertexFunctions["basicVertex"]!,
                 fragmentFunction: fragmentFunctions["texturedFragment"]!,
-                shaderVariants: [
-                    ShaderVariant(renderTarget: .colorPlusDepth, shaderOptions: [.instanced, .msaa]),
-                    ShaderVariant(renderTarget: .colorPlusBrightnessPlusDepth, shaderOptions: [.instanced, .msaa]),
-                    ShaderVariant(renderTarget: .gbuffer, shaderOptions: [.instanced]),
-                    ShaderVariant(renderTarget: .depth, shaderOptions: [.instanced]),
-                ],
+                shaderVariants: Self.filterVariants(
+                    [
+                        ShaderVariant(renderTarget: .colorPlusDepth, shaderOptions: [.instanced, .msaa]),
+                        ShaderVariant(renderTarget: .colorPlusBrightnessPlusDepth, shaderOptions: [.instanced, .msaa]),
+                        ShaderVariant(renderTarget: .gbuffer, shaderOptions: [.instanced]),
+                        ShaderVariant(renderTarget: .depth, shaderOptions: [.instanced]),
+                    ],
+                    renderingMode: renderingMode),
                 msaaSampleCount: msaaSampleCount),
             try! RenderPipeline(
                 device: device,
@@ -212,12 +221,14 @@ public class ShaderLibrary {
                 name: "Basic",
                 vertexFunction: vertexFunctions["basicVertex"]!,
                 fragmentFunction: fragmentFunctions["colorFragment"]!,
-                shaderVariants: [
-                    ShaderVariant(renderTarget: .colorPlusDepth, shaderOptions: [.instanced, .msaa, .transparency]),
-                    ShaderVariant(renderTarget: .colorPlusBrightnessPlusDepth, shaderOptions: [.instanced, .msaa, .transparency]),
-                    ShaderVariant(renderTarget: .gbuffer, shaderOptions: [.instanced]),
-                    ShaderVariant(renderTarget: .depth, shaderOptions: [.instanced]),
-                ],
+                shaderVariants: Self.filterVariants(
+                    [
+                        ShaderVariant(renderTarget: .colorPlusDepth, shaderOptions: [.instanced, .msaa, .transparency]),
+                        ShaderVariant(renderTarget: .colorPlusBrightnessPlusDepth, shaderOptions: [.instanced, .msaa, .transparency]),
+                        ShaderVariant(renderTarget: .gbuffer, shaderOptions: [.instanced]),
+                        ShaderVariant(renderTarget: .depth, shaderOptions: [.instanced]),
+                    ],
+                    renderingMode: renderingMode),
                 msaaSampleCount: msaaSampleCount),
             try! RenderPipeline(
                 device: device,
@@ -225,11 +236,13 @@ public class ShaderLibrary {
                 name: "SkyBox",
                 vertexFunction: vertexFunctions["skyboxVertex"]!,
                 fragmentFunction: fragmentFunctions["cubeTexturedFragment"]!,
-                shaderVariants: [
-                    ShaderVariant(renderTarget: .colorPlusDepth, shaderOptions: [.msaa]),
-                    ShaderVariant(renderTarget: .colorPlusBrightnessPlusDepth, shaderOptions: [.msaa]),
-                    ShaderVariant(renderTarget: .gbuffer, shaderOptions: []),
-                ],
+                shaderVariants: Self.filterVariants(
+                    [
+                        ShaderVariant(renderTarget: .colorPlusDepth, shaderOptions: [.msaa]),
+                        ShaderVariant(renderTarget: .colorPlusBrightnessPlusDepth, shaderOptions: [.msaa]),
+                        ShaderVariant(renderTarget: .gbuffer, shaderOptions: []),
+                    ],
+                    renderingMode: renderingMode),
                 msaaSampleCount: msaaSampleCount),
             try! RenderPipeline(
                 device: device,
@@ -243,7 +256,7 @@ public class ShaderLibrary {
                 msaaSampleCount: msaaSampleCount
             ),
         ] + additionalRenderPipelineDefinitions.map { pipelineDefinition in
-            var supportedTargets = [
+            var supportedTargets: [ShaderRenderTarget] = [
                 ShaderRenderTarget.colorPlusDepth,
                 ShaderRenderTarget.gbuffer,
             ]
@@ -259,25 +272,50 @@ public class ShaderLibrary {
                 name: pipelineDefinition.name,
                 vertexFunction: vertexFunctions[pipelineDefinition.vertexFunctionName]!,
                 fragmentFunction: fragmentFunctions[pipelineDefinition.fragmentFunctionName]!,
-                shaderVariants: supportedTargets.map { target in
-                    var shaderOptions: ShaderOptions = []
-                    if target != .gbuffer {
-                        shaderOptions.insert(.msaa)
-                        if pipelineDefinition.supportsTransparency {
-                            shaderOptions.insert(.transparency)
+                shaderVariants: Self.filterVariants(
+                    supportedTargets.map { target in
+                        var shaderOptions: ShaderOptions = []
+                        if target != .gbuffer {
+                            shaderOptions.insert(.msaa)
+                            if pipelineDefinition.supportsTransparency {
+                                shaderOptions.insert(.transparency)
+                            }
                         }
-                    }
-                    if pipelineDefinition.supportsAnimation {
-                        shaderOptions.insert(.animated)
-                    }
-                    if pipelineDefinition.supportsInstancing {
-                        shaderOptions.insert(.instanced)
-                    }
-                    return ShaderVariant(renderTarget: target, shaderOptions: shaderOptions)
-                },
+                        if pipelineDefinition.supportsAnimation {
+                            shaderOptions.insert(.animated)
+                        }
+                        if pipelineDefinition.supportsInstancing {
+                            shaderOptions.insert(.instanced)
+                        }
+                        return ShaderVariant(renderTarget: target, shaderOptions: shaderOptions)
+                    },
+                    renderingMode: renderingMode,
+                    supportsTransparency: pipelineDefinition.supportsTransparency),
                 msaaSampleCount: msaaSampleCount)
         }).reduce(into: [:]) { result, element in
             result[element.name] = element
         }
+    }
+
+    private static func filterVariants(
+        _ variants: [ShaderVariant],
+        renderingMode: KRRenderingMode,
+        supportsTransparency: Bool = false
+    ) -> [ShaderVariant] {
+        let filtered = variants.filter { variant in
+            switch renderingMode {
+            case .forward:
+                return variant.renderTarget != .gbuffer
+            case .deferred:
+                switch variant.renderTarget {
+                case .gbuffer, .depth:
+                    return true
+                case .colorPlusDepth, .colorPlusBrightnessPlusDepth:
+                    return supportsTransparency || variant.shaderOptions.contains(.transparency)
+                }
+            }
+        }
+
+        return filtered.isEmpty ? variants : filtered
     }
 }

@@ -96,6 +96,7 @@ public class KRRenderer {
         self.shaderLibrary = try ShaderLibrary(
             device: device,
             layoutLibrary: self.layoutLibrary,
+            renderingMode: rendererSettings.renderingMode,
             shadowTextureNumCascades: renderStageShadow.cascadeCount,
             shadowBaseTextureSize: renderStageShadow.baseTextureSize,
             msaaSampleCount: rendererSettings.msaaEnabled ? rendererSettings.msaaSampleCount : 1,
@@ -452,6 +453,7 @@ public class KRRenderer {
             self.shaderLibrary = try! ShaderLibrary(
                 device: device,
                 layoutLibrary: layoutLibrary,
+                renderingMode: rendererSettings.renderingMode,
                 shadowTextureNumCascades: renderStageShadow.cascadeCount,
                 shadowBaseTextureSize: renderStageShadow.baseTextureSize,
                 msaaSampleCount: msaaSampleCount,

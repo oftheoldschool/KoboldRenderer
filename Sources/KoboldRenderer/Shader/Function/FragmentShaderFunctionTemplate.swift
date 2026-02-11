@@ -1,6 +1,7 @@
 open class FragmentShaderFunctionTemplate {
     open class var functionName: String { fatalError("unimplemented") }
     open class var perVariantLayouts: [FragmentFunctionVariant: FragmentShaderVariantLayouts] { fatalError("unimplemented") }
+    open class var compileForwardVariantsInDeferred: Bool { false }
 
     open class var inputLayout: String { fatalError("unimplemented") }
     open class var textureLayout: String { fatalError("unimplemented") }
@@ -13,9 +14,25 @@ open class FragmentShaderFunctionTemplate {
 
     static func createFunctionGroup(
         layoutLibrary: LayoutLibrary,
-        variableMap: [String: String]
+        variableMap: [String: String],
+        renderingMode: KRRenderingMode
     ) -> FragmentShaderFunctionGroup {
-        let shaders: [FragmentFunctionVariant: FragmentShaderFunction] = perVariantLayouts.reduce(into: [:]) { result, element in
+        let hasTransparencyVariants = perVariantLayouts.keys.contains { $0.isTransparency }
+        let supportedVariants: [FragmentFunctionVariant: FragmentShaderVariantLayouts] = perVariantLayouts.filter { element in
+            let (shaderVariant, _) = element
+            return switch renderingMode {
+            case .deferred:
+                compileForwardVariantsInDeferred
+                    || shaderVariant.isGBuffer
+                    || shaderVariant.isTransparency
+                    || (hasTransparencyVariants && !shaderVariant.isGBuffer)
+            case .forward: !shaderVariant.isGBuffer
+            }
+        }
+
+        let variantsToBuild = supportedVariants.isEmpty ? perVariantLayouts : supportedVariants
+
+        let shaders: [FragmentFunctionVariant: FragmentShaderFunction] = variantsToBuild.reduce(into: [:]) { result, element in
             let (shaderVariant, perVariantLayout) = element
 
             let instancedPrefix = shaderVariant.isInstanced ? "instanced_" : ""
@@ -109,4 +126,3 @@ fragment \(outputLayout.name) \(functionName)(
 """
     }
 }
-
