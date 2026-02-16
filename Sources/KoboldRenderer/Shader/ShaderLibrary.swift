@@ -255,6 +255,21 @@ public class ShaderLibrary {
                 ],
                 msaaSampleCount: msaaSampleCount
             ),
+            try! RenderPipeline(
+                device: device,
+                library: library,
+                name: "DebugBoundingBox",
+                vertexFunction: vertexFunctions["basicVertex"]!,
+                fragmentFunction: fragmentFunctions["colorFragment"]!,
+                shaderVariants: Self.filterVariants(
+                    [
+                        ShaderVariant(renderTarget: .colorPlusDepth, shaderOptions: [.instanced, .msaa]),
+                        ShaderVariant(renderTarget: .colorPlusBrightnessPlusDepth, shaderOptions: [.instanced, .msaa]),
+                        ShaderVariant(renderTarget: .gbuffer, shaderOptions: [.instanced]),
+                    ],
+                    renderingMode: renderingMode),
+                msaaSampleCount: msaaSampleCount
+            ),
         ] + additionalRenderPipelineDefinitions.map { pipelineDefinition in
             var supportedTargets: [ShaderRenderTarget] = [
                 ShaderRenderTarget.colorPlusDepth,

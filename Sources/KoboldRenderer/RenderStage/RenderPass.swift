@@ -62,6 +62,9 @@ class RenderPass {
             }
 
             for drawData in drawDataList {
+                if drawData.instanceCount == 0 {
+                    continue
+                }
                 commandEncoder.setFrontFacing(.counterClockwise)
 
                 if isTransparencyPass {

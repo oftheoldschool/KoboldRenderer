@@ -175,7 +175,7 @@ public class KRRenderer {
             return nil
         }
         materialsBuffer[currentFrame].copy(data: materials.map { $0.toMaterialUniforms() })
-        let updatedDrawDataList = getInternalDrawData(drawDataList)
+        let updatedDrawDataList = drawDataList.map(getInternalDrawData)
 
         let renderStageWriteSkybox = RenderStageWriteSkyBox()
         let skyboxModel = renderStageWriteSkybox.writeSkybox(
@@ -229,8 +229,15 @@ public class KRRenderer {
             fatalError("Unable to acquire semaphore for frame")
         }
 
-        let opaqueDrawData = getInternalDrawData(
-            drawDataList.filter { !$0.hasTransparency || !rendererSettings.transparencyEnabled } )
+        let opaqueDrawData = drawDataList
+            .filter { !$0.hasTransparency || !rendererSettings.transparencyEnabled }
+            .map(getInternalDrawData)
+
+        let boundingBoxDrawData = drawDataList
+            .filter { $0.drawBoundingBox }
+            .compactMap { createBoundingBoxDrawData(for: $0, materials: materials) }
+
+        let fullOpaqueDrawData = opaqueDrawData + boundingBoxDrawData
 
         let cascadedShadowMap = try! renderStageShadow.renderCascadedShadowMap(
             shaderLibrary: shaderLibrary,
@@ -238,7 +245,7 @@ public class KRRenderer {
             modelManager: modelManager,
             renderPass: renderPass,
             commandBuffer: commandBuffer,
-            drawDataList: opaqueDrawData,
+            drawDataList: fullOpaqueDrawData,
             globalLight: globalLight,
             camera: camera,
             currentFrame: currentFrame)
@@ -274,12 +281,15 @@ public class KRRenderer {
             lightsBuffer: lightsBuffer,
             occludersBuffer: occludersBuffer,
             additionalBufferBindings: additionalBufferBindings,
-            drawDataList: opaqueDrawData
+            drawDataList: fullOpaqueDrawData
         ) else {
             return
         }
 
-        let transparentDrawData = getInternalDrawData(drawDataList.filter { $0.hasTransparency })
+        let transparentDrawData = drawDataList
+            .filter { $0.hasTransparency }
+            .map(getInternalDrawData)
+
         let transparencyRequired = rendererSettings.transparencyEnabled && !transparentDrawData.isEmpty
 
         var transparentTargets: RenderStageTransparentOutput?
@@ -426,17 +436,16 @@ public class KRRenderer {
         return perObjectBufferBindings
     }
 
-    private func getInternalDrawData(_ drawDataList: [KRDrawData]) -> [DrawData] {
-        return drawDataList.map { drawData in
-            return DrawData(
-                model: drawData.model,
-                pipeline: drawData.pipeline,
-                instanceCount: drawData.instanceCount,
-                perObjectBufferBindings: getPerObjectBufferBindings(drawData),
-                drawFirst: drawData.drawFirst,
-                castsShadow: drawData.castsShadow,
-                isOccluder: drawData.isOccluder)
-        }
+    private func getInternalDrawData(_ drawData: KRDrawData) -> DrawData {
+        return DrawData(
+            model: drawData.model,
+            pipeline: drawData.pipeline,
+            instanceCount: drawData.instanceCount,
+            perObjectBufferBindings: getPerObjectBufferBindings(drawData),
+            drawFirst: drawData.drawFirst,
+            castsShadow: drawData.castsShadow,
+            isOccluder: drawData.isOccluder,
+            drawBoundingBox: drawData.drawBoundingBox)
     }
 
     private func applyChanges() {
@@ -502,7 +511,6 @@ public class KRRenderer {
         }
     }
 
-    // temporary during refactor
     static func createPostProcessedTexture(
         device: MTLDevice,
         pixelFormat: MTLPixelFormat,
@@ -526,11 +534,55 @@ public class KRRenderer {
             mipmapped: false)
         outputTextureDescriptor.usage = [.shaderWrite, .shaderRead]
         outputTextureDescriptor.storageMode = .private
+
         let renderTexture = device.makeTexture(descriptor: outputTextureDescriptor)!
         renderTexture.label = "Post Processed Texture"
 
         return TextureData(
             texture: renderTexture,
             sampler: postProcessedSampler)
+    }
+
+    private func createBoundingBoxDrawData(
+        for drawData: KRDrawData,
+        materials: [KRMaterial]
+    ) -> DrawData? {
+        guard drawData.instanceCount > 0,
+              let sourceModel = modelManager.models[drawData.model],
+              let debugMaterialId = materials.firstIndex(where: { $0.name == "debugBoundingBox" })
+        else {
+            return nil
+        }
+
+        let boundingBoxUniforms = drawData.instanceData.map { instanceData in
+            let modelMatrix = instanceData.model
+
+            let center = (sourceModel.boundingBox.min + sourceModel.boundingBox.max) / 2
+            let dimensions = sourceModel.boundingBox.max - sourceModel.boundingBox.min
+
+            let scaleMatrix = float4x4(scaleBy: dimensions / 2)
+            let translationMatrix = float4x4(translationBy: center)
+            let boundingBoxModelMatrix = modelMatrix * translationMatrix * scaleMatrix
+
+            return DrawObjectUniforms(
+                model: boundingBoxModelMatrix,
+                normalMatrix: boundingBoxModelMatrix.normalMatrix,
+                materialId: Int32(debugMaterialId))
+        }
+
+        let perObjectBufferBindings: [KBufferBindingType: GPUData] = [
+            .uniformsObject: .wrapper(GPUDataWrapper(boundingBoxUniforms)),
+        ]
+
+        return DrawData(
+            model: "debugBoundingBox",
+            pipeline: "DebugBoundingBox",
+            instanceCount: drawData.instanceCount,
+            perObjectBufferBindings: perObjectBufferBindings,
+            drawFirst: false,
+            castsShadow: false,
+            isOccluder: false,
+            drawBoundingBox: false
+        )
     }
 }

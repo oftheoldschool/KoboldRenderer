@@ -12,6 +12,7 @@ class ModelManager {
         self.device = device
         self.gpuDataManager = gpuDataManager
         self.models = [:]
+        self.createDebugBoundingBoxModel()
     }
 
     func loadModel(modelInput: KRModelInput) {
@@ -48,7 +49,8 @@ class ModelManager {
                     textures: mesh.textures,
                     primitiveType: mapPrimitiveType(mesh.primitiveType))
             },
-            textures: textures
+            textures: textures,
+            boundingBox: modelInput.boundingBox
         )
         models[modelInput.name] = model
     }
@@ -61,6 +63,53 @@ class ModelManager {
         case .triangle: .triangle
         case .triangleStrip: .triangleStrip
         }
+    }
+
+    private func createDebugBoundingBoxModel() {
+        let positions: [SIMD3<Float>] = [
+            SIMD3<Float>( 1,  1,  1),
+            SIMD3<Float>( 1, -1,  1),
+            SIMD3<Float>(-1, -1,  1),
+            SIMD3<Float>(-1,  1,  1),
+            SIMD3<Float>( 1,  1, -1),
+            SIMD3<Float>( 1, -1, -1),
+            SIMD3<Float>(-1, -1, -1),
+            SIMD3<Float>(-1,  1, -1),
+        ]
+
+        let lineIndices: [UInt32] = [
+            // Front face
+            0, 1, 1, 2, 2, 3, 3, 0,
+            // Back face
+            4, 5, 5, 6, 6, 7, 7, 4,
+            // Connecting edges
+            0, 4, 1, 5, 2, 6, 3, 7,
+        ]
+
+        let normals: [SIMD3<Float>] = Array(repeating: SIMD3<Float>(0, 1, 0), count: 8)
+        let texCoords: [SIMD2<Float>] = Array(repeating: SIMD2<Float>(0, 0), count: 8)
+
+        let modelInput = KRModelInput(
+            name: "debugBoundingBox",
+            meshInput: [
+                KMeshInput(
+                    verticesData: [
+                        (.attributePosition, MemoryLayout<SIMD3<Float>>.stride, positions.toByteArray()),
+                        (.attributeNormal, MemoryLayout<SIMD3<Float>>.stride, normals.toByteArray()),
+                        (.attributeTexCoords, MemoryLayout<SIMD2<Float>>.stride, texCoords.toByteArray())
+                    ],
+                    vertexCount: positions.count,
+                    indexData: (.uint32, MemoryLayout<UInt32>.stride, lineIndices.toByteArray()),
+                    indexCount: lineIndices.count,
+                    textures: [:],
+                    primitiveType: .line,
+                    boundingBox: KBoundingBox(min: SIMD3<Float>(-1, -1, -1), max: SIMD3<Float>(1, 1, 1))
+                )
+            ],
+            textures: [:]
+        )
+
+        loadModel(modelInput: modelInput)
     }
 }
 
@@ -143,5 +192,4 @@ func createSampler(
 
     return device.makeSamplerState(descriptor: samplerStateDescriptor)!
 }
-
 

@@ -61,12 +61,13 @@ public struct KRModelInput {
     public init(
         name: String,
         meshInput: [KMeshInput],
-        textures: [String: KModelTexture]
+        textures: [String: KModelTexture],
+        boundingBox: KBoundingBox? = nil
     ) {
         self.name = name
         self.meshInput = meshInput
         self.textures = textures
-        self.boundingBox = KBoundingBox(meshInput.map { $0.boundingBox })
+        self.boundingBox = boundingBox ?? KBoundingBox(meshInput.map { $0.boundingBox })
     }
 }
 

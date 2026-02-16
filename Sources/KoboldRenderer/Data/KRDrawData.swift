@@ -26,6 +26,7 @@ public struct KRDrawData {
     let hasTransparency: Bool
     let castsShadow: Bool
     let isOccluder: Bool
+    let drawBoundingBox: Bool
     let pose: [float4x4]
     let inverseBindPose: [float4x4]
 
@@ -39,6 +40,7 @@ public struct KRDrawData {
         hasTransparency: Bool,
         castsShadow: Bool,
         isOccluder: Bool = false,
+        drawBoundingBox: Bool = false,
         pose: [float4x4] = [],
         inverseBindPose: [float4x4] = []
     ) {
@@ -50,6 +52,7 @@ public struct KRDrawData {
         self.hasTransparency = hasTransparency
         self.castsShadow = castsShadow
         self.isOccluder = isOccluder
+        self.drawBoundingBox = drawBoundingBox
         self.pose = pose
         self.inverseBindPose = inverseBindPose
         self.instanceKey = instanceKey
