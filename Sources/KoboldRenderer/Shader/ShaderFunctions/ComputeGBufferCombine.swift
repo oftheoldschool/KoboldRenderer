@@ -33,14 +33,12 @@ class ComputeShaderFunctionTemplateGBufferCombine: ComputeShaderFunctionTemplate
     float4 worldSpacePos = uniformsShared.invViewProjection * clipSpacePos;
     worldSpacePos /= worldSpacePos.w; // Perspective divide
 
-    // Transform to view space using inverse projection matrix
-    float4 viewSpacePos = uniformsShared.invProjectionMatrix * clipSpacePos;
-    viewSpacePos /= viewSpacePos.w;
-    float viewSpaceDepth = -viewSpacePos.z;
-    
+    // Reproject world position to clip space to match forward path's clipSpacePosZ
+    float4 clipFromWorld = uniformsShared.viewProjection * float4(worldSpacePos.xyz, 1.0);
+
     ShadowCalculationData shadowCalculationData = getShadowCalculationData(
         worldSpacePos.xyz,
-        viewSpaceDepth,
+        clipFromWorld.z,
         uniformsLightSpaceVolumes);
 
     constant MaterialUniforms & material = materials[materialId];
