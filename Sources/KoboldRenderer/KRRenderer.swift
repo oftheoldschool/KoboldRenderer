@@ -374,10 +374,10 @@ public class KRRenderer {
 
         let blockSemaphore = inflightSemaphore
 
-        commandBuffer.addCompletedHandler { _ in
+        let handler: @Sendable (MTLCommandBuffer) -> Void = { _ in
             blockSemaphore.signal()
         }
-
+        commandBuffer.addCompletedHandler(handler)
         commandBuffer.commit()
 
         currentFrame = (currentFrame + 1) % Self.maxFramesInFlight
