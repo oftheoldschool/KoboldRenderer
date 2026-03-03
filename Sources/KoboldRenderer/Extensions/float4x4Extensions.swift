@@ -15,28 +15,12 @@ extension float4x4 {
     public var upperLeft: float3x3 {
         return float3x3(self[0].xyz, self[1].xyz, self[2].xyz)
     }
-    
-    public var diagonal: SIMD4<Float> {
-        return SIMD4<Float>(
-            x: self[0][0],
-            y: self[1][1],
-            z: self[2][2],
-            w: self[3][3])
-    }
 
     public var normalMatrix: float3x3 {
         let upperLeft = float3x3(self[0].xyz, self[1].xyz, self[2].xyz)
         return upperLeft.inverse.transpose
     }
-    
-    public func toRotationScaleMatrix() -> Self {
-        return Self(
-            SIMD4<Float>(self[0].xyz, 0),
-            SIMD4<Float>(self[1].xyz, 0),
-            SIMD4<Float>(self[2].xyz, 0),
-            SIMD4<Float>.wPositive)
-    }
-    
+
     public static func orthographicProjection(
         left: Float,
         right: Float,
@@ -107,10 +91,10 @@ extension float4x4 {
             SIMD4<Float>( 0,  0, zz, zw),
             SIMD4<Float>( 0,  0, wz,  0))
     }
-    
+
     static func lookAt(
-        from: SIMD3<Float>, 
-        to: SIMD3<Float>, 
+        from: SIMD3<Float>,
+        to: SIMD3<Float>,
         up: SIMD3<Float>
     ) -> Self {
         // corresponds to lookAtRH (https://github.com/g-truc/glm/blob/fc8f4bb442b9540969f2f3f351c4960d91bca17a/glm/ext/matrix_transform.inl#L153-L173)
@@ -137,29 +121,6 @@ extension float4x4 {
                   SIMD4<Float>(0, v.y, 0, 0),
                   SIMD4<Float>(0, 0, v.z, 0),
                   SIMD4<Float>(0, 0, 0, 1))
-    }
-
-    init(rotationAbout axis: SIMD3<Float>, by angleRadians: Float) {
-        let x = axis.x, y = axis.y, z = axis.z
-        let c = cosf(angleRadians)
-        let s = sinf(angleRadians)
-        let t = 1 - c
-        self.init(
-            SIMD4<Float>(
-                t * x * x + c,
-                t * x * y + z * s,
-                t * x * z - y * s, 0),
-            SIMD4<Float>(
-                t * x * y - z * s,
-                t * y * y + c,
-                t * y * z + x * s,
-                0),
-            SIMD4<Float>(
-                t * x * z + y * s,
-                t * y * z - x * s,
-                t * z * z + c,
-                0),
-            SIMD4<Float>(0, 0, 0, 1))
     }
 
     init(translationBy t: SIMD3<Float>) {

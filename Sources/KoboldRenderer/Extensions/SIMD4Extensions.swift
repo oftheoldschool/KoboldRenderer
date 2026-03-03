@@ -4,10 +4,6 @@ extension SIMD4 {
     var xyz: SIMD3<Scalar> {
         return SIMD3<Scalar>(x, y, z)
     }
-
-    func clone(x: Scalar? = nil, y: Scalar? = nil, z: Scalar? = nil, w: Scalar? = nil) -> Self {
-        return Self(x ?? self.x, y ?? self.y, z ?? self.z, w ?? self.w)
-    }
 }
 
 extension SIMD4 where Scalar: SignedNumeric {
