@@ -1,6 +1,7 @@
 public enum KTextureBindingType: Sendable {
     case textureBaseColor
     case textureCubeMap
+    case textureCubeMapAdditional
     case textureArrayCascadedShadowMap
     case texturePassThrough
     case textureGBufferNormals
@@ -83,6 +84,7 @@ extension KTextureBindingType: CustomStringConvertible {
         case .textureArrayCascadedShadowMap: "textureArrayCascadedShadowMap"
         case .textureBaseColor: "textureBaseColor"
         case .textureCubeMap: "textureCubeMap"
+        case .textureCubeMapAdditional: "textureCubeMapAdditional"
         case .texturePassThrough: "texturePassThrough"
         case .textureGBufferDepth: "textureGBufferDepth"
         case .textureGBufferNormals: "textureGBufferNormals"
@@ -104,6 +106,7 @@ extension KTextureBindingType {
         return switch self {
         case .textureArrayCascadedShadowMap: .float
         case .textureCubeMap: .float
+        case .textureCubeMapAdditional: .float
         case .textureBaseColor: .float
         case .texturePassThrough: .float
         case .textureGBufferDepth: .float
@@ -124,6 +127,7 @@ extension KTextureBindingType {
         return switch self {
         case .textureArrayCascadedShadowMap: .array(.depth2d)
         case .textureCubeMap: .cube
+        case .textureCubeMapAdditional: .cube
         case .textureBaseColor: .texture2d
         case .texturePassThrough: .texture2d
         case .textureGBufferDepth: .depth2d

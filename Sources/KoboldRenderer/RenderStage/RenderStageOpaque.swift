@@ -50,6 +50,7 @@ class RenderStageOpaque {
         lightsBuffer: GPUDataMultiBuffer,
         occludersBuffer: GPUDataMultiBuffer,
         additionalBufferBindings: [KBufferBindingType: GPUData],
+        additionalTextureBindings: [KTextureBindingType: GPUTexture] = [:],
         drawDataList: [DrawData]
     ) -> RenderStageOpaqueOutput? {
         guard let outputTargets = renderTargets else {
@@ -89,7 +90,7 @@ class RenderStageOpaque {
                 TextureArrayData(
                     textureArray: lightingData.cascadedShadowMap.shadowTextureArray,
                     sampler: lightingData.cascadedShadowMap.shadowTextureSampler)),
-        ]
+        ] + additionalTextureBindings
 
         opaqueTechnique.render(
             shaderLibrary: shaderLibrary,

@@ -39,6 +39,7 @@ class RenderStageTransparent {
         lightsBuffer: GPUDataMultiBuffer,
         occludersBuffer: GPUDataMultiBuffer,
         additionalBufferBindings: [KBufferBindingType: GPUData],
+        additionalTextureBindings: [KTextureBindingType: GPUTexture] = [:],
         drawDataList: [DrawData],
         opaqueDepthTexture: MTLTexture
     ) -> RenderStageTransparentOutput? {
@@ -78,7 +79,7 @@ class RenderStageTransparent {
                 TextureArrayData(
                     textureArray: lightingData.cascadedShadowMap.shadowTextureArray,
                     sampler: lightingData.cascadedShadowMap.shadowTextureSampler)),
-        ]
+        ] + additionalTextureBindings
 
         renderPass.render(
             shaderLibrary: shaderLibrary,

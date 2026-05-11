@@ -209,6 +209,7 @@ public class KRRenderer {
         materials: [KRMaterial],
         drawDataList: [KRDrawData],
         additionalBufferBindings: [KBufferBindingType: GPUData] = [:],
+        additionalTextureBindings: [KTextureBindingType: GPUTexture] = [:],
         elapsedTime: Float
     ) {
         if needsResize || needsInit {
@@ -281,6 +282,7 @@ public class KRRenderer {
             lightsBuffer: lightsBuffer,
             occludersBuffer: occludersBuffer,
             additionalBufferBindings: additionalBufferBindings,
+            additionalTextureBindings: additionalTextureBindings,
             drawDataList: fullOpaqueDrawData
         ) else {
             return
@@ -310,6 +312,7 @@ public class KRRenderer {
                 lightsBuffer: lightsBuffer,
                 occludersBuffer: occludersBuffer,
                 additionalBufferBindings: additionalBufferBindings,
+                additionalTextureBindings: additionalTextureBindings,
                 drawDataList: transparentDrawData,
                 opaqueDepthTexture: opaqueTargets.depth)
         }
