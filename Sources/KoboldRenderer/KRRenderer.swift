@@ -169,7 +169,8 @@ public class KRRenderer {
         materials: [KRMaterial],
         bloomThreshold: SIMD3<Float>,
         bloomMultiplier: SIMD3<Float>,
-        elapsedTime: Float
+        elapsedTime: Float,
+        skyboxSize: Int = 1024
     ) -> KRModelInput? {
         guard let commandBuffer = commandQueue.makeCommandBuffer() else {
             return nil
@@ -183,7 +184,7 @@ public class KRRenderer {
             shaderLibrary: shaderLibrary,
             gpuDataManager: gpuDataManager,
             modelManager: modelManager,
-            skyboxSize: 1024,
+            skyboxSize: skyboxSize,
             renderPass: renderPass,
             commandBuffer: commandBuffer,
             drawDataList: updatedDrawDataList,
@@ -323,6 +324,18 @@ public class KRRenderer {
 
             if var alphaBloomTexture = transparentTargets?.accumulationBrightness {
                 blurFunction.encode(commandBuffer: commandBuffer, inPlaceTexture: &alphaBloomTexture)
+            }
+
+            // Produce a blurred copy of the revealage texture so the combine pass
+            // can extend transparent bloom into a halo. We copy then blur in place
+            // because the original revealage is still needed (unblurred) for the
+            // OIT color resolve.
+            if let revealage = transparentTargets?.revealageTexture,
+               var revealageBlurred = transparentTargets?.revealageBlurredTexture,
+               let blitEncoder = commandBuffer.makeBlitCommandEncoder() {
+                blitEncoder.copy(from: revealage, to: revealageBlurred)
+                blitEncoder.endEncoding()
+                blurFunction.encode(commandBuffer: commandBuffer, inPlaceTexture: &revealageBlurred)
             }
         }
 

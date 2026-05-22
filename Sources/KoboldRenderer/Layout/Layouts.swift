@@ -315,6 +315,8 @@ public class LayoutLibrary {
                         KTextureLayoutBinding(index: 4, type: .textureCombineColorAlpha, accessType: .read),
                         KTextureLayoutBinding(index: 5, type: .textureCombineBrightness, accessType: .read),
                         KTextureLayoutBinding(index: 6, type: .textureCombineBrightnessAlpha, accessType: .read),
+                        KTextureLayoutBinding(index: 7, type: .textureCombineRevealageBlurred, accessType: .read),
+                        KTextureLayoutBinding(index: 8, type: .textureCombineOpaqueDepth, accessType: .read),
                     ]
                 ),
                 KTextureLayout(

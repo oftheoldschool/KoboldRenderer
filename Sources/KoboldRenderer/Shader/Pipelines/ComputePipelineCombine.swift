@@ -15,10 +15,13 @@ public class ComputePipelineCombine: ComputePipeline {
                 .textureCombineRevealage: .texture(TextureData(texture: transparentOutput.revealageTexture, sampler: nil)),
                 .textureCombineColor: .texture(TextureData(texture: opaqueOutput.color, sampler: nil)),
                 .textureCombineColorAlpha: .texture(TextureData(texture: transparentOutput.accumulationColor, sampler: nil)),
+                .textureCombineOpaqueDepth: .texture(TextureData(texture: opaqueOutput.depth, sampler: nil)),
             ] + (opaqueOutput.brightness.map {
                 [.textureCombineBrightness: .texture(TextureData(texture: $0, sampler: nil))]
             } ?? [:]) + (transparentOutput.accumulationBrightness.map {
                 [.textureCombineBrightnessAlpha: .texture(TextureData(texture: $0, sampler: nil))]
+            } ?? [:]) + (transparentOutput.revealageBlurredTexture.map {
+                [.textureCombineRevealageBlurred: .texture(TextureData(texture: $0, sampler: nil))]
             } ?? [:])
             
             self.execute(

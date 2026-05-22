@@ -12,6 +12,8 @@ public enum KTextureBindingType: Sendable {
     case textureCombineColorAlpha
     case textureCombineBrightnessAlpha
     case textureCombineRevealage
+    case textureCombineRevealageBlurred
+    case textureCombineOpaqueDepth
     case textureComputeInput
     case textureComputeOutput
     case textureComputeBloomOutput
@@ -97,6 +99,8 @@ extension KTextureBindingType: CustomStringConvertible {
         case .textureCombineColorAlpha: "textureCombineColorAlpha"
         case .textureCombineBrightnessAlpha: "textureCombineBrightnessAlpha"
         case .textureCombineRevealage: "textureCombineRevealage"
+        case .textureCombineRevealageBlurred: "textureCombineRevealageBlurred"
+        case .textureCombineOpaqueDepth: "textureCombineOpaqueDepth"
         }
     }
 }
@@ -120,6 +124,8 @@ extension KTextureBindingType {
         case .textureCombineColorAlpha: .float
         case .textureCombineBrightnessAlpha: .float
         case .textureCombineRevealage: .float
+        case .textureCombineRevealageBlurred: .float
+        case .textureCombineOpaqueDepth: .float
         }
     }
 
@@ -141,6 +147,8 @@ extension KTextureBindingType {
         case .textureCombineColorAlpha: .texture2d
         case .textureCombineBrightnessAlpha: .texture2d
         case .textureCombineRevealage: .texture2d
+        case .textureCombineRevealageBlurred: .texture2d
+        case .textureCombineOpaqueDepth: .depth2d
         }
     }
 }

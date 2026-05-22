@@ -5,6 +5,9 @@ struct RenderStageTransparentOutput {
     var accumulationColor: MTLTexture
     var accumulationBrightness: MTLTexture?
     var revealageTexture: MTLTexture
+    // Blurred copy of revealageTexture, used by the bloom combine pass to extend
+    // transparent bloom into a halo. Only allocated when bloomEnabled.
+    var revealageBlurredTexture: MTLTexture?
 }
 
 struct RenderStageTransparentResources {
@@ -129,7 +132,15 @@ class RenderStageTransparent {
             revealageTexture: Self.createRevealageTexture(
                 device: device,
                 width: width,
-                height: height)
+                height: height,
+                allowShaderWrite: false),
+            revealageBlurredTexture: rendererSettings.bloomEnabled
+                ? Self.createRevealageTexture(
+                    device: device,
+                    width: width,
+                    height: height,
+                    allowShaderWrite: true)
+                : nil
         )
 
         let renderPassDescriptor = MTLRenderPassDescriptor()
@@ -183,7 +194,8 @@ class RenderStageTransparent {
     static func createRevealageTexture(
         device: MTLDevice,
         width: Int,
-        height: Int
+        height: Int,
+        allowShaderWrite: Bool
     ) -> MTLTexture {
         let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(
             pixelFormat: .r16Float,  // how to tie this up with the value in the render pass?
@@ -191,11 +203,15 @@ class RenderStageTransparent {
             height: height,
             mipmapped: false
         )
-        textureDescriptor.usage = [.renderTarget, .shaderRead]
+        textureDescriptor.usage = allowShaderWrite
+            ? [.renderTarget, .shaderRead, .shaderWrite]
+            : [.renderTarget, .shaderRead]
         textureDescriptor.storageMode = .private
 
         let texture = device.makeTexture(descriptor: textureDescriptor)!
-        texture.label = "Transparency Revealage Texture"
+        texture.label = allowShaderWrite
+            ? "Transparency Revealage Blurred Texture"
+            : "Transparency Revealage Texture"
         return texture
     }
 

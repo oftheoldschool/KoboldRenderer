@@ -298,9 +298,13 @@ float4 calculateBloom(
     float brightness = max(max(inputColor.r, inputColor.g), inputColor.b);
     float contribution = max(0.0, brightness - bloomThreshold.x);
     contribution = smoothstep(0.0, 0.5, contribution);
-    float4 outputBrightness = inputColor * contribution * float4(bloomMultiplier, 1.0);
-    outputBrightness.a = 1.0;
-    return outputBrightness;
+    // alpha is left as inputColor.a * contribution. Callers that want depth-aware
+    // bloom masking pack the fragment's NDC depth into inputColor.a, so the blurred
+    // brightness texture carries source-depth in its alpha channel. Legacy callers
+    // that pass alpha=1 get the previous behavior (alpha=1 on bloomy pixels,
+    // alpha=0 elsewhere) which the combine pass treats as "no depth tag, always
+    // visible" since depth=1 in reverse-Z is the closest possible value.
+    return inputColor * contribution * float4(bloomMultiplier, 1.0);
 }
 """
 }
