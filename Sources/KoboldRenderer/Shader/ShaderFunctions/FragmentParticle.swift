@@ -1,10 +1,8 @@
-class FragmentShaderFunctionTemplateColor: FragmentShaderFunctionTemplate {
-    override class var functionName: String { "colorFragment" }
-    override class var inputLayout: String { "FullFragmentInput" }
+public class FragmentShaderFunctionTemplateParticle: FragmentShaderFunctionTemplate {
+    override public class var functionName: String { "particleFragment" }
+    override public class var inputLayout: String { "FullFragmentInput" }
 
-    // todo: can we dedupe these and remove the need for variants with "instanced" in the name?
-    // can we switch the FragmentFunctionaVariant to an OptionSet? How would we resolve? Most specific to least?
-    override class var perVariantLayouts: [FragmentFunctionVariant: FragmentShaderVariantLayouts] {
+    override public class var perVariantLayouts: [FragmentFunctionVariant: FragmentShaderVariantLayouts] {
         [
             .color: FragmentShaderVariantLayouts(
                 bufferLayout: "BaseUniformsPlusLightUniforms",
@@ -53,100 +51,67 @@ class FragmentShaderFunctionTemplateColor: FragmentShaderFunctionTemplate {
         ]
     }
 
-    // todo: not required for gbuffer pass. how will we handle this?
-    override class var textureLayout: String {
+    override public class var textureLayout: String {
         "CascadedShadowMap"
     }
 
-    override class var materialLayout: String {
+    override public class var materialLayout: String {
         "None"
     }
 
-    override class func getFragmentCode(shaderVariant: FragmentFunctionVariant) -> String {
+    override public class func getFragmentCode(shaderVariant: FragmentFunctionVariant) -> String {
 """
     constant MaterialUniforms & material = materials[uniformsObject.materialId];
-    constant MaterialUniforms & globalMaterial = materials[uniformsShared.globalMaterialId];
-    float4 fragmentColor = material.color;
+    float2 uv = fragmentIn.texCoords * 2.0 - 1.0;
+    float dist = length(uv);
+    float circleAlpha = 1.0 - smoothstep(0.7, 1.0, dist);
+    if (circleAlpha < 0.01) discard_fragment();
+    float4 fragmentColor = float4(material.color.rgb, material.color.a * circleAlpha);
 """
     }
 
-    override class func getFragmentLightingCode(shaderVariant: FragmentFunctionVariant) -> String? {
-"""
-    bool enableLighting = uniformsLighting.enableLighting && material.applyLight;
-    bool enableShadows = uniformsLighting.enableShadows && material.receiveShadow;
-
-    float3 normal = getResolvedNormal(
-        uniformsShared,
-        material,
-        fragmentIn.worldPosition,
-        fragmentIn.worldNormal);
-
-    ShadowResult shadowResult = calculateShadow(
-        fragmentIn,
-        textureArrayCascadedShadowMap,
-        textureArrayCascadedShadowMapSampler,
-        uniformsCascadeEndClipSpace,
-        enableShadows,
-        uniformsLighting,
-        uniformsLights,
-        uniformsOccluders);
-
-    MaterialParameters materialParameters = resolveMaterial(
-        material,
-        globalMaterial,
-        fragmentIn.worldPosition,
-        normal,
-        shadowResult.cascadeIndex,
-        fragmentColor);
-
-    fragmentColor = calculateLighting(
-        uniformsShared,
-        uniformsLighting,
-        uniformsLights, 
-        fragmentIn.worldPosition,
-        normal,
-        materialParameters, 
-        shadowResult.shadowFactor,
-        enableLighting);
-"""
+    override public class func getFragmentLightingCode(shaderVariant: FragmentFunctionVariant) -> String? {
+        nil
     }
 
-    override class func getFragmentOutputCode(shaderVariant: FragmentFunctionVariant) -> String {
+    override public class func getFragmentOutputCode(shaderVariant: FragmentFunctionVariant) -> String {
 """
-\(shaderVariant.isBloom 
+\(shaderVariant.isBloom
     ? (shaderVariant.isTransparency
         ? alphaBloomOutput
         : bloomOutput)
-    : (shaderVariant.isGBuffer 
-        ? gbufferOutput 
+    : (shaderVariant.isGBuffer
+        ? gbufferOutput
         : (shaderVariant.isTransparency
             ? alphaOutput
             : standardOutput)))
 """
     }
 
-    override class func getFragmentTransparencyCode(shaderVariant: FragmentFunctionVariant) -> String? {
+    override public class func getFragmentTransparencyCode(shaderVariant: FragmentFunctionVariant) -> String? {
+        transparencyCode
+    }
+
+    private static let transparencyCode: String =
 """
-    float4 weightColor = fragmentColor; // Use lit but unshadowed color
+    float4 preWeightColor = fragmentColor;
+    float4 weightColor = fragmentColor;
     float transparencyWeight = max(
         min(
-            1.0f, 
+            1.0f,
             max(
                 max(
-                    weightColor.r, 
-                    weightColor.g), 
-                weightColor.b) * weightColor.a), 
-            weightColor.a) * clamp(0.03 / (1e-5 + pow(fragmentIn.clipSpacePosZ / 200, 4)), 
+                    weightColor.r,
+                    weightColor.g),
+                weightColor.b) * weightColor.a),
+            weightColor.a) * clamp(0.03 / (1e-5 + pow(fragmentIn.clipSpacePosZ / 200, 4)),
         1e-2,
     3e3);
 
-    float4 transparencyColor = float4(fragmentColor.rgb * shadowResult.shadowFactor, fragmentColor.a);
-    float4 preWeightColor = transparencyColor;
-    float revealage = transparencyColor.a;
-    fragmentColor = float4(transparencyColor.rgb * transparencyColor.a, transparencyColor.a) * transparencyWeight;
+    float revealage = fragmentColor.a;
+    fragmentColor = float4(fragmentColor.rgb * fragmentColor.a, fragmentColor.a) * transparencyWeight;
 
 """
-    }
 
     private static let standardOutput: String =
 """
