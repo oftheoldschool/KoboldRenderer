@@ -74,6 +74,27 @@ open class FragmentShaderFunctionTemplate {
             perVariantLayouts: shaders)
     }
 
+    private static func generateNearCameraFadeCode(
+        inputLayout: KInOutLayout,
+        bufferLayout: KBufferLayout
+    ) -> String {
+        let hasWorldPosition: Bool = {
+            guard case .compound(let layout) = inputLayout else { return false }
+            return layout.items.contains { $0.name == "worldPosition" }
+        }()
+        let hasSharedUniforms = bufferLayout.bufferLayoutBindings.contains { $0.type == .uniformsShared }
+
+        guard hasWorldPosition && hasSharedUniforms else { return "" }
+
+        return
+"""
+    float3 nearCameraOffset = fragmentIn.worldPosition - uniformsShared.cameraPosition;
+    float nearCameraFade = smoothstep(0.5625, 16.0, dot(nearCameraOffset, nearCameraOffset));
+    fragmentColor.a *= nearCameraFade;
+
+"""
+    }
+
     static func generateShaderCode(
         functionName: String,
         shaderVariant: FragmentFunctionVariant,
@@ -119,6 +140,7 @@ fragment \(outputLayout.name) \(functionName)(
     \(outputLayout.name) fragmentOut;
 \(fragmentCode)
 \(shaderVariant.isGBuffer ? "" : fragmentLightingCode ?? "")
+\(shaderVariant.isTransparency ? Self.generateNearCameraFadeCode(inputLayout: inputLayout, bufferLayout: bufferLayout) : "")
 \(shaderVariant.isTransparency ? fragmentTransparencyCode ?? "" : "")
 \(fragmentOutputCode)
     return fragmentOut;
